@@ -4,8 +4,8 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import sfmlGui as view
-import simpleDynamicsModel as model
-#import mitrovicModel as model
+#import simpleDynamicsModel as model
+import mitrovicModel as model
 
 # Main #########################################################################
 

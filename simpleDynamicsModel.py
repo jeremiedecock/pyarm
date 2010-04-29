@@ -7,16 +7,18 @@ import math
 import time
 import numpy as np
 
-DEBUG = True
+DEBUG = False
 LIMIT = True     # Considere min/max oridentation ?
 
 class ArmModel:
 
     former_time = 0.0
 
-    bl        = np.ones(2) * 0.1               # Bones length (m)
-    theta_min = np.ones(2) * -1 * math.pi / 2  # Min orientation (rd)
-    theta_max = np.ones(2) * math.pi / 2       # Max orientation (rd)
+    la        = np.ones(2) * 0.3               # Bones length (m)
+    #theta_min = np.ones(2) * -1 * math.pi / 2  # Min orientation (rd)
+    #theta_max = np.ones(2) * math.pi / 2       # Max orientation (rd)
+    theta_min = np.array([-1.75, 0.52])        # Min angles joints (rd) (cf. H.Kambara)
+    theta_max = np.array([-0.35, 1.92])        # Max angles joints (rd) (cf. H.Kambara)
 
     I     = np.ones(2) * 2.0           # Moment of inertia at join point (kg·m²) TODO
 
@@ -102,5 +104,5 @@ class ArmModel:
         return self.tau.tolist()
 
     def getBonesLength(self):
-        return self.bl.tolist()
+        return self.la.tolist()
 

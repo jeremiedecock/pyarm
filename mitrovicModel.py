@@ -15,21 +15,31 @@ class ArmModel:
 
     former_time = 0.0                          # Former time (s)
 
-    bl        = np.ones(2) * 0.1               # Bones length (m)
-    theta_min = np.ones(2) * -1 * math.pi / 2  # Min orientation (rd)
-    theta_max = np.ones(2) * math.pi / 2       # Max orientation (rd)
+    ### Kambara
 
-    ###
+    tick_duration = 0.01                       # The state of the arm is updated at every tick_duration time (s)
 
-    lm = np.ones(6)                # TODO : ???
+    theta_min = np.array([-1.75, 0.52])        # Min angles joints (rd) (cf. H.Kambara)
+    theta_max = np.array([-0.35, 1.92])        # Max angles joints (rd) (cf. H.Kambara)
 
-    k  = np.ones(6) * 1621.6       # Elasticity coefficient            (N/m   ???)
-    b  = np.ones(6) * 108.1        # Viscosity coefficient             (N/s/m ???)
-    k0 = np.ones(6) * 810.8        # Intrinsic elasticity  (for u = 0) (N/m   ???)
-    b0 = np.ones(6) * 54.1         # Intrinsic viscosity   (for u = 0) (N/s/m ???)
-    l0 = np.ones(6)                # Intrinsic rest length (for u = 0) (cm    ???)
-    r  = np.array([-3.491, 3.491, -2.182, 2.182, -5.498, 5.498])                   # Constant from the muscle model (...) (cm ???)
-    A  = np.array([[4., 4., 0., 0., 2.8, 2.8],[0., 0., 2.5, 2.5, 3.5, 3.5]]).T     # Moment arm (constant matrix)         (???)
+    m  = np.array([1.59, 1.44])                # Arm mass   (kg)   [upper, lower]
+    la = np.array([0.3,  0.35])                # Arm length (m)    [upper, lower]
+    lg = np.array([0.18, 0.21])                # Distance from the center of mass to the joint (m)      [upper, lower]
+    I  = np.array([6.78E-2, 7.99E-2])          # Inertia of the link around the joint          (kg.m²)  [upper, lower]
+
+    k  = np.array([3000., 2000., 1400., 1200., 600., 600.])      # Elasticity coefficient            (N/m)
+    k0 = np.array([1000., 1000., 600., 600., 300., 300.])        # Intrinsic elasticity  (for u = 0) (N/m)
+
+    b  = np.ones(6) * 100.      # Viscosity coefficient             (N.s/m)
+    b0 = np.ones(6) * 50.       # Intrinsic viscosity   (for u = 0) (N.s/m)
+
+    A  = np.array([[4., -4., 0., 0., 2.8, -3.5],[0., 0., 2.5, -2.5, 2.8, -3.5]]).T   # Moment arm (constant matrix) (cm)
+
+    ### Mitrovic
+
+    lm = np.ones(6)                 # TODO : ???
+    l0 = np.ones(6) * 10.           # Intrinsic rest length (for u = 0) (cm    ???)TODO : ???
+    r  = np.array([-3.491, 3.491, -2.182, 2.182, -5.498, 5.498])    # Constant from the muscle model (...) (cm ???)TODO : ???
 
     ###
 
@@ -57,7 +67,7 @@ class ArmModel:
         current_time = time.time()
         delta_time = current_time - self.former_time
 
-        # Fetch control signal (motor command)
+        # Fetch control signal (motor command) : 6 elements vector (value taken in [0,1])
         u = np.array(input)
         u = u[0:6]
         if DEBUG:
@@ -66,31 +76,31 @@ class ArmModel:
 
         # Dynamics ##################################################
 
-        # l : muscle length (m)
-        l = self.lm - np.dot(self.A, self.theta)
+        # l : muscle length (cm)
+        l = self.lm - np.dot(self.A, self.theta) # TODO
         if DEBUG:
             print "l"
             print l
         
-        # dl : muscle length derivative (m)
-        dl = np.dot(-1 * self.A, self.omega)
+        # dl : muscle length derivative (cm)
+        dl = np.dot(-1 * self.A, self.omega) # TODO
         if DEBUG:
             print "dl"
             print dl
 
-        # K : muscle stiffness
+        # K : muscle stiffness (N/m)
         K = np.diag(self.k0 + np.dot(self.k, u)) # TODO
         if DEBUG:
             print "K"
             print K
 
-        # B : muscle viscosity
+        # B : muscle viscosity (N.s/m)
         B = np.diag(self.b0 + np.dot(self.b, u)) # TODO
         if DEBUG:
             print "B"
             print B
 
-        # lr : muscle rest length
+        # lr : muscle rest length (cm)
         lr = self.l0 + np.dot(self.r, u) # TODO
         if DEBUG:
             print "lr"
@@ -103,7 +113,7 @@ class ArmModel:
             print T
 
         # tau : total torque (N.m)
-        self.tau = np.dot(-1 * self.A.T, T)
+        self.tau = np.dot(-1 * self.A.T, T) # TODO
         if DEBUG:
             print "tau"
             print self.tau
@@ -149,5 +159,5 @@ class ArmModel:
         return self.tau.tolist()
 
     def getBonesLength(self):
-        return self.bl.tolist()
+        return self.la.tolist()
 

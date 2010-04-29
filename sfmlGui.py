@@ -16,7 +16,7 @@ class GUI:
     text2 = None
     line1 = None
     line2 = None
-    LENGTH_SCALE = 1000.
+    LENGTH_SCALE = 300.
 
     def __init__(self, armModel):
         self.armModel = armModel
