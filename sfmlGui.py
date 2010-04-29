@@ -42,10 +42,10 @@ class GUI:
         self.text2.SetColor(self.foreground_color)
         self.text2.SetPosition(20, 40)
 
-        self.line1 = sf.Shape.Line(0, 0, 0, self.armModel.getL1() * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line1 = sf.Shape.Line(0, 0, 0, self.armModel.getBonesLength()[0] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
         self.centerLine(self.line1)
 
-        self.line2 = sf.Shape.Line(0, 0, 0, self.armModel.getL2() * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line2 = sf.Shape.Line(0, 0, 0, self.armModel.getBonesLength()[1] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
         self.centerLine(self.line2)
 
     def centerLine(self, line):
@@ -61,12 +61,12 @@ class GUI:
 
     def updateShapes(self):
         # Line 1
-        self.line1.SetRotation(math.degrees(self.armModel.getTheta1()))
+        self.line1.SetRotation(math.degrees(self.armModel.getTheta()[0]))
 
         # Line 2
         self.centerLine(self.line2)
-        self.line2.SetRotation(math.degrees(self.armModel.getTheta1()))
-        self.line2.SetRotation(math.degrees(self.armModel.getTheta2()))
+        self.line2.SetRotation(math.degrees(self.armModel.getTheta()[0]))
+        self.line2.Rotate(math.degrees(self.armModel.getTheta()[1]))
         self.translateLine(self.line2, self.line1)
 
     def run(self):
@@ -82,7 +82,7 @@ class GUI:
                 if event.Type == sf.Event.Closed:
                     running = False
 
-            input = (window_input.IsKeyDown(sf.Key.Numpad1), window_input.IsKeyDown(sf.Key.Numpad2), window_input.IsKeyDown(sf.Key.Numpad4), window_input.IsKeyDown(sf.Key.Numpad5))
+            input = (window_input.IsKeyDown(sf.Key.Numpad1), window_input.IsKeyDown(sf.Key.Numpad2), window_input.IsKeyDown(sf.Key.Numpad3), window_input.IsKeyDown(sf.Key.Numpad4), window_input.IsKeyDown(sf.Key.Numpad5), window_input.IsKeyDown(sf.Key.Numpad6))
             #print input
 
             # Update thetas (physics)
@@ -90,8 +90,10 @@ class GUI:
 
             # Update the window
             self.updateShapes()
-            self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (self.armModel.getTheta1(), math.degrees(self.armModel.getTheta1()), self.armModel.getOmega1(), self.armModel.getAlpha1(), self.armModel.getTau1()))
-            self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (self.armModel.getTheta2(), math.degrees(self.armModel.getTheta2()), self.armModel.getOmega2(), self.armModel.getAlpha2(), self.armModel.getTau2()))
+            self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (self.armModel.getTheta()[0], math.degrees(self.armModel.getTheta()[0]), self.armModel.getOmega()[0], 0.0, self.armModel.getTau()[0]))
+            #self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (self.armModel.getTheta()[0], math.degrees(self.armModel.getTheta()[0]), self.armModel.getOmega()[0], self.armModel.getAlpha()[0], self.armModel.getTau()[0]))
+            self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (self.armModel.getTheta()[1], math.degrees(self.armModel.getTheta()[1]), self.armModel.getOmega()[1], 0.0, self.armModel.getTau()[1]))
+            #self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (self.armModel.getTheta()[1], math.degrees(self.armModel.getTheta()[1]), self.armModel.getOmega()[1], self.armModel.getAlpha()[1], self.armModel.getTau()[1]))
 
             self.window.Clear(self.background_color)
 

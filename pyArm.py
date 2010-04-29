@@ -5,6 +5,7 @@
 
 import sfmlGui as view
 import simpleDynamicsModel as model
+#import mitrovicModel as model
 
 # Main #########################################################################
 

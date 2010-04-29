@@ -5,23 +5,25 @@
 
 import math
 import time
+import numpy as np
+
+DEBUG = True
+LIMIT = True     # Considere min/max oridentation ?
 
 class ArmModel:
 
     former_time = 0.0
 
-    l1     = 0.1   # Arm length (m)
-    l2     = 0.1   # Arm length (m)
-    I1     = 2.0   # Moment of inertia at join point (kg·m²)
-    I2     = 1.0   # Moment of inertia at join point (kg·m²)
-    tau1   = 0.0   # Total torque (N.m)
-    tau2   = 0.0   # Total torque (N.m)
-    alpha1 = 0.0   # Angular acceleration (rd/s/s)
-    alpha2 = 0.0   # Angular acceleration (rd/s/s)
-    omega1 = 0.0   # Angular velocity (rd/s)
-    omega2 = 0.0   # Angular velocity (rd/s)
-    theta1 = 0.0   # Orientation (rd)
-    theta2 = 0.0   # Orientation (rd)
+    bl        = np.ones(2) * 0.1               # Bones length (m)
+    theta_min = np.ones(2) * -1 * math.pi / 2  # Min orientation (rd)
+    theta_max = np.ones(2) * math.pi / 2       # Max orientation (rd)
+
+    I     = np.ones(2) * 2.0           # Moment of inertia at join point (kg·m²) TODO
+
+    tau   = np.zeros(2)                # Total torque (N.m)
+    alpha = np.zeros(2)                # Angular acceleration (rd/s/s)
+    omega = np.zeros(2)                # Angular velocity (rd/s)
+    theta = np.zeros(2)                # Orientation (rd)
 
     def __init__(self):
         pass
@@ -30,69 +32,75 @@ class ArmModel:
         current_time = time.time()
         delta_time = current_time - self.former_time
 
-        in1 = 0
-        in2 = 0
+        if DEBUG:
+            print "alpha"
+            print self.alpha
+            print "omega"
+            print self.omega
+            print "theta"
+            print self.theta
 
-        if input[0]:
-            in1 = 1
-        elif input[2]:
-            in1 = -1
+        # Control signal
+        u = np.zeros(2)
 
-        if input[1]:
-            in2 = 1
-        elif input[3]:
-            in2 = -1
+        i = np.array(input)
+        if i[0]:
+            u[0] = 1
+        elif i[3]:
+            u[0] = -1
 
+        if i[1]:
+            u[1] = 1
+        elif i[4]:
+            u[1] = -1
+
+        if DEBUG:
+            print "u"
+            print u
+        
         # Torque
-        self.tau1 = in1 * 10
-        self.tau2 = in2 * 10
+        self.tau = u * 10
+        if DEBUG:
+            print "tau"
+            print self.tau
+
+        #############################################################
 
         # Angular acceleration
-        self.alpha1 = self.tau1 / self.I1
-        self.alpha2 = self.tau2 / self.I2
+        self.alpha = self.tau / self.I  # TODO
 
         # Angular velocity
-        self.omega1 += self.alpha1 * delta_time
-        self.omega2 += self.alpha2 * delta_time
+        self.omega += self.alpha * delta_time
 
         # Orientation
-        self.theta1 += self.omega1 * delta_time
+        self.theta += self.omega * delta_time
 
-        self.theta2 += self.omega1 * delta_time
-        self.theta2 += self.omega2 * delta_time
+        if LIMIT:
+            for i in range(2):
+                if self.theta[i] < self.theta_min[i]:
+                    self.alpha[i] = 0
+                    self.omega[i] = 0
+                    self.theta[i] = self.theta_min[i]
+                elif self.theta[i] > self.theta_max[i]:
+                    self.alpha[i] = 0
+                    self.omega[i] = 0
+                    self.theta[i] = self.theta_max[i]
 
-        self.theta1  = self.theta1 % (2 * math.pi)
-        self.theta2  = self.theta2 % (2 * math.pi)
-
+        # Update clock
         self.former_time = current_time
 
-    def getTheta1(self):
-        return self.theta1
+    def getTheta(self):
+        return (self.theta % (2 * math.pi)).tolist()
 
-    def getTheta2(self):
-        return self.theta2
+    def getOmega(self):
+        return self.omega.tolist()
 
-    def getOmega1(self):
-        return self.omega1
+    def getAlpha(self):
+        return self.alpha.tolist()
 
-    def getOmega2(self):
-        return self.omega2
+    def getTau(self):
+        return self.tau.tolist()
 
-    def getAlpha1(self):
-        return self.alpha1
-
-    def getAlpha2(self):
-        return self.alpha2
-
-    def getTau1(self):
-        return self.tau1
-
-    def getTau2(self):
-        return self.tau2
-
-    def getL1(self):
-        return self.l1
-
-    def getL2(self):
-        return self.l2
+    def getBonesLength(self):
+        return self.bl.tolist()
 
