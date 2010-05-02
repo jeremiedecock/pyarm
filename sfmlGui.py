@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
@@ -16,7 +15,7 @@ class GUI:
     text2 = None
     line1 = None
     line2 = None
-    LENGTH_SCALE = 300.
+    LENGTH_SCALE = 300. # px/m (pixels per meter)
 
     def __init__(self, armModel):
         self.armModel = armModel

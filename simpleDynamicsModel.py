@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
@@ -7,20 +6,24 @@ import math
 import time
 import numpy as np
 
-DEBUG = False
-LIMIT = True     # Considere min/max oridentation ?
+_realtime = True
+_limit    = False     # Considere min/max oridentation ?
 
 class ArmModel:
 
     former_time = 0.0
 
-    la        = np.ones(2) * 0.3               # Bones length (m)
-    #theta_min = np.ones(2) * -1 * math.pi / 2  # Min orientation (rd)
-    #theta_max = np.ones(2) * math.pi / 2       # Max orientation (rd)
-    theta_min = np.array([-1.75, 0.52])        # Min angles joints (rd) (cf. H.Kambara)
-    theta_max = np.array([-0.35, 1.92])        # Max angles joints (rd) (cf. H.Kambara)
+    delta_time  = 0.01                       # The state of the arm is updated at every tick_duration time (s)
+    
+    theta_min = np.array([-1.75, 0.52])      # Min angles joints (rd) (cf. H.Kambara)
+    theta_max = np.array([-0.35, 1.92])      # Max angles joints (rd) (cf. H.Kambara)
 
-    I     = np.ones(2) * 2.0           # Moment of inertia at join point (kg·m²) TODO
+    la    = np.array([0.3, 0.33])            # Limb length (m)
+    m     = np.array([1.4, 1.1])             # Limb mass (kg) [upper, lower]
+    s     = np.array([0.11, 0.16])           # Distance from the joint center to the center of mass (m) [upper, lower]
+    
+    I     = np.array([2.5E-2, 4.5E-2])       # Moment of inertia at join point (kg·m²) TODO
+    B     = np.array([[0.05, 0.025],[0.025, 0.05]]) # ???
 
     tau   = np.zeros(2)                # Total torque (N.m)
     alpha = np.zeros(2)                # Angular acceleration (rd/s/s)
@@ -31,10 +34,13 @@ class ArmModel:
         pass
 
     def tick(self, input):
-        current_time = time.time()
-        delta_time = current_time - self.former_time
 
-        if DEBUG:
+        current_time = time.time()
+
+        if _realtime:
+            self.delta_time = current_time - self.former_time
+
+        if __debug__:
             print "alpha"
             print self.alpha
             print "omega"
@@ -56,28 +62,30 @@ class ArmModel:
         elif i[4]:
             u[1] = -1
 
-        if DEBUG:
+        if __debug__:
             print "u"
             print u
         
         # Torque
-        self.tau = u * 10
-        if DEBUG:
+        self.tau = u
+        if __debug__:
             print "tau"
             print self.tau
 
         #############################################################
 
         # Angular acceleration
-        self.alpha = self.tau / self.I  # TODO
+        M = self.M(self.theta)
+        C = self.C(self.theta, self.omega)
+        self.alpha = np.dot(np.linalg.inv(M), self.tau - C - np.dot(self.B, self.omega))  # TODO
 
         # Angular velocity
-        self.omega += self.alpha * delta_time
+        self.omega += self.alpha * self.delta_time
 
         # Orientation
-        self.theta += self.omega * delta_time
+        self.theta += self.omega * self.delta_time
 
-        if LIMIT:
+        if _limit:
             for i in range(2):
                 if self.theta[i] < self.theta_min[i]:
                     self.alpha[i] = 0
@@ -90,6 +98,32 @@ class ArmModel:
 
         # Update clock
         self.former_time = current_time
+
+    def M(self, theta):
+        """Compute inertia matrix (???)"""
+        M  = np.zeros([2, 2])
+
+        d1 = self.I[0] + self.I[1] + self.m[1] * self.la[0]**2
+        d2 = self.m[1] * self.la[0] * self.s[1]
+        d3 = self.I[1]
+
+        M[0,0] = d1 + 2 * d2 * math.cos(theta[1])
+        M[0,0] = d3 + d2 * math.cos(theta[1])
+        M[0,0] = d3 + d2 * math.cos(theta[1])
+        M[1,1] = d3
+
+        return M
+
+    def C(self, theta, omega):
+        """Compute C matrix"""
+        C = np.zeros(2)
+
+        d2 = self.m[1] * self.la[0] * self.s[1]
+
+        C[0] = -1 * omega[1] * (2. * omega[0] + omega[1]) * d2 * math.sin(theta[1])
+        C[1] = omega[0]**2 * d2 * math.sin(theta[1])
+
+        return C
 
     def getTheta(self):
         return (self.theta % (2 * math.pi)).tolist()
