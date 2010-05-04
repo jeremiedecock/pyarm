@@ -5,12 +5,12 @@
 import math
 import time
 import numpy as np
+import fig
 
 _realtime = True
 _limit    = True     # Considere min/max oridentation ?
 
 class ArmModel:
-
 
     ### Kambara
 
@@ -44,15 +44,23 @@ class ArmModel:
     ###
 
     def __init__(self):
-        self.former_time = 0.0       # Former time (s)
+        self.former_time = time.time()     # Former time (s)
 
-        self.tau   = np.zeros(2)     # Total torque (N.m)
-        self.alpha = np.zeros(2)     # Angular acceleration (rd/s²)
-        self.omega = np.zeros(2)     # Angular velocity (rd/s)
-        self.theta = np.zeros(2)     # Orientation (rd)
+        self.tau   = np.zeros(2)           # Total torque (N.m)
+        self.alpha = np.zeros(2)           # Angular acceleration (rd/s²)
+        self.omega = np.zeros(2)           # Angular velocity (rd/s)
+        self.theta = np.zeros(2)           # Orientation (rd)
 
-        self.length = self.l(self.theta)  # Current muscle length (cm)
-        self.v      = np.zeros(6)         # Current muscle contraction velocity (muscle length derivative) (cm/s)
+        self.length = self.l(self.theta)   # Current muscle length (cm)
+        self.v      = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (cm/s)
+
+        # Init datas to plot (title, xlabel, ylabel)
+        fig.subfig('dtime', 'Time (s)', 'tick number', 'delta time')
+        fig.subfig('length', 'Muscle length (s)', 'tick number', 'muscle length')
+        fig.subfig('torque', 'Torque (N.m)', 'tick number', 'torque')
+
+    def __del__(self):
+        fig.show()
 
     def tick(self, input):
 
@@ -62,12 +70,16 @@ class ArmModel:
         if _realtime:
             self.delta_time = current_time - self.former_time
 
+        fig.append('dtime', self.delta_time)
+
         # Muscle inverse kinematics #################################
 
         # Muscle length
         former_length = self.length
         self.length = self.l(self.theta)
         delta_length = self.length - former_length
+
+        fig.append('length', self.length)
 
         # Muscle velocity
         self.v  = delta_length / self.delta_time
@@ -77,6 +89,8 @@ class ArmModel:
         # tau : total torque (N.m)
         T = self.T(self.u(input), self.length, self.v)
         self.tau = np.dot(self.A.T, T)
+
+        fig.append('torque', self.tau)
 
         # Angular acceleration
         M = self.M(self.theta)

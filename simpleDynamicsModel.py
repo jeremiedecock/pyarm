@@ -5,13 +5,12 @@
 import math
 import time
 import numpy as np
+import fig
 
 _realtime = True
 _limit    = False     # Considere min/max oridentation ?
 
 class ArmModel:
-
-    former_time = 0.0
 
     delta_time  = 0.01                       # The state of the arm is updated at every tick_duration time (s)
     
@@ -25,13 +24,22 @@ class ArmModel:
     I     = np.array([2.5E-2, 4.5E-2])       # Moment of inertia at join point (kg·m²) TODO
     B     = np.array([[0.05, 0.025],[0.025, 0.05]]) # ???
 
-    tau   = np.zeros(2)                # Total torque (N.m)
-    alpha = np.zeros(2)                # Angular acceleration (rd/s/s)
-    omega = np.zeros(2)                # Angular velocity (rd/s)
-    theta = np.zeros(2)                # Orientation (rd)
-
     def __init__(self):
-        pass
+        self.former_time = time.time()     # Former time (s)
+
+        self.tau   = np.zeros(2)           # Total torque (N.m)
+        self.alpha = np.zeros(2)           # Angular acceleration (rd/s/s)
+        self.omega = np.zeros(2)           # Angular velocity (rd/s)
+        self.theta = np.zeros(2)           # Orientation (rd)
+
+        # Init datas to plot (title, xlabel, ylabel)
+        fig.subfig('alpha', 'Angular acceleration', 'tick number', 'Angular acceleration (rad/s/s)')
+        fig.subfig('omega', 'Angular velocity', 'tick number', 'Angular velocity (rad/s)')
+        fig.subfig('torque', 'Torque (N.m)', 'tick number', 'torque')
+        fig.subfig('theta', 'Angle', 'tick number', 'Angle (rad)')
+
+    def __del__(self):
+        fig.show()
 
     def tick(self, input):
 
@@ -39,14 +47,6 @@ class ArmModel:
 
         if _realtime:
             self.delta_time = current_time - self.former_time
-
-        if __debug__:
-            print "alpha"
-            print self.alpha
-            print "omega"
-            print self.omega
-            print "theta"
-            print self.theta
 
         # Control signal
         u = np.zeros(2)
@@ -68,9 +68,8 @@ class ArmModel:
         
         # Torque
         self.tau = u
-        if __debug__:
-            print "tau"
-            print self.tau
+
+        fig.append('torque', self.tau)
 
         #############################################################
 
@@ -79,8 +78,12 @@ class ArmModel:
         C = self.C(self.theta, self.omega)
         self.alpha = np.dot(np.linalg.inv(M), self.tau - C - np.dot(self.B, self.omega))  # TODO
 
+        fig.append('alpha', self.alpha)
+
         # Angular velocity
         self.omega += self.alpha * self.delta_time
+
+        fig.append('omega', self.omega)
 
         # Orientation
         self.theta += self.omega * self.delta_time
@@ -95,6 +98,8 @@ class ArmModel:
                     self.alpha[i] = 0
                     self.omega[i] = 0
                     self.theta[i] = self.theta_max[i]
+
+        fig.append('theta', self.theta)
 
         # Update clock
         self.former_time = current_time
