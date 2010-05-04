@@ -55,7 +55,7 @@ class ArmModel:
         T = self.T(self.a(u), self.l(self.theta), self.v(self.theta, self.omega))
         self.tau = np.dot(MA,T)
 
-        # Angular acceleration (rad/s/s)
+        # Angular acceleration (rad/s²)
         M = self.M(self.theta)
         C = self.C(self.theta, self.omega)
         self.alpha = np.dot(np.linalg.inv(M), self.tau - C - np.dot(self.B, self.omega))  # TODO

@@ -15,13 +15,13 @@ def usage():
     A robotic arm model and simulator.
 
     -m, --model
-        the arm model to use (naive, mitrovic or weiwei)
+        the arm model to use (naive, kambara or weiwei)
     '''
 
 
 def main():
     # Parse options ###################
-    model = 'mitrovic'
+    model = 'kambara'
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'm:h', ["model=", "help"])
@@ -39,7 +39,7 @@ def main():
         else:
             assert False, "unhandled option"
 
-    if model not in ('mitrovic', 'naive', 'weiwei'):
+    if model not in ('kambara', 'naive', 'weiwei'):
         usage()
         sys.exit(2)
 
@@ -47,8 +47,8 @@ def main():
 
     import sfmlGui as view
 
-    if model == 'mitrovic':
-        import mitrovicModel as model
+    if model == 'kambara':
+        import kambaraModel as model
     elif model == 'naive':
         import simpleDynamicsModel as model
     elif model == 'weiwei':
