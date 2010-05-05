@@ -8,16 +8,28 @@ import numpy as np
 import fig
 
 _realtime = True
-_limit    = True     # Considere min/max oridentation ?
+_limit    = False     # Considere min/max oridentation ?
 
 class ArmModel:
-
-    ### Kambara
 
     delta_time = 0.01                          # The state of the arm is updated at every tick_duration time (s)
 
     theta_min = np.array([-1.75, 0.52])        # Min angles joints (rd) (cf. H.Kambara)
     theta_max = np.array([-0.35, 1.92])        # Max angles joints (rd) (cf. H.Kambara)
+
+    umin,     umax     = 0, 1
+    #lmin,     lmax     = 0, 0.5
+    lmin,     lmax     = -1, 1    # TODO : temp values
+    lrestmin, lrestmax = 0, 0.5
+    # 1 N is the force of Earth's gravity on an object with a mass of about 102 g (1⁄9.81 kg) (such as a small apple).
+    # On Earth's surface, a mass of 1 kg exerts a force of approximately 9.8 N [down] (or 1.0 kilogram-force; 1 kgf=9.80665 N by definition). The approximation of 1 kg corresponding to 10 N is sometimes used as a rule of thumb in everyday life and in engineering.
+    # The force of Earth's gravity on a human being with a mass of 70 kg is approximately 686 N.
+    Tmin,     Tmax     = -200, 200
+    taumin,   taumax   = -200, 200
+
+    alphamin, alphamax = -10E1, 10E1
+    omegamin, omegamax = -10E2, 10E2
+    thetamin, thetamax = -10E4, 10E4
 
     # Arm dynamics
     m  = np.array([1.59, 1.44])                # Limb mass   (kg)   [upper, lower]
@@ -34,14 +46,14 @@ class ArmModel:
     b0 = np.ones(6) * 50.                                      # Intrinsic viscosity   (for u = 0) (N.s/m)
     b1 = np.ones(6) * 100.                                     # Variation rate of viscosity       (N.s/m)
 
-    l0rest = np.ones(6) * 10.                                  # Intrinsic rest length (for u = 0) (cm    ???)TODO : ???
-    l1rest = np.ones(6) * 15.                                  # Rest length (cm) # TODO
-    ld     = np.array([7.7, 12.8, 10., 4., 2., 1.9])           # ??? (cm) # TODO
-    l0     = np.array([7.7, 12.8, 10., 4., 2., 1.9])           # ??? (cm) # TODO
+    l0rest = np.ones(6) * 0.1                                  # Intrinsic rest length (for u = 0) (m    ???)TODO : ???
+    l1rest = np.ones(6) * 0.15                                 # Rest length (m) # TODO
+    ld     = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])  # ??? (m) # TODO
+    l0     = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])  # ??? (m) # TODO
 
-    A  = np.array([[4., -4., 0., 0., 2.8, -3.5],[0., 0., 2.5, -2.5, 2.8, -3.5]]).T   # Moment arm (constant matrix) (cm)
+    A  = np.array([[ 0.04 , -0.04 ,  0.   ,  0.   ,  0.028, -0.035],
+                   [ 0.   ,  0.   ,  0.025, -0.025,  0.028, -0.035]]).T   # Moment arm (constant matrix) (m)
 
-    ###
 
     def __init__(self):
         self.former_time = time.time()     # Former time (s)
@@ -51,13 +63,16 @@ class ArmModel:
         self.omega = np.zeros(2)           # Angular velocity (rd/s)
         self.theta = np.zeros(2)           # Orientation (rd)
 
-        self.length = self.l(self.theta)   # Current muscle length (cm)
-        self.v      = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (cm/s)
+        self.length = self.l(self.theta)   # Current muscle length (m)
+        self.v      = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (m/s)
 
         # Init datas to plot (title, xlabel, ylabel)
-        fig.subfig('dtime', 'Time (s)', 'tick number', 'delta time')
-        fig.subfig('length', 'Muscle length (s)', 'tick number', 'muscle length')
-        fig.subfig('torque', 'Torque (N.m)', 'tick number', 'torque')
+        fig.subfig('dtime',  'Time',                 'time (s)', 'delta time (s)')
+        fig.subfig('length', 'Muscle length',        'time (s)', 'muscle length (m)')
+        fig.subfig('torque', 'Torque',               'time (s)', 'Torque (N.m)')
+        fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'Angular acceleration (rad/s/s)')
+        fig.subfig('omega',  'Angular velocity',     'time (s)', 'Angular velocity (rad/s)')
+        fig.subfig('theta',  'Angle',                'time (s)', 'Angle (rad)')
 
     def __del__(self):
         fig.show()
@@ -92,18 +107,31 @@ class ArmModel:
 
         fig.append('torque', self.tau)
 
+        if self.tau.max() > self.taumax or self.tau.min() < self.taumin:
+            raise TypeError('Torque : values are out of bounds : ' + str(self.tau) + ' ([' + str(self.taumin) + ',' + str(self.taumax) + '] expected)')
+
         # Angular acceleration
         M = self.M(self.theta)
         C = self.C(self.theta, self.omega)
         G = self.G(self.theta)
         self.alpha = np.dot(np.linalg.inv(M), self.tau - C - G)
 
+        fig.append('alpha', self.alpha)
+
+        if self.alpha.max() > self.alphamax or self.alpha.min() < self.alphamin:
+            raise TypeError('Angular acceleration : values are out of bounds : ' + str(self.alpha) + ' ([' + str(self.alphamin) + ',' + str(self.alphamax) + '] expected)')
+
         # Kinematics ################################################
 
         # Angular velocity
         self.omega += self.alpha * self.delta_time
 
-        # Orientation
+        fig.append('omega', self.omega)
+
+        if self.omega.max() > self.omegamax or self.omega.min() < self.omegamin:
+            raise TypeError('Angular velocity : values are out of bounds : ' + str(self.omega) + ' ([' + str(self.omegamin) + ',' + str(self.omegamax) + '] expected)')
+
+        # Joint angle
         self.theta += self.omega * self.delta_time
 
         if _limit:
@@ -117,6 +145,11 @@ class ArmModel:
                     self.omega[i] = 0
                     self.theta[i] = self.theta_max[i]
 
+        fig.append('theta', self.theta)
+
+        if self.theta.max() > self.thetamax or self.theta.min() < self.thetamin:
+            raise TypeError('Joint angle : values are out of bounds : ' + str(self.theta) + ' ([' + str(self.thetamin) + ',' + str(self.thetamax) + '] expected)')
+
         # Update clock
         self.former_time = current_time
 
@@ -125,18 +158,27 @@ class ArmModel:
 
         Return a 6 elements vector (array) with value taken in [0, 1]"""
 
+        if isinstance(input, list):
+            raise TypeError('Motor command : type is ' + str(type(x)) + ' (list expected)')
+
         u = np.array(input)
         u = u[0:6]
 
-        if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
+        if u.shape != (6,):
+            raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
+        if u.max() > self.umax or u.min() < self.umin:
+            raise TypeError('Motor command : values are out of bounds : ' + str(u) + ' ([0,1] expected)')
 
         return u
 
     def l(self, theta):
-        """Muscle length (cm)."""
+        """Muscle length (m)."""
         if theta.shape != (2,): raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
 
         l = self.l0 - np.dot(self.A, theta) # TODO
+
+        if l.max() > self.lmax or l.min() < self.lmin:
+            raise TypeError('Muscle length : values are out of bounds : ' + str(l) + ' ([' + str(self.lmin) + ',' + str(self.lmax) + '] expected)')
 
         return l
         
@@ -144,7 +186,7 @@ class ArmModel:
         """Muscle stiffness (N/m)."""
         if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
 
-        K = np.diag(self.k0 + self.k1 * u)
+        K = self.k0 + self.k1 * u
 
         return K
 
@@ -152,15 +194,18 @@ class ArmModel:
         """Muscle viscosity (N.s/m)."""
         if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
 
-        B = np.diag(self.b0 + self.b1 * u)
+        B = self.b0 + self.b1 * u
 
         return B
 
     def lrest(self, u):
-        """Muscle rest length (cm)."""
+        """Muscle rest length (m)."""
         if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
 
         lrest = self.l0rest - self.l1rest * u
+
+        if lrest.max() > self.lrestmax or lrest.min() < self.lrestmin:
+            raise TypeError(' : values are out of bounds : ' + str(lrest) + ' ([' + str(self.lrestmin) + ',' + str(self.lrestmax) + '] expected)')
 
         return lrest
 
@@ -174,7 +219,10 @@ class ArmModel:
         B = self.B(u)
         lrest = self.lrest(u)
 
-        T = np.dot(K,(l-lrest)) + np.dot(B,v) # TODO
+        T = K * (l-lrest) + B * v
+
+        if T.max() > self.Tmax or T.min() < self.Tmin:
+            raise TypeError('Muscle Tension : values are out of bounds : ' + str(T) + ' ([' + str(self.Tmin) + ',' + str(self.Tmax) + '] expected)')
 
         return T
 
@@ -221,15 +269,19 @@ class ArmModel:
         return G
 
     def getTheta(self):
+        print "theta", str(self.theta)
         return (self.theta % (2 * math.pi)).tolist()
 
     def getOmega(self):
+        print "omega", str(self.omega)
         return self.omega.tolist()
 
     def getAlpha(self):
+        print "alpha", str(self.alpha)
         return self.alpha.tolist()
 
     def getTau(self):
+        print "tau", str(self.tau)
         return self.tau.tolist()
 
     def getBonesLength(self):

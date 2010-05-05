@@ -87,12 +87,15 @@ class GUI:
             # Update thetas (physics)
             self.armModel.tick(input)
 
+            theta = self.armModel.getTheta()
+            omega = self.armModel.getOmega()
+            alpha = self.armModel.getAlpha()
+            tau   = self.armModel.getTau()
+
             # Update the window
             self.updateShapes()
-            self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (self.armModel.getTheta()[0], math.degrees(self.armModel.getTheta()[0]), self.armModel.getOmega()[0], 0.0, self.armModel.getTau()[0]))
-            #self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (self.armModel.getTheta()[0], math.degrees(self.armModel.getTheta()[0]), self.armModel.getOmega()[0], self.armModel.getAlpha()[0], self.armModel.getTau()[0]))
-            self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (self.armModel.getTheta()[1], math.degrees(self.armModel.getTheta()[1]), self.armModel.getOmega()[1], 0.0, self.armModel.getTau()[1]))
-            #self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (self.armModel.getTheta()[1], math.degrees(self.armModel.getTheta()[1]), self.armModel.getOmega()[1], self.armModel.getAlpha()[1], self.armModel.getTau()[1]))
+            self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (theta[0], math.degrees(theta[0]), omega[0], alpha[0], tau[0]))
+            self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (theta[1], math.degrees(theta[1]), omega[1], alpha[1], tau[1]))
 
             self.window.Clear(self.background_color)
 

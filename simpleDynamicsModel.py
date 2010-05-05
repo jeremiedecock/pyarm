@@ -35,7 +35,7 @@ class ArmModel:
         # Init datas to plot (title, xlabel, ylabel)
         fig.subfig('alpha', 'Angular acceleration', 'tick number', 'Angular acceleration (rad/s/s)')
         fig.subfig('omega', 'Angular velocity', 'tick number', 'Angular velocity (rad/s)')
-        fig.subfig('torque', 'Torque (N.m)', 'tick number', 'torque')
+        fig.subfig('torque', 'Torque', 'tick number', 'Torque (N.m)', type='fill')
         fig.subfig('theta', 'Angle', 'tick number', 'Angle (rad)')
 
     def __del__(self):
@@ -62,23 +62,19 @@ class ArmModel:
         elif i[4]:
             u[1] = -1
 
-        if __debug__:
-            print "u"
-            print u
-        
         # Torque
         self.tau = u
 
         fig.append('torque', self.tau)
 
-        #############################################################
-
         # Angular acceleration
         M = self.M(self.theta)
         C = self.C(self.theta, self.omega)
-        self.alpha = np.dot(np.linalg.inv(M), self.tau - C - np.dot(self.B, self.omega))  # TODO
+        self.alpha = np.dot(np.linalg.inv(M), self.tau - C - np.dot(self.B, self.omega))
 
         fig.append('alpha', self.alpha)
+
+        # Kinematics ################################################
 
         # Angular velocity
         self.omega += self.alpha * self.delta_time
