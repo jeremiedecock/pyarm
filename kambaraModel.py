@@ -156,11 +156,7 @@ class ArmModel:
         u = np.array(input)
         u = u[0:6]
 
-        if u.shape != (6,):
-            raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
-
-        if u.max() > self.umax or u.min() < self.umin:
-            raise TypeError('Motor command : values are out of bounds : ' + str(u) + ' ([0,1] expected)')
+        assert u.min() >= self.umin and u.max() <= self.umax, 'Motor command'
 
         return u
 
