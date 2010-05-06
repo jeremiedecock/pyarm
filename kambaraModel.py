@@ -8,7 +8,7 @@ import numpy as np
 import fig
 
 _realtime = True
-_limit    = False     # Considere min/max oridentation ?
+_limit    = True     # Considere min/max oridentation ?
 
 class ArmModel:
 
@@ -18,8 +18,7 @@ class ArmModel:
     theta_max = np.array([-0.35, 1.92])        # Max angles joints (rd) (cf. H.Kambara)
 
     umin,     umax     = 0, 1
-    #lmin,     lmax     = 0, 0.5
-    lmin,     lmax     = -1, 1    # TODO : temp values
+    lmin,     lmax     = 0, 0.5
     lrestmin, lrestmax = 0, 0.5
     # 1 N is the force of Earth's gravity on an object with a mass of about 102 g (1⁄9.81 kg) (such as a small apple).
     # On Earth's surface, a mass of 1 kg exerts a force of approximately 9.8 N [down] (or 1.0 kilogram-force; 1 kgf=9.80665 N by definition). The approximation of 1 kg corresponding to 10 N is sometimes used as a rule of thumb in everyday life and in engineering.
@@ -107,8 +106,7 @@ class ArmModel:
 
         fig.append('torque', self.tau)
 
-        if self.tau.max() > self.taumax or self.tau.min() < self.taumin:
-            raise TypeError('Torque : values are out of bounds : ' + str(self.tau) + ' ([' + str(self.taumin) + ',' + str(self.taumax) + '] expected)')
+        assert self.tau.min() >= self.taumin and self.tau.max() <= self.taumax, "Total torque"
 
         # Angular acceleration
         M = self.M(self.theta)
@@ -117,9 +115,7 @@ class ArmModel:
         self.alpha = np.dot(np.linalg.inv(M), self.tau - C - G)
 
         fig.append('alpha', self.alpha)
-
-        if self.alpha.max() > self.alphamax or self.alpha.min() < self.alphamin:
-            raise TypeError('Angular acceleration : values are out of bounds : ' + str(self.alpha) + ' ([' + str(self.alphamin) + ',' + str(self.alphamax) + '] expected)')
+        assert self.alpha.min() >= self.alphamin and self.alpha.max() <= self.alphamax, "Angular acceleration"
 
         # Kinematics ################################################
 
@@ -127,9 +123,7 @@ class ArmModel:
         self.omega += self.alpha * self.delta_time
 
         fig.append('omega', self.omega)
-
-        if self.omega.max() > self.omegamax or self.omega.min() < self.omegamin:
-            raise TypeError('Angular velocity : values are out of bounds : ' + str(self.omega) + ' ([' + str(self.omegamin) + ',' + str(self.omegamax) + '] expected)')
+        assert self.omega.min() >= self.omegamin and self.omega.max() <= self.omegamax, "Angular velocity"
 
         # Joint angle
         self.theta += self.omega * self.delta_time
@@ -146,9 +140,7 @@ class ArmModel:
                     self.theta[i] = self.theta_max[i]
 
         fig.append('theta', self.theta)
-
-        if self.theta.max() > self.thetamax or self.theta.min() < self.thetamin:
-            raise TypeError('Joint angle : values are out of bounds : ' + str(self.theta) + ' ([' + str(self.thetamin) + ',' + str(self.thetamax) + '] expected)')
+        assert self.theta.min() >= self.thetamin and self.theta.max() <= self.thetamax, "Joint angle"
 
         # Update clock
         self.former_time = current_time
@@ -166,6 +158,7 @@ class ArmModel:
 
         if u.shape != (6,):
             raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
+
         if u.max() > self.umax or u.min() < self.umin:
             raise TypeError('Motor command : values are out of bounds : ' + str(u) + ' ([0,1] expected)')
 
@@ -177,8 +170,7 @@ class ArmModel:
 
         l = self.l0 - np.dot(self.A, theta) # TODO
 
-        if l.max() > self.lmax or l.min() < self.lmin:
-            raise TypeError('Muscle length : values are out of bounds : ' + str(l) + ' ([' + str(self.lmin) + ',' + str(self.lmax) + '] expected)')
+        assert l.min() >= self.lmin and l.max() <= self.lmax, 'Muscle length'
 
         return l
         
@@ -204,8 +196,7 @@ class ArmModel:
 
         lrest = self.l0rest - self.l1rest * u
 
-        if lrest.max() > self.lrestmax or lrest.min() < self.lrestmin:
-            raise TypeError(' : values are out of bounds : ' + str(lrest) + ' ([' + str(self.lrestmin) + ',' + str(self.lrestmax) + '] expected)')
+        assert lrest.min() >= self.lrestmin and lrest.max() <= self.lrestmax, "Muscle rest length"
 
         return lrest
 
@@ -221,8 +212,7 @@ class ArmModel:
 
         T = K * (l-lrest) + B * v
 
-        if T.max() > self.Tmax or T.min() < self.Tmin:
-            raise TypeError('Muscle Tension : values are out of bounds : ' + str(T) + ' ([' + str(self.Tmin) + ',' + str(self.Tmax) + '] expected)')
+        assert T.min() >= self.Tmin and T.max() <= self.Tmax, 'Muscle Tension'
 
         return T
 
@@ -269,19 +259,15 @@ class ArmModel:
         return G
 
     def getTheta(self):
-        print "theta", str(self.theta)
         return (self.theta % (2 * math.pi)).tolist()
 
     def getOmega(self):
-        print "omega", str(self.omega)
         return self.omega.tolist()
 
     def getAlpha(self):
-        print "alpha", str(self.alpha)
         return self.alpha.tolist()
 
     def getTau(self):
-        print "tau", str(self.tau)
         return self.tau.tolist()
 
     def getBonesLength(self):
