@@ -49,17 +49,27 @@ def show(numcols=2):
         numrows = math.ceil(len(_subfigs)/float(numcols))
         plt.subplot(numrows, numcols, n)
 
+        # Set labels
         plt.title(_subfigs[fig]['title'])
         plt.xlabel(_subfigs[fig]['xlabel'])
         plt.ylabel(_subfigs[fig]['ylabel'])
 
+        # Fetch datas
         x = np.array(_subfigs[fig]['xdata'])
         y = np.array(_subfigs[fig]['ydata'])
 
+        # Plot
         if _subfigs[fig]['type'] == 'fill':
             plt.fill(x, y, alpha=0.2)
         else:
             plt.plot(x, y)
+
+        # Set axis limits
+        if isinstance(_subfigs[fig]['axis'], list):
+            if len(_subfigs[fig]['axis']) >= 2:
+                plt.xlim(_subfigs[fig]['axis'][0], _subfigs[fig]['axis'][1])
+            if len(_subfigs[fig]['axis']) >= 4:
+                plt.ylim(_subfigs[fig]['axis'][2], _subfigs[fig]['axis'][3])
 
     if n > 0:
         if _save: plt.savefig(_filename, dpi=300)
