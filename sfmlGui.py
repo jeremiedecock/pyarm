@@ -4,10 +4,17 @@
 
 from PySFML import sf
 import math
+import time
+import fig
 
 class GUI:
 
-    armModel = None
+    delta_time  = 0.01                          # The state of the arm is updated at every tick_duration time (s)
+    former_time = 0.
+    realtime = True
+
+    arm = None
+    muscle = None
     window = None
     background_color = None
     foreground_color = None
@@ -17,8 +24,9 @@ class GUI:
     line2 = None
     LENGTH_SCALE = 300. # px/m (pixels per meter)
 
-    def __init__(self, armModel):
-        self.armModel = armModel
+    def __init__(self, muscle, arm, realtime):
+        self.muscle = muscle
+        self.arm = arm
 
         # Create the main window
         self.window = sf.RenderWindow(sf.VideoMode(800, 600), "pyArm")
@@ -26,26 +34,27 @@ class GUI:
         self.background_color = sf.Color(255, 255, 255, 255)
         self.foreground_color = sf.Color(0, 0, 0, 255)
 
-        # Create a graphical elements to display
-        #font = sf.Font()
-        #font.LoadFromFile('FreeSans.ttf', 11, 'utf8')
-        #font.LoadFromFile('/home/decock/git_pub/pyArm/FreeSans.ttf')
-
-        #self.text1 = sf.String("", font, 11)
         self.text1 = sf.String("", Size=16)
         self.text1.SetColor(self.foreground_color)
         self.text1.SetPosition(20, 10)
 
-        #self.text2 = sf.String("", font, 11)
         self.text2 = sf.String("", Size=16)
         self.text2.SetColor(self.foreground_color)
         self.text2.SetPosition(20, 40)
 
-        self.line1 = sf.Shape.Line(0, 0, 0, self.armModel.getBonesLength()[0] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line1 = sf.Shape.Line(0, 0, 0, self.arm.la[0] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
         self.centerLine(self.line1)
 
-        self.line2 = sf.Shape.Line(0, 0, 0, self.armModel.getBonesLength()[1] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line2 = sf.Shape.Line(0, 0, 0, self.arm.la[1] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
         self.centerLine(self.line2)
+
+        self.realtime = realtime
+        self.former_time = time.time()         # Former time (s)
+
+        fig.subfig('dtime', 'Time', 'time (s)', 'delta time (s)')
+
+    def __del__(self):
+        fig.show()
 
     def centerLine(self, line):
         screen_center = (self.window.GetWidth() / 2, self.window.GetHeight() / 2)
@@ -60,12 +69,12 @@ class GUI:
 
     def updateShapes(self):
         # Line 1
-        self.line1.SetRotation(math.degrees(self.armModel.getTheta()[0]))
+        self.line1.SetRotation(math.degrees(self.arm.theta[0]))
 
         # Line 2
         self.centerLine(self.line2)
-        self.line2.SetRotation(math.degrees(self.armModel.getTheta()[0]))
-        self.line2.Rotate(math.degrees(self.armModel.getTheta()[1]))
+        self.line2.SetRotation(math.degrees(self.arm.theta[0]))
+        self.line2.Rotate(math.degrees(self.arm.theta[1]))
         self.translateLine(self.line2, self.line1)
 
     def run(self):
@@ -82,15 +91,21 @@ class GUI:
                     running = False
 
             input = (window_input.IsKeyDown(sf.Key.Numpad1), window_input.IsKeyDown(sf.Key.Numpad2), window_input.IsKeyDown(sf.Key.Numpad3), window_input.IsKeyDown(sf.Key.Numpad4), window_input.IsKeyDown(sf.Key.Numpad5), window_input.IsKeyDown(sf.Key.Numpad6))
-            #print input
+
+            # Compute delta time
+            current_time = time.time()
+
+            if self.realtime:
+                self.delta_time = current_time - self.former_time
+
+            fig.append('dtime', self.delta_time)
 
             # Update thetas (physics)
-            self.armModel.tick(input)
+            tau = self.muscle.update(input, self.arm.theta, self.delta_time)
+            alpha, omega, theta = self.arm.update(tau, self.delta_time)
 
-            theta = self.armModel.getTheta()
-            omega = self.armModel.getOmega()
-            alpha = self.armModel.getAlpha()
-            tau   = self.armModel.getTau()
+            # Update clock
+            self.former_time = current_time
 
             # Update the window
             self.updateShapes()
