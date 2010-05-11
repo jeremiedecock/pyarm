@@ -49,11 +49,9 @@ class MuscleModel:
     [7] Todorov & Li
     """
 
-    length = None        # Current muscle length (m)
-    v      = None        # Current muscle contraction velocity (muscle length derivative) (m/s)
-
-    lm = np.ones(6)                 # TODO : ???
-    l0 = np.ones(6) * 0.1           # Intrinsic rest length (for u = 0) (m)TODO : ???
+    _l = None              # Current muscle length (m)
+    lm = np.ones(6) * 0.1  # Muscle length when the joint angle = 0 (m)
+    l0 = np.ones(6) * 0.1  # Intrinsic rest length (for u = 0) (m)
 
     # Min and max joint angles (rd) (from [6] p.357)
     theta_limit = [{'min': math.pi/2., 'max': math.pi}, 
@@ -67,13 +65,12 @@ class MuscleModel:
     k  = np.ones(6) * 1621.6    # Elasticity coefficient            (N/m)
     b0 = np.ones(6) * 54.1      # Intrinsic viscosity   (for u = 0) (N.s/m)
     k0 = np.ones(6) * 810.8     # Intrinsic elasticity  (for u = 0) (N/m)
-    r  = np.array([-3.491, 3.491, -2.182, 2.182, -5.498, 5.498])    # Constant from the muscle model (cm)
-    A  = np.array([[4., 4.,  0.,  0., 2.8, 2.8],
-                   [0., 0., 2.5, 2.5, 3.5, 3.5]]).T   # Moment arm (constant matrix) (cm)
+    r  = np.array([-0.03491,  0.03491, -0.02182,  0.02182, -0.05498,  0.05498])  # Constant from the muscle model (cm)
+    A  = np.array([[ 0.04 ,  0.04 ,  0.   ,  0.   ,  0.028,  0.028],
+                   [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T  # Moment arm (constant matrix) (m)
 
     def __init__(self, theta):
-        self.length = self.l(theta)        # Current muscle length (m)
-        self.v      = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (m/s)
+        self._l = self.l(theta)        # Current muscle length (m)
 
         # Init datas to plot (title, xlabel, ylabel)
         fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
@@ -81,37 +78,57 @@ class MuscleModel:
 
     def update(self, input_signal, theta, dt):
 
-        # Fetch control signal (motor command) : 6 elements vector (value taken in [0,1])
-        u = np.array(input_signal)
-        u = u[0:6]
+        # Fetch control signal (motor command)
+        # 6 elements vector (value taken in [0,1])
+        u = np.array(input_signal)[0:6]
 
-        # Dynamics ##################################################
+        fl = self._l             # Former muscle length
+        self._l = self.l(theta)
+        v  = self.v(self._l, fl, dt)
 
-        self.length = self.l(theta)
-        
-        # dl : muscle length derivative (cm)
-        dl = np.dot(-1 * self.A, self.v) # TODO
+        K  = self.K(u)
+        B  = self.B(u)
+        lr = self.lr(u)
+        T  = self.T(K, B, lr, self._l, v)
 
-        # K : muscle stiffness (N/m)
-        K = np.diag(self.k0 + np.dot(self.k, u)) # TODO
-
-        # B : muscle viscosity (N.s/m)
-        B = np.diag(self.b0 + np.dot(self.b, u)) # TODO
-
-        # lr : muscle rest length (cm)
-        lr = self.l0 + np.dot(self.r, u) # TODO
-
-        # T : muscle tension (cf. Kelvin-Voight model)
-        T = np.dot(K,(lr-l)) - np.dot(B,dl) # TODO
-
-        # tau : total torque (N.m)
-        tau = np.dot(-1 * self.A.T, T) # TODO
-        assert tau[0] > 10 or tau[1] > 10, "Tau > 10"
+        tau = self.tau(T)
 
         return tau
 
 
     def l(self, theta):
         """Compute muscle length (cm)"""
-        return self.lm - np.dot(self.A, theta) # TODO
+        l = self.lm - np.dot(self.A, theta) # TODO
+        return l
+
+    def v(self, l, fl, dt):
+        """Compute muscle contraction velocity (muscle length derivative) (m/s)"""
+        dl = l - fl
+        v  = dl / dt
+        return v
+
+    def K(self, u):
+        """Compute muscle stiffness (N/m)"""
+        K = self.k0 + self.k * u
+        return K
+
+    def B(self, u):
+        """Compute muscle viscosity (N.s/m)"""
+        B = self.b0 + self.b * u
+        return B
+
+    def lr(self, u):
+        """Compute muscle rest length (cm)"""
+        lr = self.l0 + self.r * u
+        return lr
+
+    def T(self, K, B, lr, l, v):
+        """Compute muscle tension (cf. Kelvin-Voight model)."""
+        T = K * (lr-l) - B * v # TODO
+        return T
+
+    def tau(self, T):
+        """Compute total torque (N.m)."""
+        tau = np.dot(-1 * self.A.T, T) # TODO
+        return tau
 
