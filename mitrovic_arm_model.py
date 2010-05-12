@@ -49,12 +49,18 @@ class ArmModel:
     [7] Todorov & Li
     """
 
-    # Min and max joint angles (rd) (from [3] p.19)
-    theta_limit = [{'min': 2. * math.pi / 9., 'max': 7. * math.pi / 9.}, 
-                   {'min': 2. * math.pi / 9., 'max': 7. * math.pi / 9.}] 
+    # Min and max joint angles (rd) from [6] p.357
+    theta_limit = [{'min': math.radians(-90), 'max': math.radians(180)}, 
+                   {'min': math.radians(0),   'max': math.radians(180)}] 
+
+    ## Min and max joint angles (rd) (from [3] p.19)
+    #theta_limit = [{'min': 2. * math.pi / 9., 'max': 7. * math.pi / 9.}, 
+    #               {'min': 2. * math.pi / 9., 'max': 7. * math.pi / 9.}] 
+
     has_theta_limit = True
 
-    theta_init = [math.pi / 2., math.pi / 2.]  # Orientation (rd) arbitrarily chosen
+    # Initial joint angles : functional standard posture (rd) from [6] p.356-357
+    theta_init = [math.radians(45), math.radians(70)]
 
     # Bound values for assert
     taumin,   taumax   = -200, 200                     # Total torque (N.m) arbitrarily chosen
@@ -62,10 +68,10 @@ class ArmModel:
     omegamin, omegamax = -2. * math.pi, 2. * math.pi   # Angular velocity (rd/s) from [3] p.19
 
     # Arm parameters from from [6] p.356
-    # [upper, lower]
+    # [upper arm, forearm]
     m     = np.array([1.59, 1.44])           # Limb mass (kg)
-    la    = np.array([0.3, 0.35])            # Limb length (m)
-    s     = np.array([0.18, 0.21])           # Distance from the joint center to the center of mass (m)
+    L     = np.array([0.3, 0.35])            # Limb length (m)
+    Lg    = np.array([0.18, 0.21])           # Distance from the joint center to the center of mass (m)
     I     = np.array([4.77E-2, 5.88E-2])     # Moment of inertia at join point (kg·m²)
 
     def __init__(self, has_theta_limit):
@@ -88,16 +94,20 @@ class ArmModel:
         # Angular acceleration ########
         M = self.M(self.theta)
         C = self.C(self.theta, self.omega)
-        self.alpha = np.dot(np.linalg.inv(M), tau - C * self.omega) # from [1] p.3, [3] p.4 and [6] p.354
+
+        # from [1] p.3, [3] p.4 and [6] p.354
+        self.alpha = np.dot(np.linalg.inv(M), tau - C) 
 
         fig.append('alpha', self.alpha)
-        assert self.alpha.min() >= self.alphamin and self.alpha.max() <= self.alphamax, "Angular acceleration"
+        assert self.alpha.min() >= self.alphamin \
+           and self.alpha.max() <= self.alphamax, "Angular acceleration"
 
         # Angular velocity ############
         self.omega += self.alpha * dt
 
         fig.append('omega', self.omega)
-        assert self.omega.min() >= self.omegamin and self.omega.max() <= self.omegamax, "Angular velocity"
+        assert self.omega.min() >= self.omegamin \
+           and self.omega.max() <= self.omegamax, "Angular velocity"
 
         # Joint angle #################
         self.theta += self.omega * dt
@@ -118,11 +128,8 @@ class ArmModel:
         
         M  = np.zeros([2, 2])
 
-        raise NotImplementedError
-
-        # TODO
-        d1 = self.I[0] + self.I[1] + self.m[1] * self.la[0]**2
-        d2 = self.m[1] * self.la[0] * self.s[1]
+        d1 = self.I[0] + self.I[1] + self.m[1] * self.L[0]**2
+        d2 = self.m[1] * self.L[0] * self.Lg[1]
         d3 = self.I[1]
 
         M[0, 0] = d1 + 2 * d2 * math.cos(theta[1])
@@ -141,13 +148,12 @@ class ArmModel:
 
         C = np.zeros(2)
 
-        raise NotImplementedError
+        d2 = self.m[1] * self.L[0] * self.Lg[1]
 
-        # TODO
-        d2 = self.m[1] * self.la[0] * self.s[1]
+        a1 = np.array([[-2. * omega[1], -1. * omega[1]],
+                       [omega[0],    0.]])
 
-        C[0] = -1 * omega[1] * (2. * omega[0] + omega[1]) * d2 * math.sin(theta[1])
-        C[1] = omega[0]**2 * d2 * math.sin(theta[1])
+        C = d2 * math.sin(theta[1]) * np.dot(a1, omega)
 
         return C
 

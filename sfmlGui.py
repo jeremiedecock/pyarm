@@ -42,10 +42,10 @@ class GUI:
         self.text2.SetColor(self.foreground_color)
         self.text2.SetPosition(20, 40)
 
-        self.line1 = sf.Shape.Line(0, 0, 0, self.arm.la[0] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line1 = sf.Shape.Line(0, 0, 0, self.arm.L[0] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
         self.centerLine(self.line1)
 
-        self.line2 = sf.Shape.Line(0, 0, 0, self.arm.la[1] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line2 = sf.Shape.Line(0, 0, 0, self.arm.L[1] * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
         self.centerLine(self.line2)
 
         self.realtime = realtime

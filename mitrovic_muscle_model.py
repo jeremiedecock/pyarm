@@ -50,27 +50,25 @@ class MuscleModel:
     """
 
     _l = None              # Current muscle length (m)
+
     lm = np.ones(6) * 0.1  # Muscle length when the joint angle = 0 (m)
     l0 = np.ones(6) * 0.1  # Intrinsic rest length (for u = 0) (m)
 
-    # Min and max joint angles (rd) (from [6] p.357)
-    theta_limit = [{'min': math.pi/2., 'max': math.pi}, 
-                   {'min': 0., 'max': math.pi}] 
-    has_theta_limit = True
-
-    theta_init = [math.pi / 2., math.pi / 2.]  # Orientation (rd) arbitrarily chosen
-
-    # Muscle parameters from from [6] p.356-357
+    # Muscle parameters from [6] p.356-357
     b  = np.ones(6) * 108.1     # Viscosity coefficient             (N.s/m)
     k  = np.ones(6) * 1621.6    # Elasticity coefficient            (N/m)
     b0 = np.ones(6) * 54.1      # Intrinsic viscosity   (for u = 0) (N.s/m)
     k0 = np.ones(6) * 810.8     # Intrinsic elasticity  (for u = 0) (N/m)
-    r  = np.array([-0.03491,  0.03491, -0.02182,  0.02182, -0.05498,  0.05498])  # Constant from the muscle model (cm)
+
+    # Constant from the muscle model (m) from [6] p.357
+    r  = np.array([-0.03491,  0.03491, -0.02182,  0.02182, -0.05498,  0.05498])
+
+    # Moment arm (constant matrix) (m) from [6] p.356
     A  = np.array([[ 0.04 ,  0.04 ,  0.   ,  0.   ,  0.028,  0.028],
-                   [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T  # Moment arm (constant matrix) (m)
+                   [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T
 
     def __init__(self, theta):
-        self._l = self.l(theta)        # Current muscle length (m)
+        self._l = self.l(theta)
 
         # Init datas to plot (title, xlabel, ylabel)
         fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
@@ -82,7 +80,7 @@ class MuscleModel:
         # 6 elements vector (value taken in [0,1])
         u = np.array(input_signal)[0:6]
 
-        fl = self._l             # Former muscle length
+        fl = self._l                      # Former muscle length
         self._l = self.l(theta)
         v  = self.v(self._l, fl, dt)
 
@@ -93,42 +91,45 @@ class MuscleModel:
 
         tau = self.tau(T)
 
+        fig.append('length', self._l)
+        fig.append('torque', tau)
+
         return tau
 
 
     def l(self, theta):
-        """Compute muscle length (cm)"""
-        l = self.lm - np.dot(self.A, theta) # TODO
+        "Compute muscle length (m)."
+        l = self.lm - np.dot(self.A, theta)
         return l
 
     def v(self, l, fl, dt):
-        """Compute muscle contraction velocity (muscle length derivative) (m/s)"""
+        "Compute muscle contraction velocity (muscle length derivative) (m/s)."
         dl = l - fl
         v  = dl / dt
         return v
 
     def K(self, u):
-        """Compute muscle stiffness (N/m)"""
+        "Compute muscle stiffness (N/m)."
         K = self.k0 + self.k * u
         return K
 
     def B(self, u):
-        """Compute muscle viscosity (N.s/m)"""
+        "Compute muscle viscosity (N.s/m)."
         B = self.b0 + self.b * u
         return B
 
     def lr(self, u):
-        """Compute muscle rest length (cm)"""
+        "Compute muscle rest length (m)."
         lr = self.l0 + self.r * u
         return lr
 
     def T(self, K, B, lr, l, v):
-        """Compute muscle tension (cf. Kelvin-Voight model)."""
-        T = K * (lr-l) - B * v # TODO
+        "Compute muscle tension (cf. Kelvin-Voight model)."
+        T = K * (lr-l) - B * v
         return T
 
     def tau(self, T):
-        """Compute total torque (N.m)."""
-        tau = np.dot(-1 * self.A.T, T) # TODO
+        "Compute total torque (N.m)."
+        tau = np.dot(-1 * self.A.T, T)
         return tau
 

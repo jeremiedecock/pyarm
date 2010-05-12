@@ -30,11 +30,11 @@ class ArmModel:
     # Bound values for assert
     taumin,   taumax   = -200, 200             # Total torque (N.m)
     alphamin, alphamax = -10E1, 10E1           # Angular acceleration (rd/s²)
-    omegamin, omegamax = -10E2, 10E2           # Angular velocity (rd/s)
+    omegamin, omegamax = -2. * math.pi, 2. * math.pi   # Angular velocity (rd/s) from [3] p.19
 
     # Arm dynamics [upper, lower]
     m  = np.array([1.59, 1.44])                # Limb mass   (kg)
-    la = np.array([0.3,  0.35])                # Limb length (m)
+    L  = np.array([0.3,  0.35])                # Limb length (m)
     lg = np.array([0.18, 0.21])                # Distance from the center of mass to the joint (m)
     I  = np.array([6.78E-2, 7.99E-2])          # Rotary inertia of the link around the joint   (kg.m²)
     g  = 9.8                                   # Gravitational acceleration (m/s²)
@@ -90,8 +90,8 @@ class ArmModel:
         
         M  = np.zeros([2, 2])
 
-        d1 = self.I[0] + self.I[1] + self.m[1] * self.la[0]**2
-        d2 = self.m[1] * self.la[0] * self.lg[1]
+        d1 = self.I[0] + self.I[1] + self.m[1] * self.L[0]**2
+        d2 = self.m[1] * self.L[0] * self.lg[1]
         d3 = self.I[1]
 
         M[0,0] = d1 + 2 * d2 * math.cos(theta[1])
@@ -103,25 +103,30 @@ class ArmModel:
 
     def C(self, theta, omega):
         """Compute centripedal and coriolis forces matrix (???)"""
-        if theta.shape != (2,): raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
-        if omega.shape != (2,): raise TypeError('Omega : shape is ' + str(omega.shape) + ' ((2,) expected)')
+        if theta.shape != (2,):
+            raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
+        if omega.shape != (2,):
+            raise TypeError('Omega : shape is ' + str(omega.shape) + ' ((2,) expected)')
 
         C = np.zeros(2)
 
-        d2 = self.m[1] * self.la[0] * self.lg[1]
+        d2 = self.m[1] * self.L[0] * self.lg[1]
 
-        C[0] = -1 * omega[1] * (2. * omega[0] + omega[1]) * d2 * math.sin(theta[1])
-        C[1] = omega[0]**2 * d2 * math.sin(theta[1])
+        C[0] = d2 * math.sin(theta[1]) * -1. * omega[1] * (2. * omega[0] + omega[1])
+        C[1] = d2 * math.sin(theta[1]) * omega[0]**2
 
         return C
 
     def G(self, theta):
         """Compute ??? matrix (???)"""
-        if theta.shape != (2,): raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
+        if theta.shape != (2,):
+            raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
 
         G = np.zeros(2)
 
-        G[0] = self.m[0] * self.g * self.lg[0] * math.cos(theta[0]) + self.m[1] * self.g * (self.la[0] * math.cos(theta[0] + self.lg[1] * math.cos(theta[0] + theta[1])))
+        G[0] = self.m[0] * self.g * self.lg[0] * math.cos(theta[0])  \
+               + self.m[1] * self.g * (self.L[0] * math.cos(theta[0] \
+               + self.lg[1] * math.cos(theta[0] + theta[1])))
         G[1] = self.m[1] * self.g * self.lg[1] * math.cos(theta[0] + theta[1])
 
         return G
