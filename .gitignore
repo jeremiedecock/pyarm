@@ -1,7 +1,8 @@
+ip.py
+fig.png
 *.swp
 *.pyc
 *.pyo
-ip.py
 *.log
 *.aux
 *.dvi
@@ -11,3 +12,5 @@ ip.py
 *.out
 *.pdf
 *.ps
+*.nav
+*.snm
