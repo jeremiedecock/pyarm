@@ -2,7 +2,6 @@
 *.pyc
 *.pyo
 ip.py
-*.png
 *.log
 *.aux
 *.dvi
