@@ -3,3 +3,12 @@
 *.pyo
 ip.py
 *.png
+*.log
+*.aux
+*.dvi
+*.toc
+*.lot
+*.lof
+*.out
+*.pdf
+*.ps

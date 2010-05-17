@@ -3,15 +3,17 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import numpy as np
+import math
 import fig
 
 class MuscleModel:
 
     taumin,   taumax   = -200, 200
 
+    _l = None              # Current muscle length (m)
+
     def __init__(self, theta):
-        self.length = self.l(theta)        # Current muscle length (m)
-        self.vm     = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (m/s)
+        self._l = self.l(theta)
 
         # Init datas to plot (title, xlabel, ylabel)
         fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
@@ -89,12 +91,7 @@ class MuscleModel:
         return a
 
     def l(self, theta):
-        """Muscle length (m ???)"""
-        l = 0.1 # TODO ???
+        "Compute muscle length (m)."
+        l = self.lm - np.dot(self.A, theta)
         return l
-
-    def v(self, theta, omega):
-        """Muscle velocity (dl/dt ???)"""
-        v = 0.1 # TODO ???
-        return v
 
