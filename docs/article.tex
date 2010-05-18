@@ -59,6 +59,8 @@
     \end{enumerate}
 \end{itemize}
 
+Remarque : la numérotation des muscles est différente dans le modèle de Weiwei.
+
 \subsection{Les modèles étudiés}
 Trois modèles ont été étudiés~:
 \begin{itemize}
@@ -92,9 +94,9 @@ Le simulateur est composé de 5 modules :
         \item Cinématique
         \item Dynamique
     \end{itemize}
-    \item Modèle de muscles
+    \item Modèle de muscle
     \begin{itemize}
-        \item Cinématique
+        \item Cinématique inverse
         \item Dynamique
     \end{itemize}
 \end{itemize}
@@ -106,7 +108,15 @@ Le simulateur est composé de 5 modules :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Modèle du muscles}
+\section{Cinematique inverse du muscle}
+
+\subsection{Methode d'Euler}
+
+$\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Dynamique du muscle}
 
 \subsection{Mitrovic}
 
@@ -146,6 +156,8 @@ Le simulateur est composé de 5 modules :
         \includegraphics[width=.50\linewidth]{fig/moment_arm}
 \end{center}
 
+%%%%%%%%
+
 \subsection{Kambara}
 
 \begin{tabular}{lcl}
@@ -179,8 +191,34 @@ Le simulateur est composé de 5 modules :
     $l_{0i}$ & = & Longueur du muscle $i$ au repos pour l'angle $\theta = 0$ \\
 \end{tabular}
 
+%%%%%%%%
+
 \subsection{Weiwei}
 
+\begin{tabular}{lcl}
+    $\tau$ & = & $M(\theta) T(a, l(\theta), v(\theta, \omega))$ \\
+\end{tabular}
+
+\paragraph{}
+\begin{center}
+        \includegraphics[width=.60\linewidth]{fig/weiwei}
+\end{center}
+
+\paragraph{}
+\begin{tabular}{lcl}
+    $M(\theta)$  & = & matrice des bras de levier $(a + b \cos (c \theta))$ \\
+    $T(a, l, v)$ & = & tension exercée par le muscle \\
+    $A(a, l)$    & = & relation activation-fréquence \\
+%    $N_f(l)$     & = &  \\
+    $F_L(l)$     & = & relation force-longueur \\
+    $F_V(l, v)$  & = & relation force-vitesse \\
+    $F_P(l)$     & = & force élastique du muscle \\ % TODO ???
+    $a$          & = & signaux d'activation filtrés du muscle \\
+    $l$          & = & longueur du muscle \\
+    $v$          & = & vitesse de contraction du muscle \\
+\end{tabular}
+
+\paragraph{}
 \begin{center}
         \includegraphics[width=.40\linewidth]{fig/brown}
 \end{center}
@@ -225,7 +263,41 @@ $\tau = M(\theta)\alpha + C(\theta, \omega) + b(\omega) + g(\theta) $ (1)
 \subsection{Mitrovic}
 
 \subsubsection{Dynamique inverse}
-$\tau = M(\theta)\alpha + C(\theta, \omega) \omega $ (2)
+$
+\begin{pmatrix}
+    \tau_s \\
+    \tau_e \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+    I_1 + I_2 + M_2 L_1^2 + 2 M_2 L_1 L_{g2} \cos(\theta_e)  &  I_2 + M_2 L_1 L_{g2} \cos(\theta_e) \\
+    I_2 + M_2 L_1 L_{g2} \cos(\theta_e)  &  I_2\\
+\end{pmatrix}
+\begin{pmatrix}
+    \alpha_s \\
+    \alpha_e \\
+\end{pmatrix}
++ M_2 L_1 L_{g2} \sin(\theta_e)
+\begin{pmatrix}
+    -2 \omega_e  &  -\omega_e \\
+    \omega_s     &  0\\
+\end{pmatrix}
+\begin{pmatrix}
+    \omega_s \\
+    \omega_e \\
+\end{pmatrix}
+(2)$
+
+\paragraph{}
+\begin{tabular}{lcl}
+    $M_j$ & = & masse du membre \\
+    $L_j$ & = & longueur du membre \\
+    $L_{gj}$ & = & distance séparant le centre de masse de l'articulation \\
+    $I_{j}$ & = & moment d'inertie \\
+\end{tabular}
+
+\paragraph{}
+(2) $\Leftrightarrow \tau = M(\theta)\alpha + C(\theta, \omega) \omega  $
 
 \subsubsection{Dynamique}
 (2) $\Leftrightarrow \alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) \omega) $
@@ -338,6 +410,17 @@ $\tau = M(\theta)\alpha + C(\theta, \omega) + B\omega $ (4)
     \hline
 \end{tabular}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Cinematique du bras}
+
+\subsection{Methode d'Euler}
+
+\begin{tabular}{lcl}
+    $\omega$ & = & $\frac{\delta \alpha}{\delta t}$ \\
+    $\theta$ & = & $\frac{\delta \omega}{\delta t}$ \\
+\end{tabular}
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Bibliographie}
