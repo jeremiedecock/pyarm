@@ -160,9 +160,9 @@ Le simulateur est composé de 5 modules :
 \frametitle{Cinématique inverse du muscle}
 Méthode d'Euler\\
 \begin{tabular}{lcl}
-    $l$       & = & $l_m - A \theta $ \\
+    $l$       & = & $l_m - A q $ \\
     $\dot{l}$ & = & $\frac{\delta l}{\delta t}$ \\
-    $l_{m}$   & = & Longueur du muscle $i$ au repos pour l'angle $\theta = 0$ \\
+    $l_{m}$   & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
 \end{tabular}
 \end{frame}
 
@@ -195,8 +195,8 @@ Méthode d'Euler\\
     $b(u)$    & = & $b_0 + b u$ \\
     $l_r(u)$  & = & $l_0 - r u$ \\
 %    \\
-%    $l$       & = & $l_m - A \theta $ \\
-%    $\dot{l}$ & = & $l_m - A \omega $ \\
+%    $l$       & = & $l_m - A q $ \\
+%    $\dot{l}$ & = & $l_m - A \dot{q} $ \\
 \end{tabular}
 \end{frame}
 
@@ -217,7 +217,7 @@ Méthode d'Euler\\
     $k$ & = & Coefficient de variation de l'élasticité \\
     $b$ & = & Coefficient de variation de la viscosité \\
     $r$ & = & Coefficient de variation de la longueur au repos \\
-    %$l_{0i}$ & = & Longueur du muscle au repos pour l'angle $\theta = 0$ \\
+    %$l_{0i}$ & = & Longueur du muscle au repos pour l'angle $q = 0$ \\
 \end{tabular}
 \end{frame}
 
@@ -236,7 +236,7 @@ Méthode d'Euler\\
     $B_i(\tilde{u}_i)$        & = & $b_{0i} + b_{1i} \tilde{u}_i$ \\
     $L_i^{rest}(\tilde{u}_i)$ & = & $ l_{0i}^{rest} - l_{1i}^{rest} \tilde{u}_i$ \\
 %    \\
-%    $L_i$ & = & $l_{0i} - \sum_{j=1}^2 A_{i,j} \theta_j $ \\
+%    $L_i$ & = & $l_{0i} - \sum_{j=1}^2 A_{i,j} q_j $ \\
 \end{tabular}
 \end{frame}
 
@@ -257,7 +257,7 @@ Méthode d'Euler\\
     $k_{1i}$ & = & Coefficient de variation de l'élasticité \\
     $b_{1i}$ & = & Coefficient de variation de la viscosité \\
     $l^{rest}_{1i}$ & = & Coefficient de variation de la longueur au repos \\
-    $l_{0i}$ & = & Longueur du muscle $i$ au repos pour l'angle $\theta = 0$ \\
+    $l_{0i}$ & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
 \end{tabular}
 \end{frame}
 
@@ -282,7 +282,7 @@ Méthode d'Euler\\
 \begin{frame}
 \frametitle{Weiwei}
 \begin{tabular}{lcl}
-    $\tau$ & = & $M(\theta) T(a, l(\theta), v(\theta, \omega))$ \\
+    $\tau$ & = & $M(q) T(a, l(q), v(q, \dot{q}))$ \\
     \\
     $T(a, l, v)$ & = & $A(a,l)(F_L(l) F_V(l,v) + F_P(l))$ \\
     $A(a, l)$    & = & $1 - \exp \left(- \left(\frac{a}{0.56 N_f(l)}\right)^{N_f(l)}\right)$ \\
@@ -301,7 +301,7 @@ Méthode d'Euler\\
 \begin{frame}
 \frametitle{Weiwei}
 \begin{tabular}{lcl}
-    $M(\theta)$  & = & matrice des bras de levier $(a + b \cos (c \theta))$ \\
+    $M(q)$  & = & matrice des bras de levier $(a + b \cos (c q))$ \\
     $T(a, l, v)$ & = & tension exercée par le muscle \\
     $A(a, l)$    & = & relation activation-fréquence \\
 %    $N_f(l)$     & = &  \\
@@ -331,10 +331,10 @@ Méthode d'Euler\\
 \begin{frame}
 \frametitle{Cas général}
 Dynamique inverse : \\
-$\tau = M(\theta)\alpha + C(\theta, \omega) + b(\omega) + g(\theta) $ (1)\\
+$\tau = M(q)\ddot{q} + C(q, \dot{q}) + b(\dot{q}) + g(q) $ (1)\\
 ~\\
 Dynamique :\\
-(1) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) - b(\omega) - g(\theta)) $ \\
+(1) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - b(\dot{q}) - g(q)) $ \\
 ~\\
 Légende : \\
 \begin{tabular}{lcl}
@@ -343,9 +343,9 @@ Légende : \\
     $b$      & = & force de viscosité et de friction \\ % TODO
     $g$      & = & force de gravité \\
     $\tau$   & = & couple total exercé sur les articulations ($N \cdot m$) \\
-    $\alpha$ & = & accélération angulaire ($rd \cdot s^{-2}$) \\
-    $\omega$ & = & vitesse angulaire ($rd \cdot s^{-1}$) \\
-    $\theta$ & = & angle ($rd$) \\
+    $\ddot{q}$ & = & accélération angulaire ($rd \cdot s^{-2}$) \\
+    $\dot{q}$ & = & vitesse angulaire ($rd \cdot s^{-1}$) \\
+    $q$ & = & angle ($rd$) \\
 \end{tabular}
 \end{frame}
 
@@ -363,21 +363,21 @@ $
 \end{pmatrix}
 =
 \begin{pmatrix}
-    I_1 + I_2 + M_2 L_1^2 + 2 M_2 L_1 L_{g2} \cos(\theta_e)  &  I_2 + M_2 L_1 L_{g2} \cos(\theta_e) \\
-    I_2 + M_2 L_1 L_{g2} \cos(\theta_e)  &  I_2\\
+    I_1 + I_2 + M_2 L_1^2 + 2 M_2 L_1 L_{g2} \cos(q_e)  &  I_2 + M_2 L_1 L_{g2} \cos(q_e) \\
+    I_2 + M_2 L_1 L_{g2} \cos(q_e)  &  I_2\\
 \end{pmatrix}
 \begin{pmatrix}
-    \alpha_s \\
-    \alpha_e \\
+    \ddot{q}_s \\
+    \ddot{q}_e \\
 \end{pmatrix}
-+ M_2 L_1 L_{g2} \sin(\theta_e)
++ M_2 L_1 L_{g2} \sin(q_e)
 \begin{pmatrix}
-    -2 \omega_e  &  -\omega_e \\
-    \omega_s     &  0\\
+    -2 \dot{q}_e  &  -\dot{q}_e \\
+    \dot{q}_s     &  0\\
 \end{pmatrix}
 \begin{pmatrix}
-    \omega_s \\
-    \omega_e \\
+    \dot{q}_s \\
+    \dot{q}_e \\
 \end{pmatrix}
 (2)$\\
 ~\\
@@ -388,10 +388,10 @@ $
     $I_{j}$ & = & moment d'inertie \\
 \end{tabular}
 ~\\
-(2) $\Leftrightarrow \tau = M(\theta)\alpha + C(\theta, \omega) \omega  $ \\
+(2) $\Leftrightarrow \tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q}  $ \\
 ~\\
 Dynamique :\\
-(2) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega) $
+(2) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q}) $
 \end{frame}
 
 %%%%%%%%
@@ -408,21 +408,21 @@ $
 \end{pmatrix}
 =
 \begin{pmatrix}
-    M_{11}\alpha_1 + M_{12}\alpha_2 + h_{122}\omega_2^2 + 2h_{112}\omega_1\omega_2 + g_1 \\
-    M_{21}\alpha_1 + M_{22}\alpha_2 + h_{211}\omega_1^2 + g_2 \\
+    M_{11}\ddot{q}_1 + M_{12}\ddot{q}_2 + h_{122}\dot{q}_2^2 + 2h_{112}\dot{q}_1\dot{q}_2 + g_1 \\
+    M_{21}\ddot{q}_1 + M_{22}\ddot{q}_2 + h_{211}\dot{q}_1^2 + g_2 \\
 \end{pmatrix}
 (3)$\\
 ~\\
 \begin{tabular}{lcl}
-    $M_{11}$ & = & $I_1 + I_2 + m_2(l_1^2 + 2 l_1 l_{g2}\cos\theta_2$) \\
-    $M_{12}$ & = & $I_2 + m_2l_1l_{g2}\cos\theta_2$ \\
-    $M_{21}$ & = & $I_2 + m_2l_1l_{g2}\cos\theta_2$ \\
+    $M_{11}$ & = & $I_1 + I_2 + m_2(l_1^2 + 2 l_1 l_{g2}\cos q_2$) \\
+    $M_{12}$ & = & $I_2 + m_2l_1l_{g2}\cos q_2$ \\
+    $M_{21}$ & = & $I_2 + m_2l_1l_{g2}\cos q_2$ \\
     $M_{22}$ & = & $I_2$ \\
-    $h_{122}$ & = & $-m_2 l_1 l_{g2} \sin\theta_2$ \\
-    $h_{112}$ & = & $-m_2 l_1 l_{g2} \sin\theta_2$ \\
-    $h_{211}$ & = & $m_2 l_1 l_{g2} \sin\theta_2$ \\
-    $g_1$ & = & $m_1 \hat{g} l_{g1} \cos\theta_1 + m_2 \hat{g} (l_1 \cos\theta_1 + l_{g2} \cos(\theta_1 + \theta_2))$ \\
-    $g_2$ & = & $m_2 \hat{g} l_{g2} \cos(\theta_1 + \theta_2))$ \\
+    $h_{122}$ & = & $-m_2 l_1 l_{g2} \sin q_2$ \\
+    $h_{112}$ & = & $-m_2 l_1 l_{g2} \sin q_2$ \\
+    $h_{211}$ & = & $m_2 l_1 l_{g2} \sin q_2$ \\
+    $g_1$ & = & $m_1 \hat{g} l_{g1} \cos q_1 + m_2 \hat{g} (l_1 \cos q_1 + l_{g2} \cos(q_1 + q_2))$ \\
+    $g_2$ & = & $m_2 \hat{g} l_{g2} \cos(q_1 + q_2))$ \\
     $m_j$ & = & masse du membre \\
     $l_j$ & = & longueur du membre \\
     $l_{gj}$ & = & distance séparant le centre de masse de l'articulation \\
@@ -434,11 +434,11 @@ $
 \begin{frame}
 \frametitle{Kambara}
 \begin{tabular}{lcl}
-    (3) & $\Leftrightarrow$ & $\tau = M(\theta)\alpha + C(\theta, \omega) \omega + g$ \\
+    (3) & $\Leftrightarrow$ & $\tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q} + g$ \\
 \end{tabular}\\
 ~\\
 Dynamique :\\
-(3) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega - g) $
+(3) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - g) $
 \end{frame}
 
 %%%%%%%%
@@ -448,24 +448,24 @@ Dynamique :\\
 \begin{frame}
 \frametitle{Weiwei}
 Dynamique inverse :\\
-$\tau = M(\theta)\alpha + C(\theta, \omega) + B\omega $ (4)\\
+$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ (4)\\
 ~\\
 \begin{tabular}{lcl}
     $M$ & = &
     $
     \begin{pmatrix}
-        d1 + 2 d_2 \cos\theta_2  & d_3 + d_2 \cos \theta_2 \\
-        d_3 + d_2 \cos\theta_2 & d_3 \\
+        d1 + 2 d_2 \cos q_2  & d_3 + d_2 \cos q_2 \\
+        d_3 + d_2 \cos q_2 & d_3 \\
     \end{pmatrix}
     $ \\
 
     $C$ & = &
     $
     \begin{pmatrix}
-        -\omega_2 (2 \omega_1 + \omega_2) \\
-        \omega_1^2 \\
+        -\dot{q}_2 (2 \dot{q}_1 + \dot{q}_2) \\
+        \dot{q}_1^2 \\
     \end{pmatrix}
-    d_2 \sin\theta_2
+    d_2 \sin q_2
     $\\
 
     $B$ & = &
@@ -494,7 +494,7 @@ $\tau = M(\theta)\alpha + C(\theta, \omega) + B\omega $ (4)\\
 \begin{frame}
 \frametitle{Weiwei}
 Dynamique :\\
-(4) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) - B\omega) $
+(4) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q}) $
 \end{frame}
 
 \subsection{Résumé}
@@ -503,11 +503,11 @@ Dynamique :\\
 \frametitle{Résumé}
 \begin{tabular}{|c|l|}
     \hline
-    Mitrovic & $\alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega)$ \\
+    Mitrovic & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q})$ \\
     \hline
-    Kambara  & $\alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega - g)$ \\
+    Kambara  & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - g)$ \\
     \hline
-    Weiwei   & $\alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) - B\omega)$ \\
+    Weiwei   & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q})$ \\
     \hline
 \end{tabular}
 \end{frame}
@@ -526,8 +526,8 @@ Dynamique :\\
 \begin{frame}
 \frametitle{Méthode d'Euler}
 \begin{tabular}{lcl}
-    $\omega$ & = & $\delta \alpha \cdot \delta t$ \\
-    $\theta$ & = & $\delta \omega \cdot \delta t$ \\
+    $\dot{q}$ & = & $\delta \ddot{q} \cdot \delta t$ \\
+    $q$ & = & $\delta \dot{q} \cdot \delta t$ \\
 \end{tabular}
 \end{frame}
     
