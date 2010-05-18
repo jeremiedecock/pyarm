@@ -47,6 +47,7 @@
 \begin{itemize}
     \item Bras 2D
     \item Plan horizontal (Mitrovic, Weiwei) ou vertical (Kambara)
+    \item 2 membres (le bras et l'avant-bras) % ou arrière-bras ou bras supérieur
     \item 2 articulations (épaule et coude)
     \item 6 muscles~:
     \begin{enumerate}
@@ -112,7 +113,11 @@ Le simulateur est composé de 5 modules :
 
 \subsection{Methode d'Euler}
 
-$\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
+\begin{tabular}{lcl}
+    $l$       & = & $l_m - A \theta $ \\
+    $\dot{l}$ & = & $\frac{\delta l}{\delta t}$ \\
+    $l_{m}$   & = & Longueur du muscle $i$ au repos pour l'angle $\theta = 0$ \\
+\end{tabular}
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -122,15 +127,15 @@ $\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
 
 \begin{tabular}{lcl}
     $\tau$ & = & $-A^T t(l, \dot{l}, u)$ \\
-    & & \\
+    \\
     $t(l, \dot{l}, u)$        & = & $k(u) (l_r(u) - l) + b(u) \dot{l}$ \\
-    & & \\
+    \\
     $k(u)$    & = & $k_0 + k u$ \\
     $b(u)$    & = & $b_0 + b u$ \\
     $l_r(u)$  & = & $l_0 - r u$ \\
-    & & \\
-    $l$       & = & $l_m - A \theta $ \\
-    $\dot{l}$ & = & $l_m - A \omega $ \\
+    \\
+%    $l$       & = & $l_m - A \theta $ \\
+%    $\dot{l}$ & = & $l_m - A \omega $ \\
 \end{tabular}
 
 \paragraph{}
@@ -162,14 +167,14 @@ $\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
 
 \begin{tabular}{lcl}
     $\tau$ & = & $A^T T$ \\
-    & & \\
+    \\
     $T_i$                     & = & $K_i(\tilde{u}_i) (L_i - L_i^{rest}(\tilde{u}_i)) + B_i(\tilde{u}_i) \dot{L}_i$ \\
-    & & \\
+    \\
     $K_i(\tilde{u}_i)$        & = & $k_{0i} + k_{1i} \tilde{u}_i$ \\
     $B_i(\tilde{u}_i)$        & = & $b_{0i} + b_{1i} \tilde{u}_i$ \\
     $L_i^{rest}(\tilde{u}_i)$ & = & $ l_{0i}^{rest} - l_{1i}^{rest} \tilde{u}_i$ \\
-    & & \\
-    $L_i$ & = & $l_{0i} - \sum_{j=1}^2 A_{i,j} \theta_j $ \\
+    %\\
+    %$L_i$ & = & $l_{0i} - \sum_{j=1}^2 A_{i,j} \theta_j $ \\
 \end{tabular}
 
 \paragraph{}
@@ -195,14 +200,34 @@ $\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
 
 \subsection{Weiwei}
 
+\begin{center}
+        \includegraphics[width=.40\linewidth]{fig/brown}
+\end{center}
+
 \begin{tabular}{lcl}
-    $\tau$ & = & $M(\theta) T(a, l(\theta), v(\theta, \omega))$ \\
+    $CE$  & = & éléments contractiles \\
+    $SE$  & = & élasticité des tendons (ignorée) \\
+    $PE$  & = & élasticité du muscle \\
+    $PE1$ & = & résistance à l'étirement du muscle passif \\
+    $PE2$ & = & résistance à la compression du muscle actif \\
 \end{tabular}
 
 \paragraph{}
-\begin{center}
-        \includegraphics[width=.60\linewidth]{fig/weiwei}
-\end{center}
+\begin{tabular}{lcl}
+    $\tau$ & = & $M(\theta) T(a, l(\theta), v(\theta, \omega))$ \\
+    \\
+    $T(a, l, v)$ & = & $A(a,l)(F_L(l) F_V(l,v) + F_P(l))$ \\
+    $A(a, l)$    & = & $1 - \exp \left(- \left(\frac{a}{0.56 N_f(l)}\right)^{N_f(l)}\right)$ \\
+    $N_f(l)$     & = & $2.11 + 4.16 \left(\frac{1}{l} - 1\right)$ \\
+    $F_L(l)$     & = & $\exp \left(-\left|\frac{l^{1.93} - 1}{1.03}\right|^{1.87}\right)$ \\
+    $F_V(l, v)$  & = & $\left\{ 
+        \begin{array}{l}
+            \frac{-5.72 - v}{-5.72 + (1.38 + 2.09 l) v}, v \leq 0 \\
+            \frac{0.62 - \left(-3.12 + 4.21 l - 2.67 l^2\right) v}{0.62 + v}, v > 0 \\
+        \end{array}
+        \right.$ \\
+    $F_P(l)$     & = & $-0.02 \exp(13.8 - 18.7 l)$ \\
+\end{tabular}
 
 \paragraph{}
 \begin{tabular}{lcl}
@@ -218,19 +243,6 @@ $\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
     $v$          & = & vitesse de contraction du muscle \\
 \end{tabular}
 
-\paragraph{}
-\begin{center}
-        \includegraphics[width=.40\linewidth]{fig/brown}
-\end{center}
-
-\begin{tabular}{lcl}
-    $CE$  & = & éléments contractiles \\
-    $SE$  & = & élasticité des tendons (ignorée) \\
-    $PE$  & = & élasticité du muscle \\
-    $PE1$ & = & résistance à l'étirement du muscle passif \\
-    $PE2$ & = & résistance à la compression du muscle actif \\
-\end{tabular}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -244,7 +256,7 @@ $\dot{l}$ = $\frac{\delta l}{\delta t}$ \\
 $\tau = M(\theta)\alpha + C(\theta, \omega) + b(\omega) + g(\theta) $ (1)
 
 \subsubsection{Dynamique}
-(1) $\Leftrightarrow \alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) - b(\omega) - g(\theta)) $
+(1) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) - b(\omega) - g(\theta)) $
 
 \subsubsection{Légende}
 \begin{tabular}{lcl}
@@ -252,9 +264,9 @@ $\tau = M(\theta)\alpha + C(\theta, \omega) + b(\omega) + g(\theta) $ (1)
     $C$      & = & force de Coriolis et force centripète \\
     $b$      & = & force de viscosité et de friction \\ % TODO
     $g$      & = & force de gravité \\
-    $\tau$   & = & couple total exercé sur les articulations ($N.m$) \\
-    $\alpha$ & = & accélération angulaire ($rd.s^{-2}$) \\
-    $\omega$ & = & vitesse angulaire ($rd.s^{-1}$) \\
+    $\tau$   & = & couple total exercé sur les articulations ($N \cdot m$) \\
+    $\alpha$ & = & accélération angulaire ($rd \cdot s^{-2}$) \\
+    $\omega$ & = & vitesse angulaire ($rd \cdot s^{-1}$) \\
     $\theta$ & = & angle ($rd$) \\
 \end{tabular}
 
@@ -300,7 +312,7 @@ $
 (2) $\Leftrightarrow \tau = M(\theta)\alpha + C(\theta, \omega) \omega  $
 
 \subsubsection{Dynamique}
-(2) $\Leftrightarrow \alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) \omega) $
+(2) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega) $
 
 %%%%%%%%
 
@@ -330,7 +342,7 @@ $
     $h_{211}$ & = & $m_2 l_1 l_{g2} \sin\theta_2$ \\
     $g_1$ & = & $m_1 \hat{g} l_{g1} \cos\theta_1 + m_2 \hat{g} (l_1 \cos\theta_1 + l_{g2} \cos(\theta_1 + \theta_2))$ \\
     $g_2$ & = & $m_2 \hat{g} l_{g2} \cos(\theta_1 + \theta_2))$ \\
-    & & \\
+    \\
     $m_j$ & = & masse du membre \\
     $l_j$ & = & longueur du membre \\
     $l_{gj}$ & = & distance séparant le centre de masse de l'articulation \\
@@ -344,7 +356,7 @@ $
 \end{tabular}
 
 \subsubsection{Dynamique}
-(3) $\Leftrightarrow \alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) \omega - g) $
+(3) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega - g) $
 
 %%%%%%%%
 
@@ -397,16 +409,16 @@ $\tau = M(\theta)\alpha + C(\theta, \omega) + B\omega $ (4)
 \end{tabular}
 
 \subsubsection{Dynamique}
-(4) $\Leftrightarrow \alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) - B\omega) $
+(4) $\Leftrightarrow \alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) - B\omega) $
 
 \subsection{Résumé}
 \begin{tabular}{|c|l|}
     \hline
-    Mitrovic  & $\alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) \omega)$ \\
+    Mitrovic & $\alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega)$ \\
     \hline
-    Kambara  & $\alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) \omega - g)$ \\
+    Kambara  & $\alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) \omega - g)$ \\
     \hline
-    Weiwei  & $\alpha = M(\theta)^{-1} + (\tau - C(\theta, \omega) - B\omega)$ \\
+    Weiwei   & $\alpha = M(\theta)^{-1} (\tau - C(\theta, \omega) - B\omega)$ \\
     \hline
 \end{tabular}
 
@@ -417,8 +429,8 @@ $\tau = M(\theta)\alpha + C(\theta, \omega) + B\omega $ (4)
 \subsection{Methode d'Euler}
 
 \begin{tabular}{lcl}
-    $\omega$ & = & $\frac{\delta \alpha}{\delta t}$ \\
-    $\theta$ & = & $\frac{\delta \omega}{\delta t}$ \\
+    $\omega$ & = & $\delta \alpha \cdot \delta t$ \\
+    $\theta$ & = & $\delta \omega \cdot \delta t$ \\
 \end{tabular}
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
