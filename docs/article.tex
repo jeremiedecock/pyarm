@@ -1,10 +1,12 @@
 % Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 \documentclass[pdftex,a4paper,11pt]{article} 
+%\documentclass[pdftex,a4paper,11pt]{report} 
 \usepackage[utf8]{inputenc}
 \usepackage[frenchb]{babel}
 \usepackage[pdftex]{graphicx}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{subfigure}
 \usepackage{hyperref}
 
@@ -23,6 +25,8 @@
 	filecolor=black,                    % color of file links
 	urlcolor=black                      % color of external links
 }
+
+%\newcommand{\reels}{\mathbb{R}}
 
 \begin{document}
 
@@ -65,10 +69,25 @@ Remarque : la numérotation des muscles est différente dans le modèle de Weiwe
 \subsection{Les modèles étudiés}
 Trois modèles ont été étudiés~:
 \begin{itemize}
-    \item Katayama / Mitrovic
-    \item Kambara
-    \item Brown / Weiwei
+    \item Katayama / Mitrovic \cite{katayama1993, ozkaya1999, mitrovic10, mitrovic2008, mitrovic2009}
+    \item Kambara \cite{kambara2009, ozkaya1999}
+    \item Brown / Weiwei \cite{brown1999, li2006, li2004, todorov2005}
 \end{itemize}
+
+%\cite{mitrovic10}
+%\cite{mitrovic2008}
+%\cite{mitrovic2009}
+%\cite{katayama1993}
+%\cite{brown1999}
+%\cite{li2006}
+%\cite{li2004}
+%\cite{todorov2005}
+
+\subsection{Historique}
+
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/bib}
+\end{center}
 
 \subsection{Simulateur Pyarm}
 
@@ -83,7 +102,7 @@ Trois modèles ont été étudiés~:
 \begin{figure}
     \centering
     \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm2}}~~~
-    \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm2}}~~~
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm3}}~~~
 \end{figure}
 
 \paragraph{}
@@ -119,6 +138,19 @@ Le simulateur est composé de 5 modules :
     $l_{m}$   & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
 \end{tabular}
     
+\begin{center}
+        \includegraphics[width=.50\linewidth]{fig/moment_arm}
+\end{center}
+
+% TODO
+Dans les modèles de Mitrovic et Kambara, la longueur du bras d'inertie est constante. Elle correspond au rayon ...
+Sous réserve que la longueur de l'arc soit toujours positive (...)
+% TODO
+
+\begin{center}
+        \includegraphics[width=.50\linewidth]{fig/muscle_length}
+\end{center}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Dynamique du muscle}
@@ -156,10 +188,6 @@ Le simulateur est composé de 5 modules :
     $r$ & = & Coefficient de variation de la longueur au repos \\
     %$l_{0i}$ & = & Longueur du muscle au repos pour l'angle $q = 0$ \\
 \end{tabular}
-
-\begin{center}
-        \includegraphics[width=.50\linewidth]{fig/moment_arm}
-\end{center}
 
 %%%%%%%%
 
@@ -253,21 +281,39 @@ Le simulateur est composé de 5 modules :
 \subsection{Cas général}
 
 \subsubsection{Dynamique inverse}
-$\tau = M(q)\ddot{q} + C(q, \dot{q}) + b(\dot{q}) + g(q) $ (1)
+$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q) $ \emph{(1)}
 
 \subsubsection{Dynamique}
-(1) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - b(\dot{q}) - g(q)) $
+\emph{(1)} $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q)) $
 
 \subsubsection{Légende}
 \begin{tabular}{lcl}
-    $M$      & = & matrice des moments d'inertie \\ % TODO
-    $C$      & = & force de Coriolis et force centripète \\
-    $b$      & = & force de viscosité et de friction \\ % TODO
-    $g$      & = & force de gravité \\
-    $\tau$   & = & couple total exercé sur les articulations ($N \cdot m$) \\
-    $\ddot{q}$ & = & accélération angulaire ($rd \cdot s^{-2}$) \\
-    $\dot{q}$ & = & vitesse angulaire ($rd \cdot s^{-1}$) \\
-    $q$ & = & angle ($rd$) \\
+    $M \in \mathbb{R}^{2 \times 2}$  & = & matrice des moments d'inertie \\ % TODO
+    $C \in \mathbb{R}^{2}$  & = & force de Coriolis et force centripète \\
+    $B \in \mathbb{R}^{2}$  & = & force de viscosité et de friction \\ % TODO
+    $G \in \mathbb{R}^{2}$  & = & force de gravité \\
+    $\tau \in \mathbb{R}^{2}$        & = & couple total exercé sur les articulations ($N \cdot m$) \\
+    $\ddot{q} \in \mathbb{R}^{2}$    & = & accélération angulaire ($rd \cdot s^{-2}$) \\
+    $\dot{q} \in \mathbb{R}^{2}$     & = & vitesse angulaire ($rd \cdot s^{-1}$)\\
+    $q \in \mathbb{R}^{2}$           & = & angle ($rd$)\\
+\end{tabular}
+
+\paragraph{}
+\begin{tabular}{lcl}
+    $m_i$ & = & masse du membre $i$ \\
+    $l_i$ & = & longueur du membre $i$ \\
+    $\gamma_i$ & = & distance séparant le centre de l'articulation au centre de masse du membre $i$ \\
+    $\iota_j$ & = & moment d'inertie de l'articulation $j$ \\
+    $\hat{g}$ & = & champ de pesanteur \\
+\end{tabular}
+
+\paragraph{}
+%Indices :\\
+\begin{tabular}{lcl}
+    $u$ & = & bras (supérieur)\\
+    $f$ & = & avant-bras\\
+    $s$ & = & épaule\\
+    $e$ & = & coude\\
 \end{tabular}
 
 %%%%%%%%
@@ -275,44 +321,30 @@ $\tau = M(q)\ddot{q} + C(q, \dot{q}) + b(\dot{q}) + g(q) $ (1)
 \subsection{Mitrovic}
 
 \subsubsection{Dynamique inverse}
-$
-\begin{pmatrix}
-    \tau_s \\
-    \tau_e \\
-\end{pmatrix}
-=
-\begin{pmatrix}
-    I_1 + I_2 + M_2 L_1^2 + 2 M_2 L_1 L_{g2} \cos(q_e)  &  I_2 + M_2 L_1 L_{g2} \cos(q_e) \\
-    I_2 + M_2 L_1 L_{g2} \cos(q_e)  &  I_2\\
-\end{pmatrix}
-\begin{pmatrix}
-    \ddot{q}_s \\
-    \ddot{q}_e \\
-\end{pmatrix}
-+ M_2 L_1 L_{g2} \sin(q_e)
-\begin{pmatrix}
-    -2 \dot{q}_e  &  -\dot{q}_e \\
-    \dot{q}_s     &  0\\
-\end{pmatrix}
-\begin{pmatrix}
-    \dot{q}_s \\
-    \dot{q}_e \\
-\end{pmatrix}
-(2)$
+$\tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q}$
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M_j$ & = & masse du membre \\
-    $L_j$ & = & longueur du membre \\
-    $L_{gj}$ & = & distance séparant le centre de masse de l'articulation \\
-    $I_{j}$ & = & moment d'inertie \\
+    $M$ & = &
+    $
+    \begin{pmatrix}
+        \iota_s + \iota_e + m_f l_u^2 + 2 m_f l_u \gamma_f \cos(q_e)  &  \iota_e + m_f l_u \gamma_f \cos(q_e) \\
+        \iota_e + m_f l_u \gamma_f \cos(q_e)  &  \iota_e\\
+    \end{pmatrix}
+    $ \\
+
+    $C$ & = &
+    $
+    \begin{pmatrix}
+        -2 \dot{q}_e  &  -\dot{q}_e \\
+        \dot{q}_s     &  0\\
+    \end{pmatrix}
+    m_f l_u \gamma_f \sin(q_e)
+    $\\
 \end{tabular}
 
-\paragraph{}
-(2) $\Leftrightarrow \tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q}  $
-
 \subsubsection{Dynamique}
-(2) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q}) $
+$\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q}) $
 
 %%%%%%%%
 
@@ -326,62 +358,57 @@ $
 \end{pmatrix}
 =
 \begin{pmatrix}
-    M_{11}\ddot{q}_1 + M_{12}\ddot{q}_2 + h_{122}\dot{q}_2^2 + 2h_{112}\dot{q}_1\dot{q}_2 + g_1 \\
-    M_{21}\ddot{q}_1 + M_{22}\ddot{q}_2 + h_{211}\dot{q}_1^2 + g_2 \\
+    M_{11}\ddot{q}_1 + M_{12}\ddot{q}_2 + h_{122}\dot{q}_2^2 + 2h_{112}\dot{q}_1\dot{q}_2 + G_1 \\
+    M_{21}\ddot{q}_1 + M_{22}\ddot{q}_2 + h_{211}\dot{q}_1^2 + G_2 \\
 \end{pmatrix}
-(3)$
+$
+\emph{(3)}
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M_{11}$ & = & $I_1 + I_2 + m_2(l_1^2 + 2 l_1 l_{g2}\cos q_2$) \\
-    $M_{12}$ & = & $I_2 + m_2l_1l_{g2}\cos q_2$ \\
-    $M_{21}$ & = & $I_2 + m_2l_1l_{g2}\cos q_2$ \\
-    $M_{22}$ & = & $I_2$ \\
-    $h_{122}$ & = & $-m_2 l_1 l_{g2} \sin q_2$ \\
-    $h_{112}$ & = & $-m_2 l_1 l_{g2} \sin q_2$ \\
-    $h_{211}$ & = & $m_2 l_1 l_{g2} \sin q_2$ \\
-    $g_1$ & = & $m_1 \hat{g} l_{g1} \cos q_1 + m_2 \hat{g} (l_1 \cos q_1 + l_{g2} \cos(q_1 + q_2))$ \\
-    $g_2$ & = & $m_2 \hat{g} l_{g2} \cos(q_1 + q_2))$ \\
-    \\
-    $m_j$ & = & masse du membre \\
-    $l_j$ & = & longueur du membre \\
-    $l_{gj}$ & = & distance séparant le centre de masse de l'articulation \\
-    $I_{j}$ & = & moment d'inertie \\
-    $\hat{g}$ & = & champ de pesanteur \\
+    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)$) \\
+    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e)$ \\
+    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e)$ \\
+    $M_{22}$ & = & $\iota_e$ \\
+    $h_{122}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
+    $h_{112}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
+    $h_{211}$ & = & $m_f l_u  \gamma_f \sin(q_e)$ \\
+    $G_1$ & = & $m_u \hat{g}  \gamma_u \cos(q_s) + m_f \hat{g} (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e))$ \\
+    $G_2$ & = & $m_f \hat{g}  \gamma_f \cos(q_s + q_e))$ \\
 \end{tabular}
 
 \paragraph{}
 \begin{tabular}{lcl}
-    (3) & $\Leftrightarrow$ & $\tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q} + g$ \\
+    \emph{(3)} & $\Leftrightarrow$ & $\tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q} + g$ \\
 \end{tabular}
 
 \subsubsection{Dynamique}
-(3) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - g) $
+\emph{(3)} $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - g) $
 
 %%%%%%%%
 
 \subsection{Weiwei}
 
 \subsubsection{Dynamique inverse}
-$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ (4)
+$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ \emph{(4)}
 
 \paragraph{}
 \begin{tabular}{lcl}
     $M$ & = &
     $
     \begin{pmatrix}
-        d1 + 2 d_2 \cos q_2  & d_3 + d_2 \cos q_2 \\
-        d_3 + d_2 \cos q_2 & d_3 \\
+        d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
+        d_3 + d_2 \cos(q_e) & d_3 \\
     \end{pmatrix}
     $ \\
 
     $C$ & = &
     $
     \begin{pmatrix}
-        -\dot{q}_2 (2 \dot{q}_1 + \dot{q}_2) \\
-        \dot{q}_1^2 \\
+        -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
+        \dot{q}_s^2 \\
     \end{pmatrix}
-    d_2 \sin q_2
+    d_2 \sin(q_e)
     $\\
 
     $B$ & = &
@@ -395,28 +422,20 @@ $\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ (4)
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $d_1$ & = & $I_1 + I_2 + m_2 l_1^2$ \\
-    $d_2$ & = & $m_2 l_1 s_2$ \\
-    $d_3$ & = & $I_2$ \\
-\end{tabular}
-
-\paragraph{}
-\begin{tabular}{lcl}
-    $m_j$ & = & masse du membre \\
-    $l_j$ & = & longueur du membre \\
-    $s_{j}$ & = & distance séparant le centre de masse de l'articulation \\
-    $I_{j}$ & = & moment d'inertie \\
+    $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+    $d_2$ & = & $m_f l_u \gamma_f$ \\
+    $d_3$ & = & $\iota_e$ \\
 \end{tabular}
 
 \subsubsection{Dynamique}
-(4) $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q}) $
+\emph{(4)} $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q}) $
 
 \subsection{Résumé}
 \begin{tabular}{|c|l|}
     \hline
     Mitrovic & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q})$ \\
     \hline
-    Kambara  & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - g)$ \\
+    Kambara  & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - G)$ \\
     \hline
     Weiwei   & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q})$ \\
     \hline
@@ -437,8 +456,9 @@ $\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ (4)
 
 \section{Bibliographie}
 
-\begin{center}
-        \includegraphics[width=.80\linewidth]{fig/bib}
-\end{center}
+%\cite{clef_de_référence}
+
+\bibliographystyle{plain}
+\bibliography{article}
 
 \end{document}

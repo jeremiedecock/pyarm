@@ -1,6 +1,8 @@
 all: article.pdf slides.pdf
 
-article.pdf: article.tex
+article.pdf: article.tex article.bib
+	pdflatex article.tex
+	bibtex article
 	pdflatex article.tex
 	pdflatex article.tex
 
