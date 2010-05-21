@@ -263,7 +263,9 @@
          sodipodi:role="line"
          id="tspan4804"
          x="121.72337"
-         y="393.23761">l</tspan></text>
+         y="393.23761">l<tspan
+   style="font-size:20"
+   id="tspan2851">m</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
@@ -311,8 +313,10 @@
          x="355.18365"
          y="476.40628"
          style="fill:#0a9500;fill-opacity:1">l<tspan
-   style="font-size:24px;fill:#0a9500;fill-opacity:1"
-   id="tspan5057">m</tspan></tspan></text>
+   style="font-size:20"
+   id="tspan2850">m</tspan><tspan
+   style="font-size:20px"
+   id="tspan2849">0</tspan></tspan></text>
     <path
        style="fill:none;stroke:#0a9500;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="M 253.58478,417.29223 420.22346,525.06255"

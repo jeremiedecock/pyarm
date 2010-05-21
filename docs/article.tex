@@ -65,7 +65,7 @@
     \end{enumerate}
 \end{itemize}
 
-Remarque : la numérotation des muscles est différente dans le modèle de Weiwei.
+Remarque~: la numérotation des muscles est différente dans le modèle de Weiwei.
 
 \subsection{Les modèles étudiés}
 Trois modèles ont été étudiés~:
@@ -126,16 +126,21 @@ Le simulateur est composé de 5 modules :
 
 Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
 
-\[l = l_m - A q\]
-\[\dot{l} = \frac{\delta l}{\delta t}\]
+\[l_m = l_{m0} - A q\]
+\[\dot{l_m} = \frac{\delta l_m}{\delta t}\]
 
+\begin{small}
 \begin{tabular}{lcl}
-    $l_{m}$   & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
+    $l_m \in \mathbb{R}^6$     & = & Longueur constatée des muscles $(m)$ \\
+    $l_{m0} \in \mathbb{R}^6$  & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
 \end{tabular}
+\end{small}
     
-\begin{center}
-        \includegraphics[width=.50\linewidth]{fig/moment_arm}
-\end{center}
+\begin{figure}[h]
+    \centering
+    \subfigure{\includegraphics[width=.40\linewidth]{fig/moment_arm}}~~~
+    \subfigure{\includegraphics[width=.40\linewidth]{fig/arm_shin}}~~~
+\end{figure}
 
 % TODO
 Dans les modèles de Mitrovic et Kambara, la longueur du bras d'inertie est constante. Elle correspond au rayon ...
@@ -155,56 +160,59 @@ Sous réserve que la longueur de l'arc soit toujours positive (...)
 \paragraph{}
 Mitrovic~:
 \[ \tau = -A^T t(l_m, \dot{l_m}, \tilde{u}) \]
-\[ t(l_m, \dot{l_m}, \tilde{u}) = k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + b(\tilde{u}) \cdot \dot{l_m} \]
+\[ t(l_m, \dot{l_m}, \tilde{u}) = k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
 
 \paragraph{}
 Kambara~:
 \[ \tau = A^T t(l_m, \dot{l_m}, \tilde{u}) \]
-\[ t(l_m, \dot{l_m}, \tilde{u}) = -k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + b(\tilde{u}) \cdot \dot{l_m} \]
+\[ t(l_m, \dot{l_m}, \tilde{u}) = -k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $k(\tilde{u})$    & = & $k_0 + k \cdot \tilde{u}$ \\
-    $b(\tilde{u})$    & = & $b_0 + b \cdot \tilde{u}$ \\
-    $l_r(\tilde{u})$  & = & $l_0 - r \cdot \tilde{u}$ \\
+    $k(\tilde{u})$    & = &  $k_0 + k_1 \cdot \tilde{u}$ \\
+    $\nu(\tilde{u})$  & = &  $\nu_0 + \nu_1 \cdot \tilde{u}$ \\
+    $l_r(\tilde{u})$  & = &  $l_{r0} - l_{r1} \cdot \tilde{u}$ \\
 \end{tabular}
 
-\begin{tabular}{lcl}
-    $L_i^{rest}(\tilde{u}_i)$ & = & $l_{0i}^{rest} - l_{1i}^{rest} \tilde{u}_i$ \\
-    %$L_i$ & = & $l_{0i} - \sum_{j=1}^2 A_{i,j} q_j $ \\
-\end{tabular}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.20\linewidth]{fig/Kelvin_Voigt_diagram}
+    \caption{Kelvin-Voigt model}
+\end{figure}
 
 \paragraph{}
+\begin{small}
 \begin{tabular}{lcl}
     $\tau_i \in \mathbb{R}^2$            & = & Couple total exercé sur les articulations \\
     $A \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier \\
     $t(l, \dot{l}, u) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
     \\
+    $k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m)$ & = & Force élastique des muscles (raideur $\cdot$ étirement) \\
+    \\
 
-    $k(\tilde{u}) \in \mathbb{R}^6$      & = & Raideur des muscles \\ % élasticité
+    $k(\tilde{u}) \in \mathbb{R}^6$      & = & Raideur des muscles \\
     $k_0 \in \mathbb{R}^6$               & = & Raideur intrinsèque des muscles $(N/m)$ \\
-    $\mathrm{k} \in \mathbb{R}^6$                 & = & Coefficient de variation de l'élasticité des muscles $(N/m)$ \\
+    $k_1 \in \mathbb{R}^6$               & = & Coefficient de variation de l'élasticité des muscles $(N/m)$ \\
     \\
 
     $\nu(\tilde{u}) \in \mathbb{R}^6$    & = & Viscosité des muscles \\
     $\nu_0 \in \mathbb{R}^6$             & = & Viscosité intrinsèque des muscles $(N \cdot s/m)$ \\
-    $\mathrm{\nu} \in \mathbb{R}^6$               & = & Coefficient de variation de la viscosité des muscles $(N \cdot s/m)$ \\
+    $\nu_1 \in \mathbb{R}^6$             & = & Coefficient de variation de la viscosité des muscles $(N \cdot s/m)$ \\
     \\
 
-    $l_r(\tilde{u}) \in \mathbb{R}^6$    & = & Longueur des muscles au repos \\
-    $l_{r0} \in \mathbb{R}^6$            & = & Longueur des muscles au repos \\
-    $\mathrm{r} \in \mathbb{R}^6$                 & = & Coefficient de variation de la longueur des muscles au repos \\
+    $l_r(\tilde{u}) \in \mathbb{R}^6$    & = & Longueur des muscles au repos pour un taux d'activation donné $(m)$ \\
+    $l_{r0} \in \mathbb{R}^6$            & = & Longueur intrinsèque des muscles au repos $(m)$ \\
+    $l_{r1} \in \mathbb{R}^6$            & = & Coefficient de variation de la longueur des muscles au repos $(m)$ \\
     \\
 
-    $l_m \in \mathbb{R}^6$               & = & Longueur des muscles \\
-    $l^{rest}_{1i} \in \mathbb{R}^6$     & = & Coefficient de variation de la longueur des muscles au repos \\
-    $l_{0} \in \mathbb{R}^6$                  & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
-    %$l_{0} \in \mathbb{R}^6$                 & = & Longueur du muscle au repos pour l'angle $q = 0$ \\
+    $l_m \in \mathbb{R}^6$               & = & Longueur constatée des muscles $(m)$ \\
+    $l_{m0} \in \mathbb{R}^6$            & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
     \\
 
-    $u \in \mathbb{R}^6$                 & = & Signaux d'activation des muscles \\
-    $\tilde{u} \in \mathbb{R}^6$         & = & Signaux d'activation filtrés \\
+    $u \in \mathbb{R}^6$                 & = & Signaux d'activation des muscles $(u_i \in [0;1])$ \\
+    $\tilde{u} \in \mathbb{R}^6$         & = & Signaux d'activation filtrés $(\tilde{u_i} \in [0;1])$ \\
 \end{tabular}
+\end{small}
 
 \paragraph{}
 Mitrovic \cite{katayama1993} (p.356-357)~: 
@@ -216,24 +224,25 @@ A =
 \end{pmatrix}^T
 \]
 
+\begin{footnotesize}
 \begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}}|l|r|r|r|r|r|r|}
-%\begin{tabular}{|l|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|}
     \hline
-                            & $k$    & $k_0$ & $\nu$ & $\nu_0$ & -       & - \\
+                            & $k_0$ & $k_1$  & $\nu_0$ & $\nu_1$ & $l_{r1}$               & $l_{m0} - l_{r0}$ \\
+    \hline                                            
+    fléchisseur de l'épaule & 810.8 & 1621.6 & 54.1    & 108.1   & $-3.49 \cdot 10^{-2}$  & $  9.08 \cdot 10^{-2}$ \\
     \hline
-    fléchisseur de l'épaule & 1621.6 & 810.8 & 108.1 & 54.1    & -3.491  &  9.076 \\
+    extenseur de l'épaule   & 810.8 & 1621.6 & 54.1    & 108.1   & $ 3.49 \cdot 10^{-2}$  & $ -2.79 \cdot 10^{-2}$ \\
     \hline
-    extenseur de l'épaule   & 1621.6 & 810.8 & 108.1 & 54.1    &  3.491  & -2.793 \\
+    fléchisseur du coude    & 810.8 & 1621.6 & 54.1    & 108.1   & $-2.18 \cdot 10^{-2}$  & $  5.67 \cdot 10^{-2}$ \\
     \hline
-    fléchisseur du coude    & 1621.6 & 810.8 & 108.1 & 54.1    & -2.182  &  5.672 \\
+    extenseur du coude      & 810.8 & 1621.6 & 54.1    & 108.1   & $ 2.18 \cdot 10^{-2}$  & $  0.44 \cdot 10^{-2}$ \\
     \hline
-    extenseur du coude      & 1621.6 & 810.8 & 108.1 & 54.1    &  2.182  &  0.436 \\
+    double fléchisseur      & 810.8 & 1621.6 & 54.1    & 108.1   & $-5.50 \cdot 10^{-2}$  & $ 14.29 \cdot 10^{-2}$ \\
     \hline
-    double fléchisseur      & 1621.6 & 810.8 & 108.1 & 54.1    & -5.498  &  14.294 \\
-    \hline
-    double extenseur        & 1621.6 & 810.8 & 108.1 & 54.1    &  5.498  & -1.343 \\
+    double extenseur        & 810.8 & 1621.6 & 54.1    & 108.1   & $ 5.50 \cdot 10^{-2}$  & $ -1.34 \cdot 10^{-2}$ \\
     \hline
 \end{tabular*}
+\end{footnotesize}
 
 \paragraph{}
 Kambara  \cite{kambara2009} (p.359-360)~:
@@ -245,24 +254,25 @@ A =
 \end{pmatrix}^T
 \]
 
+\begin{small}
 \begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}}|l|r|r|r|r|r|r|}
-%\begin{tabular}{|l|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|}
     \hline
-                            & $k$    & $k_0$  & $\nu$ & $\nu_0$ & -      & - \\
+                            & $k_0$  & $k_1$  & $\nu_0$ & $\nu_1$ & $l_{r1}$ & $l_{m0} - l_{r0}$ \\
     \hline
-    fléchisseur de l'épaule & 1000   & 3000   & 50    & 100     & 0.15   & 0.077 \\
+    fléchisseur de l'épaule & 1000   & 3000   & 50      & 100     & 0.15     & 0.077 \\
     \hline
-    extenseur de l'épaule   & 1000   & 2000   & 50    & 100     & 0.15   & 0.128 \\
+    extenseur de l'épaule   & 1000   & 2000   & 50      & 100     & 0.15     & 0.128 \\
     \hline
-    fléchisseur du coude    & 600    & 1400   & 50    & 100     & 0.15   & 0.100 \\
+    fléchisseur du coude    & 600    & 1400   & 50      & 100     & 0.15     & 0.100 \\
     \hline
-    extenseur du coude      & 600    & 1200   & 50    & 100     & 0.15   & 0.040 \\
+    extenseur du coude      & 600    & 1200   & 50      & 100     & 0.15     & 0.040 \\
     \hline
-    double fléchisseur      & 300    & 600    & 50    & 100     & 0.15   & 0.020 \\
+    double fléchisseur      & 300    & 600    & 50      & 100     & 0.15     & 0.020 \\
     \hline
-    double extenseur        & 300    & 600    & 50    & 100     & 0.15   & 0.019 \\
+    double extenseur        & 300    & 600    & 50      & 100     & 0.15     & 0.019 \\
     \hline
 \end{tabular*}
+\end{small}
 
 
 %%%%%%%%
