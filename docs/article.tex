@@ -348,6 +348,7 @@ Dynamique~:
         0.05  & 0.025 \\
         0.025 & 0.05 \\
     \end{pmatrix}
+    \dot{q}
     $\\
 
     $G(q)$ & = &
@@ -554,8 +555,8 @@ $
         d_2 \sin(q_e) \dot{q}_s^2 \\
     \end{pmatrix} =
     \begin{pmatrix}
-        ... \\
-        ... \\
+        -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
+        \dot{q}_s^2 \\
     \end{pmatrix}
     d_2 \sin(q_e)
     $\\
@@ -569,10 +570,10 @@ $
     $ \\
     \\
 
-    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)) = ...$ \\
-    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = ...$ \\
-    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = ...$ \\
-    $M_{22}$ & = & $\iota_e = ...$ \\
+    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)) = d_1 + 2 d_2 \cos(q_e)$ \\
+    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = d_3 + d_2 \cos(q_e)$ \\
+    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = d_3 + d_2 \cos(q_e)$ \\
+    $M_{22}$ & = & $\iota_e = d_3$ \\
     $h_{122}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
     $h_{112}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
     $h_{211}$ & = & $m_f l_u  \gamma_f \sin(q_e)$ \\
@@ -592,7 +593,10 @@ $
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M$ & = &
+    $\tau$ & = & $M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q})$ \\
+    \\
+
+    $M(q)$ & = &
     $
     \begin{pmatrix}
         d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
@@ -600,7 +604,7 @@ $
     \end{pmatrix}
     $ \\
 
-    $C$ & = &
+    $C(q, \dot{q})$ & = &
     $
     \begin{pmatrix}
         -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
@@ -609,25 +613,21 @@ $
     d_2 \sin(q_e)
     $\\
 
-    $B$ & = &
+    $B(\dot{q})$ & = &
     $
     \begin{pmatrix}
         0.05  & 0.025 \\
         0.025 & 0.05 \\
     \end{pmatrix}
-    $
-\end{tabular}
+    \dot{q}
+    $ \\
+    \\
 
-\paragraph{}
-\begin{tabular}{lcl}
     $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
     $d_2$ & = & $m_f l_u \gamma_f$ \\
     $d_3$ & = & $\iota_e$ \\
 \end{tabular}
 
-\paragraph{}
-$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q}$
- 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Bibliographie}

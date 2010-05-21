@@ -1,10 +1,12 @@
 all: article.pdf slides.pdf
 
-article.pdf: article.tex article.bib
+article.pdf: article.tex article.aux
+	pdflatex article.tex
+	pdflatex article.tex
+
+article.aux: article.bib
 	pdflatex article.tex
 	bibtex article
-	pdflatex article.tex
-	pdflatex article.tex
 
 slides.pdf: slides.tex
 	pdflatex slides.tex
