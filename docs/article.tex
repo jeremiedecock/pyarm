@@ -51,7 +51,7 @@
 
 \begin{itemize}
     \item Bras 2D
-    \item Plan horizontal (Mitrovic, Weiwei) ou vertical (Kambara)
+    \item Plan transverse (Mitrovic, Weiwei) ou sagittal (Kambara)
     \item 2 membres (le bras et l'avant-bras) % ou arrière-bras ou bras supérieur
     \item 2 articulations (épaule et coude)
     \item 6 muscles~:
@@ -60,8 +60,8 @@
         \item extenseur de l'épaule
         \item fléchisseur du coude
         \item extenseur du coude
-        \item fléchisseur
-        \item extenseur
+        \item double fléchisseur
+        \item double extenseur
     \end{enumerate}
 \end{itemize}
 
@@ -74,15 +74,6 @@ Trois modèles ont été étudiés~:
     \item Kambara \cite{kambara2009, ozkaya1999}
     \item Brown / Weiwei \cite{brown1999, li2006, li2004, todorov2005}
 \end{itemize}
-
-%\cite{mitrovic10}
-%\cite{mitrovic2008}
-%\cite{mitrovic2009}
-%\cite{katayama1993}
-%\cite{brown1999}
-%\cite{li2006}
-%\cite{li2004}
-%\cite{todorov2005}
 
 \subsection{Historique}
 
@@ -159,78 +150,124 @@ Sous réserve que la longueur de l'arc soit toujours positive (...)
 
 \section{Dynamique du muscle}
 
-\subsection{Mitrovic}
+\subsection{Katayama (Mitrovic et Kambara)}
 
-\begin{tabular}{lcl}
-    $\tau$ & = & $-A^T t(l, \dot{l}, u)$ \\
-    \\
-    $t(l, \dot{l}, u)$        & = & $k(u) (l_r(u) - l) + b(u) \dot{l}$ \\
-    \\
-    $k(u)$    & = & $k_0 + k u$ \\
-    $b(u)$    & = & $b_0 + b u$ \\
-    $l_r(u)$  & = & $l_0 - r u$ \\
-    \\
-%    $l$       & = & $l_m - A q $ \\
-%    $\dot{l}$ & = & $l_m - A \dot{q} $ \\
-\end{tabular}
+\paragraph{}
+Mitrovic~:
+\[ \tau = -A^T t(l_m, \dot{l_m}, \tilde{u}) \]
+\[ t(l_m, \dot{l_m}, \tilde{u}) = k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + b(\tilde{u}) \cdot \dot{l_m} \]
+
+\paragraph{}
+Kambara~:
+\[ \tau = A^T t(l_m, \dot{l_m}, \tilde{u}) \]
+\[ t(l_m, \dot{l_m}, \tilde{u}) = -k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + b(\tilde{u}) \cdot \dot{l_m} \]
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $\tau_i$ & = & Couple total exercé sur l'articulation $i$ \\
-    $A$  & = & Matrice des bras de levier \\
-    $t(l, \dot{l}, u)$  & = & Tension exercée par le muscle \\
-    $k(u)$ & = & Raideur du muscle \\
-    $b(u)$ & = & Viscosité du muscle \\
-    $l_r(u)$ & = & Longueur du muscle au repos \\
-    $l$ & = & Longueur du muscle \\
-    $u$ & = & Signaux d'activation du muscle \\
-    $k_0$ & = & Élasticité intrinsèque \\
-    $b_0$ & = & Viscosité intrinsèque \\
-    $l_0$ & = & Longueur du muscle au repos \\
-    $k$ & = & Coefficient de variation de l'élasticité \\
-    $b$ & = & Coefficient de variation de la viscosité \\
-    $r$ & = & Coefficient de variation de la longueur au repos \\
-    %$l_{0i}$ & = & Longueur du muscle au repos pour l'angle $q = 0$ \\
+    $k(\tilde{u})$    & = & $k_0 + k \cdot \tilde{u}$ \\
+    $b(\tilde{u})$    & = & $b_0 + b \cdot \tilde{u}$ \\
+    $l_r(\tilde{u})$  & = & $l_0 - r \cdot \tilde{u}$ \\
 \end{tabular}
 
-%%%%%%%%
-
-\subsection{Kambara}
-
 \begin{tabular}{lcl}
-    $\tau$ & = & $A^T T$ \\
-    \\
-    $T_i$                     & = & $K_i(\tilde{u}_i) (L_i - L_i^{rest}(\tilde{u}_i)) + B_i(\tilde{u}_i) \dot{L}_i$ \\
-    \\
-    $K_i(\tilde{u}_i)$        & = & $k_{0i} + k_{1i} \tilde{u}_i$ \\
-    $B_i(\tilde{u}_i)$        & = & $b_{0i} + b_{1i} \tilde{u}_i$ \\
-    $L_i^{rest}(\tilde{u}_i)$ & = & $ l_{0i}^{rest} - l_{1i}^{rest} \tilde{u}_i$ \\
-    %\\
+    $L_i^{rest}(\tilde{u}_i)$ & = & $l_{0i}^{rest} - l_{1i}^{rest} \tilde{u}_i$ \\
     %$L_i$ & = & $l_{0i} - \sum_{j=1}^2 A_{i,j} q_j $ \\
 \end{tabular}
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $\tau_i$ & = & Couple total exercé sur l'articulation $i$ \\
-    $A$  & = & Matrice des bras de levier \\
-    $T_i$  & = & Tension exercée par le muscle $i$ \\
-    $K_i(\tilde{u}_i)$ & = & Raideur du muscle $i$ \\
-    $B_i(\tilde{u}_i)$ & = & Viscosité du muscle $i$ \\
-    $L_i^{rest}(\tilde{u}_i)$ & = & Longueur du muscle $i$ au repos \\
-    $L_i$ & = & Longueur du muscle $i$ \\
-    $\tilde{u}_i$ & = & Signaux d'activation filtrés du muscle $i$ \\
-    $k_{0i}$ & = & Élasticité intrinsèque \\
-    $b_{0i}$ & = & Viscosité intrinsèque \\
-    $l^{rest}_{0i}$ & = & Longueur du muscle $i$ au repos \\
-    $k_{1i}$ & = & Coefficient de variation de l'élasticité \\
-    $b_{1i}$ & = & Coefficient de variation de la viscosité \\
-    $l^{rest}_{1i}$ & = & Coefficient de variation de la longueur au repos \\
-    $l_{0i}$ & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
+    $\tau_i \in \mathbb{R}^2$            & = & Couple total exercé sur les articulations \\
+    $A \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier \\
+    $t(l, \dot{l}, u) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
+    \\
+
+    $k(\tilde{u}) \in \mathbb{R}^6$      & = & Raideur des muscles \\ % élasticité
+    $k_0 \in \mathbb{R}^6$               & = & Raideur intrinsèque des muscles $(N/m)$ \\
+    $\mathrm{k} \in \mathbb{R}^6$                 & = & Coefficient de variation de l'élasticité des muscles $(N/m)$ \\
+    \\
+
+    $\nu(\tilde{u}) \in \mathbb{R}^6$    & = & Viscosité des muscles \\
+    $\nu_0 \in \mathbb{R}^6$             & = & Viscosité intrinsèque des muscles $(N \cdot s/m)$ \\
+    $\mathrm{\nu} \in \mathbb{R}^6$               & = & Coefficient de variation de la viscosité des muscles $(N \cdot s/m)$ \\
+    \\
+
+    $l_r(\tilde{u}) \in \mathbb{R}^6$    & = & Longueur des muscles au repos \\
+    $l_{r0} \in \mathbb{R}^6$            & = & Longueur des muscles au repos \\
+    $\mathrm{r} \in \mathbb{R}^6$                 & = & Coefficient de variation de la longueur des muscles au repos \\
+    \\
+
+    $l_m \in \mathbb{R}^6$               & = & Longueur des muscles \\
+    $l^{rest}_{1i} \in \mathbb{R}^6$     & = & Coefficient de variation de la longueur des muscles au repos \\
+    $l_{0} \in \mathbb{R}^6$                  & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
+    %$l_{0} \in \mathbb{R}^6$                 & = & Longueur du muscle au repos pour l'angle $q = 0$ \\
+    \\
+
+    $u \in \mathbb{R}^6$                 & = & Signaux d'activation des muscles \\
+    $\tilde{u} \in \mathbb{R}^6$         & = & Signaux d'activation filtrés \\
 \end{tabular}
+
+\paragraph{}
+Mitrovic \cite{katayama1993} (p.356-357)~: 
+\[
+A =
+\begin{pmatrix}
+    0.04 & 0.04 & 0     & 0     & 0.028 & 0.035 \\
+    0    & 0    & 0.025 & 0.025 & 0.028 & 0.035 \\
+\end{pmatrix}^T
+\]
+
+\begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}}|l|r|r|r|r|r|r|}
+%\begin{tabular}{|l|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|}
+    \hline
+                            & $k$    & $k_0$ & $\nu$ & $\nu_0$ & -       & - \\
+    \hline
+    fléchisseur de l'épaule & 1621.6 & 810.8 & 108.1 & 54.1    & -3.491  &  9.076 \\
+    \hline
+    extenseur de l'épaule   & 1621.6 & 810.8 & 108.1 & 54.1    &  3.491  & -2.793 \\
+    \hline
+    fléchisseur du coude    & 1621.6 & 810.8 & 108.1 & 54.1    & -2.182  &  5.672 \\
+    \hline
+    extenseur du coude      & 1621.6 & 810.8 & 108.1 & 54.1    &  2.182  &  0.436 \\
+    \hline
+    double fléchisseur      & 1621.6 & 810.8 & 108.1 & 54.1    & -5.498  &  14.294 \\
+    \hline
+    double extenseur        & 1621.6 & 810.8 & 108.1 & 54.1    &  5.498  & -1.343 \\
+    \hline
+\end{tabular*}
+
+\paragraph{}
+Kambara  \cite{kambara2009} (p.359-360)~:
+\[
+A =
+\begin{pmatrix}
+    0.04 & -0.04 & 0     & 0      & 0.028 & -0.035 \\
+    0    & 0     & 0.025 & -0.025 & 0.028 & -0.035 \\
+\end{pmatrix}^T
+\]
+
+\begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}}|l|r|r|r|r|r|r|}
+%\begin{tabular}{|l|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|m{5em}|}
+    \hline
+                            & $k$    & $k_0$  & $\nu$ & $\nu_0$ & -      & - \\
+    \hline
+    fléchisseur de l'épaule & 1000   & 3000   & 50    & 100     & 0.15   & 0.077 \\
+    \hline
+    extenseur de l'épaule   & 1000   & 2000   & 50    & 100     & 0.15   & 0.128 \\
+    \hline
+    fléchisseur du coude    & 600    & 1400   & 50    & 100     & 0.15   & 0.100 \\
+    \hline
+    extenseur du coude      & 600    & 1200   & 50    & 100     & 0.15   & 0.040 \\
+    \hline
+    double fléchisseur      & 300    & 600    & 50    & 100     & 0.15   & 0.020 \\
+    \hline
+    double extenseur        & 300    & 600    & 50    & 100     & 0.15   & 0.019 \\
+    \hline
+\end{tabular*}
+
 
 %%%%%%%%
 
-\subsection{Weiwei}
+\subsection{Brown (Weiwei)}
 
 \begin{center}
         \includegraphics[width=.40\linewidth]{fig/brown}
