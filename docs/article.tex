@@ -27,6 +27,7 @@
 }
 
 %\newcommand{\reels}{\mathbb{R}}
+\numberwithin{equation}{subsection}
 
 \begin{document}
 
@@ -128,13 +129,16 @@ Le simulateur est composé de 5 modules :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Cinematique inverse du muscle}
+\section{Cinématique inverse du muscle}
 
-\subsection{Methode d'Euler}
+\subsection{Résolution numérique par la méthode d'Euler}
+
+Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
+
+\[l = l_m - A q\]
+\[\dot{l} = \frac{\delta l}{\delta t}\]
 
 \begin{tabular}{lcl}
-    $l$       & = & $l_m - A q $ \\
-    $\dot{l}$ & = & $\frac{\delta l}{\delta t}$ \\
     $l_{m}$   & = & Longueur du muscle $i$ au repos pour l'angle $q = 0$ \\
 \end{tabular}
     
@@ -280,117 +284,311 @@ Sous réserve que la longueur de l'arc soit toujours positive (...)
 
 \subsection{Cas général}
 
-\subsubsection{Dynamique inverse}
-$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q) $ \emph{(1)}
+Dynamique inverse~:
+%\begin{equation}
+%\label{dynamique inverse}
+%\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q)
+%\end{equation}
+\[\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q)\]
 
-\subsubsection{Dynamique}
-\emph{(1)} $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q)) $
+Dynamique~:
+\[\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q))\]
+%\[
+%(\ref{dynamique inverse}) \Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q))
+%\]
 
-\subsubsection{Légende}
 \begin{tabular}{lcl}
-    $M \in \mathbb{R}^{2 \times 2}$  & = & matrice des moments d'inertie \\ % TODO
-    $C \in \mathbb{R}^{2}$  & = & force de Coriolis et force centripète \\
-    $B \in \mathbb{R}^{2}$  & = & force de viscosité et de friction \\ % TODO
-    $G \in \mathbb{R}^{2}$  & = & force de gravité \\
-    $\tau \in \mathbb{R}^{2}$        & = & couple total exercé sur les articulations ($N \cdot m$) \\
-    $\ddot{q} \in \mathbb{R}^{2}$    & = & accélération angulaire ($rd \cdot s^{-2}$) \\
-    $\dot{q} \in \mathbb{R}^{2}$     & = & vitesse angulaire ($rd \cdot s^{-1}$)\\
-    $q \in \mathbb{R}^{2}$           & = & angle ($rd$)\\
+    $M(q) \in \mathbb{R}^{2 \times 2}$  & = & matrice des moments d'inertie \\ % TODO
+    $C(q, \dot{q}) \in \mathbb{R}^{2}$  & = & force de Coriolis et force centripète \\
+    $B(\dot{q}) \in \mathbb{R}^{2}$     & = & force de viscosité et de friction \\ % TODO
+    $G(q) \in \mathbb{R}^{2}$           & = & force de gravité \\
+    $\tau \in \mathbb{R}^{2}$           & = & couple total exercé sur les articulations ($N \cdot m$) \\
+    $\ddot{q} \in \mathbb{R}^{2}$       & = & accélération angulaire ($rd \cdot s^{-2}$) \\
+    $\dot{q} \in \mathbb{R}^{2}$        & = & vitesse angulaire ($rd \cdot s^{-1}$)\\
+    $q \in \mathbb{R}^{2}$              & = & angle ($rd$)\\
+\end{tabular}
+
+\subsection{Modèles étudiés}
+
+\begin{tabular}{|c|l|l|}
+    \hline
+    Mitrovic & $\tau = M(q)\ddot{q} + C(q, \dot{q})$
+             & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}))$ \\
+    \hline
+    Kambara  & $\tau = M(q)\ddot{q} + C(q, \dot{q}) + G(q)$
+             & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - G(q))$ \\
+    \hline
+    Weiwei   & $\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q})$
+             & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}))$ \\
+    \hline
 \end{tabular}
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $m_i$ & = & masse du membre $i$ \\
-    $l_i$ & = & longueur du membre $i$ \\
-    $\gamma_i$ & = & distance séparant le centre de l'articulation au centre de masse du membre $i$ \\
-    $\iota_j$ & = & moment d'inertie de l'articulation $j$ \\
-    $\hat{g}$ & = & champ de pesanteur \\
-\end{tabular}
+    $M(q)$ & = &
+    $
+    \begin{pmatrix}
+        d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
+        d_3 + d_2 \cos(q_e) & d_3 \\
+    \end{pmatrix}
+    $ \\
 
-\paragraph{}
+    $C(q, \dot{q})$ & = &
+    $
+    \begin{pmatrix}
+        -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
+        \dot{q}_s^2 \\
+    \end{pmatrix}
+    d_2 \sin(q_e)
+    $\\
+
+    $B(\dot{q})$ & = &
+    $
+    \begin{pmatrix}
+        0.05  & 0.025 \\
+        0.025 & 0.05 \\
+    \end{pmatrix}
+    $\\
+
+    $G(q)$ & = &
+    $
+    \begin{pmatrix}
+        m_u \hat{g}  \gamma_u \cos(q_s) + m_f \hat{g} (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e)) \\
+        m_f \hat{g}  \gamma_f \cos(q_s + q_e) \\
+    \end{pmatrix}
+    $ \\
+
+    \\
+    $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+    $d_2$ & = & $m_f l_u \gamma_f$ \\
+    $d_3$ & = & $\iota_e$ \\
+    \\
+    $m_i$ & = & masse du membre $i$ ($kg$) \\
+    $l_i$ & = & longueur du membre $i$ ($m$) \\
+    $\gamma_i$ & = & distance séparant le centre de l'articulation au centre de masse du membre $i$ ($m$) \\
+    $\iota_j$ & = & moment d'inertie de l'articulation $j$ ($kg \cdot m^2$) \\
+    $\hat{g}$ & = & champ de pesanteur ($m \cdot s^{-2}$) \\
+    \\
 %Indices :\\
-\begin{tabular}{lcl}
+
     $u$ & = & bras (supérieur)\\
     $f$ & = & avant-bras\\
+
     $s$ & = & épaule\\
     $e$ & = & coude\\
 \end{tabular}
 
+\paragraph{}
+\begin{small}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+             & $m_u$  & $m_f$  & $l_u$ & $l_f$  & $\gamma_u$ & $\gamma_f$ & $\iota_s$            & $\iota_f$            & $\hat{g}$ \\
+    \hline
+    Mitrovic \cite{katayama1993} (p.356) 
+             & $1.59$ & $1.44$ & $0.3$ & $0.35$ & $0.18$     & $0.21$     & $4.77 \cdot 10^{-2}$ & $5.88 \cdot 10^{-2}$ & - \\
+    \hline
+    Kambara  \cite{kambara2009} (p.359)
+             & $1.59$ & $1.44$ & $0.3$ & $0.35$ & $0.18$     & $0.21$     & $6.78 \cdot 10^{-2}$ & $7.99 \cdot 10^{-2}$ & N/A \\
+    \hline
+    Weiwei   \cite{li2006} (p.23)
+             & $1.4$  & $1.1$  & $0.3$ & $0.33$ & $0.11$     & $0.16$     & $2.5 \cdot 10^{-2}$  & $4.5 \cdot 10^{-2}$  & - \\
+    \hline
+\end{tabular}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Cinématique du bras}
+
+\subsection{Résolution numérique par la méthode d'Euler}
+
+Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
+
+\[\dot{q} = \delta \ddot{q} \cdot \delta t\]
+\[q = \delta \dot{q} \cdot \delta t\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Annexe}
+
+\subsection{Modèle du bras}
+
 %%%%%%%%
 
-\subsection{Mitrovic}
+\subsubsection{Mitrovic}
+Écriture originale \cite{katayama1993} (p.355).
 
-\subsubsection{Dynamique inverse}
-$\tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q}$
-
-\paragraph{}
-\begin{tabular}{lcl}
-    $M$ & = &
-    $
+\begin{align*}
     \begin{pmatrix}
+        \tau_s \\
+        \tau_e \\
+    \end{pmatrix} =
+    & \begin{pmatrix}
         \iota_s + \iota_e + m_f l_u^2 + 2 m_f l_u \gamma_f \cos(q_e)  &  \iota_e + m_f l_u \gamma_f \cos(q_e) \\
         \iota_e + m_f l_u \gamma_f \cos(q_e)  &  \iota_e\\
     \end{pmatrix}
-    $ \\
-
-    $C$ & = &
-    $
+    \begin{pmatrix}
+        \ddot{q}_s \\
+        \ddot{q}_e \\
+    \end{pmatrix}\\
+    & + m_f l_u \gamma_f \sin(q_e)
     \begin{pmatrix}
         -2 \dot{q}_e  &  -\dot{q}_e \\
         \dot{q}_s     &  0\\
     \end{pmatrix}
-    m_f l_u \gamma_f \sin(q_e)
-    $\\
-\end{tabular}
+    \begin{pmatrix}
+        \dot{q}_s \\
+        \dot{q}_e \\
+    \end{pmatrix}
+\end{align*}
 
-\subsubsection{Dynamique}
-$\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q}) $
+$
+\Leftrightarrow 
+\left \{
+    \begin{tabular}{rcl}
+        $\tau$ & = &
+        $M(q)\ddot{q} + C(q, \dot{q})$ \\
+
+        $M(q)$
+        & = &
+        $
+        \begin{pmatrix}
+            \iota_s + \iota_e + m_f l_u^2 + 2 m_f l_u \gamma_f \cos(q_e)  &  \iota_e + m_f l_u \gamma_f \cos(q_e) \\
+            \iota_e + m_f l_u \gamma_f \cos(q_e)  &  \iota_e\\
+        \end{pmatrix}
+        $
+        \\
+
+        $C(q, \dot{q})$
+        & = &
+        $
+        m_f l_u \gamma_f \sin(q_e)
+        \begin{pmatrix}
+            -2 \dot{q}_e  &  -\dot{q}_e \\
+            \dot{q}_s     &  0\\
+        \end{pmatrix}
+        \begin{pmatrix}
+            \dot{q}_s \\
+            \dot{q}_e \\
+        \end{pmatrix}
+        $
+        \\
+    \end{tabular}
+\right .
+$
+
+$
+\Leftrightarrow 
+\left \{
+    \begin{tabular}{rcl}
+        $\tau$ & = &
+        $M(q)\ddot{q} + C(q, \dot{q})$ \\
+
+        $M(q)$ & = &
+        $
+        \begin{pmatrix}
+            d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
+            d_3 + d_2 \cos(q_e) & d_3 \\
+        \end{pmatrix}
+        $ \\
+
+        $C(q, \dot{q})$ & = &
+        $
+        \begin{pmatrix}
+            -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
+            \dot{q}_s^2 \\
+        \end{pmatrix}
+        d_2 \sin(q_e)
+        $\\
+
+        $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+        $d_2$ & = & $m_f l_u \gamma_f$ \\
+        $d_3$ & = & $\iota_e$ \\
+    \end{tabular}
+\right .
+$
 
 %%%%%%%%
 
-\subsection{Kambara}
+\subsubsection{Kambara}
+Écriture originale \cite{kambara2009} (p.360).
 
-\subsubsection{Dynamique inverse}
-$
-\begin{pmatrix}
-    \tau_1 \\
-    \tau_2 \\
-\end{pmatrix}
-=
-\begin{pmatrix}
-    M_{11}\ddot{q}_1 + M_{12}\ddot{q}_2 + h_{122}\dot{q}_2^2 + 2h_{112}\dot{q}_1\dot{q}_2 + G_1 \\
-    M_{21}\ddot{q}_1 + M_{22}\ddot{q}_2 + h_{211}\dot{q}_1^2 + G_2 \\
-\end{pmatrix}
-$
-\emph{(3)}
+\begin{align*}
+    \begin{pmatrix}
+        \tau_s \\
+        \tau_e \\
+    \end{pmatrix}
+    & = \begin{pmatrix}
+        M_{11}\ddot{q}_s + M_{12}\ddot{q}_e + h_{122}\dot{q}_e^2 + 2h_{112}\dot{q}_s\dot{q}_e + g_1 \\
+        M_{21}\ddot{q}_s + M_{22}\ddot{q}_e + h_{211}\dot{q}_s^2 + g_2 \\
+    \end{pmatrix}\\
+    & = \begin{pmatrix}
+        M_{11}\ddot{q}_s + M_{12}\ddot{q}_e \\
+        M_{21}\ddot{q}_s + M_{22}\ddot{q}_e \\
+    \end{pmatrix} +
+    \begin{pmatrix}
+        h_{122}\dot{q}_e^2 + 2h_{112}\dot{q}_s\dot{q}_e \\
+        h_{211}\dot{q}_s^2 \\
+    \end{pmatrix} +
+    \begin{pmatrix}
+        g_1 \\
+        g_2 \\
+    \end{pmatrix}\\
+    & = M(q) \ddot{q} + C(q, \dot{q}) + G(q)
+\end{align*}
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)$) \\
-    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e)$ \\
-    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e)$ \\
-    $M_{22}$ & = & $\iota_e$ \\
+    $M(q)$ & = &
+    $
+    \begin{pmatrix}
+        M_{11} & M_{12} \\
+        M_{21} & M_{22} \\
+    \end{pmatrix}
+    $ \\
+
+    $C(q, \dot{q})$ & = &
+    $
+    \begin{pmatrix}
+        -d_2 \sin(q_e) \dot{q}_e^2 - 2 d_2 \sin(q_e)\dot{q}_s\dot{q}_e \\
+        d_2 \sin(q_e) \dot{q}_s^2 \\
+    \end{pmatrix} =
+    \begin{pmatrix}
+        ... \\
+        ... \\
+    \end{pmatrix}
+    d_2 \sin(q_e)
+    $\\
+
+    $G(q)$ & = &
+    $
+    \begin{pmatrix}
+        g_1 \\
+        g_2 \\
+    \end{pmatrix}
+    $ \\
+    \\
+
+    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)) = ...$ \\
+    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = ...$ \\
+    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = ...$ \\
+    $M_{22}$ & = & $\iota_e = ...$ \\
     $h_{122}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
     $h_{112}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
     $h_{211}$ & = & $m_f l_u  \gamma_f \sin(q_e)$ \\
-    $G_1$ & = & $m_u \hat{g}  \gamma_u \cos(q_s) + m_f \hat{g} (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e))$ \\
-    $G_2$ & = & $m_f \hat{g}  \gamma_f \cos(q_s + q_e))$ \\
-\end{tabular}
+    $g_1$ & = & $m_u \hat{g}  \gamma_u \cos(q_s) + m_f \hat{g} (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e))$ \\
+    $g_2$ & = & $m_f \hat{g}  \gamma_f \cos(q_s + q_e)$ \\
+    \\
 
-\paragraph{}
-\begin{tabular}{lcl}
-    \emph{(3)} & $\Leftrightarrow$ & $\tau = M(q)\ddot{q} + C(q, \dot{q}) \dot{q} + g$ \\
+    $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+    $d_2$ & = & $m_f l_u \gamma_f$ \\
+    $d_3$ & = & $\iota_e$ \\
 \end{tabular}
-
-\subsubsection{Dynamique}
-\emph{(3)} $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - g) $
 
 %%%%%%%%
 
-\subsection{Weiwei}
-
-\subsubsection{Dynamique inverse}
-$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ \emph{(4)}
+\subsubsection{Weiwei}
+Écriture originale \cite{li2006} (p.22).
 
 \paragraph{}
 \begin{tabular}{lcl}
@@ -427,31 +625,9 @@ $\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q} $ \emph{(4)}
     $d_3$ & = & $\iota_e$ \\
 \end{tabular}
 
-\subsubsection{Dynamique}
-\emph{(4)} $\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q}) $
-
-\subsection{Résumé}
-\begin{tabular}{|c|l|}
-    \hline
-    Mitrovic & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q})$ \\
-    \hline
-    Kambara  & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) \dot{q} - G)$ \\
-    \hline
-    Weiwei   & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B\dot{q})$ \\
-    \hline
-\end{tabular}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Cinematique du bras}
-
-\subsection{Methode d'Euler}
-
-\begin{tabular}{lcl}
-    $\dot{q}$ & = & $\delta \ddot{q} \cdot \delta t$ \\
-    $q$ & = & $\delta \dot{q} \cdot \delta t$ \\
-\end{tabular}
-    
+\paragraph{}
+$\tau = M(q)\ddot{q} + C(q, \dot{q}) + B\dot{q}$
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Bibliographie}
