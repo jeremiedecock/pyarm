@@ -2,11 +2,243 @@ from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_C(arm):
-    plot_C_forearm(arm)
-    plot_C_upperarm(arm)
+def main():
 
-def plot_C_forearm(arm):
+    # Init
+    import kambara_muscle_model
+    import mitrovic_muscle_model
+    import weiwei_muscle_model
+
+    import kambara_arm_model
+    import mitrovic_arm_model
+    import weiwei_arm_model
+
+    kambara_arm  = kambara_arm_model.ArmModel(True)
+    mitrovic_arm = mitrovic_arm_model.ArmModel(True)
+    weiwei_arm   = weiwei_arm_model.ArmModel(True)
+
+    kambara_muscle  = kambara_muscle_model.MuscleModel(kambara_arm.theta)
+    mitrovic_muscle = mitrovic_muscle_model.MuscleModel(mitrovic_arm.theta)
+    weiwei_muscle   = weiwei_muscle_model.MuscleModel(weiwei_arm.theta)
+
+    # Plot
+    plot_lm(kambara_arm, kambara_muscle)
+    plot_lm(mitrovic_arm, mitrovic_muscle)
+
+    plot_k(kambara_muscle)
+    plot_k(mitrovic_muscle)
+
+    plot_v(kambara_muscle)
+    plot_v(mitrovic_muscle)
+
+    plot_lr(kambara_muscle)
+    plot_lr(mitrovic_muscle)
+
+    plot_nf(weiwei_muscle)
+    plot_fp(weiwei_muscle)
+    plot_fl(weiwei_muscle)
+    plot_fv(weiwei_muscle)
+    plot_fa(weiwei_muscle)
+
+    plot_c_forearm(kambara_arm)
+    plot_c_forearm(mitrovic_arm)
+
+
+def plot_k(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    u = np.linspace(0, 1, n)
+
+    k = np.zeros([len(u), 6])
+    for i in range(len(u)):
+        k[i] = muscle.K(np.ones(6) * u[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Elastic force')
+    plt.title(muscle.name)
+    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
+    plt.plot(u, k)
+
+    plt.savefig('muscle_' + muscle.name + '_k.png')
+
+def plot_v(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    u = np.linspace(0, 1, n)
+
+    v = np.zeros([len(u), 6])
+    for i in range(len(u)):
+        v[i] = muscle.B(np.ones(6) * u[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Viscosity force')
+    plt.title(muscle.name)
+    plt.plot(u, v)
+
+    plt.savefig('muscle_' + muscle.name + '_v.png')
+
+def plot_lr(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    u = np.linspace(0, 1, n)
+
+    lr = np.zeros([len(u), 6])
+    for i in range(len(u)):
+        lr[i] = muscle.lr(np.ones(6) * u[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Rest length')
+    plt.title(muscle.name)
+    plt.plot(u, lr)
+
+    plt.savefig('muscle_' + muscle.name + '_lr.png')
+
+def plot_lm(arm, muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    q = np.linspace(arm.theta_limit[1]['min'], arm.theta_limit[1]['max'], n)
+
+    lm = np.zeros([len(q), 6])
+    for i in range(len(q)):
+        lm[i] = muscle.lm(np.ones(2) * q[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Muscle length')
+    plt.title(muscle.name)
+    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
+    plt.plot(q, lm)
+
+    plt.savefig('muscle_' + muscle.name + '_lm.png')
+
+def plot_nf(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    lm = np.linspace(muscle.lm_min, muscle.lm_max, n)
+
+    nf = muscle.nf(lm)
+
+    # Plot data #################
+    plt.xlabel('Muscle length (m)')
+    plt.ylabel('nf (?)')
+    plt.title(muscle.name)
+    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
+    plt.plot(lm, nf)
+
+    plt.savefig('muscle_' + muscle.name + '_nf.png')
+
+def plot_fp(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    lm = np.linspace(muscle.lm_min, muscle.lm_max, n)
+
+    fp = muscle.fp(lm)
+
+    # Plot data #################
+    plt.xlabel('Muscle length (m)')
+    plt.ylabel('fp : Elastic force')
+    plt.title(muscle.name)
+    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
+    plt.plot(lm, fp)
+
+    plt.savefig('muscle_' + muscle.name + '_fp.png')
+
+def plot_fl(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    lm = np.linspace(muscle.lm_min, muscle.lm_max, n)
+
+    fl = muscle.fl(lm)
+
+    # Plot data #################
+    plt.xlabel('Muscle length (m)')
+    plt.ylabel('fl : Force-length relationship')
+    plt.title(muscle.name)
+    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
+    plt.plot(lm, fl)
+
+    plt.savefig('muscle_' + muscle.name + '_fl.png')
+
+
+def plot_fv(muscle):
+
+    # Build datas ###############
+    n = 50
+    x = np.linspace(muscle.lm_min, muscle.lm_max, n)
+    y = np.linspace(muscle.dlm_min, muscle.dlm_max, n)
+
+    z = np.zeros([len(x), len(y)])
+    for i in range(len(x)):
+        for j in range(len(y)):
+            # !!! c'est bien z[j, i] et non pas z[i, j] (sinon, c pas en phase ac le meshgrid) !!!
+            z[j, i] = muscle.fv(x[i], y[j])
+
+    x, y = np.meshgrid(x, y)
+
+    # Plot data #################
+    fig = plt.figure()
+    ax = axes3d.Axes3D(fig)
+    ax.plot_wireframe(x, y, z)
+
+    ax.set_xlabel('Muscle length (m)')
+    ax.set_ylabel('Muscle velocity (m/s)')
+    ax.set_zlabel('fv : Force-velocity relationship')
+
+    plt.savefig('muscle_' + muscle.name + '_fv.png')
+
+
+def plot_fa(muscle):
+
+    # Build datas ###############
+    n = 50
+    x = np.linspace(muscle.lm_min, muscle.lm_max, n)
+    y = np.linspace(0., 1., n)
+
+    z = np.zeros([len(x), len(y)])
+    for i in range(len(x)):
+        for j in range(len(y)):
+            # !!! c'est bien z[j, i] et non pas z[i, j] (sinon, c pas en phase ac le meshgrid) !!!
+            z[j, i] = muscle.fa(x[i], y[j])
+
+    x, y = np.meshgrid(x, y)
+
+    # Plot data #################
+    fig = plt.figure()
+    ax = axes3d.Axes3D(fig)
+    ax.plot_wireframe(x, y, z)
+
+    ax.set_xlabel('Muscle length (m)')
+    ax.set_ylabel('Motor signal')
+    ax.set_zlabel('fa : Activation-frequency relationship')
+
+    plt.savefig('muscle_' + muscle.name + '_fa.png')
+
+
+def plot_c_forearm(arm):
 
     # Build datas ###############
     n = 50
@@ -30,11 +262,10 @@ def plot_C_forearm(arm):
     ax.set_ylabel('Shoulder velocity (rad/s)')
     ax.set_zlabel('Centrifugal, coriolis and friction forces applied on forearm')
 
-    plt.savefig('c_forearm.png')
-    plt.show()
+    plt.savefig('arm_' + arm.name + '_c_forearm.png')
 
     
-def plot_C_upperarm(arm):
+def plot_c_upperarm(arm):
     
     # Build datas ###############
     n  = 50
@@ -66,5 +297,8 @@ def plot_C_upperarm(arm):
         #plt.savefig('c_upperarm_' + str(t) + '.png')
         plt.clf()
         fig.clf()
+
+if __name__ == '__main__':
+    main()
 
 

@@ -8,6 +8,12 @@ import fig
 
 class MuscleModel:
 
+    name = 'Weiwei'
+
+    # Bound values for assert
+    lm_min,   lm_max   = 0.01, 0.4               # Muscle length (m) (arbitraire)
+    dlm_min,  dlm_max  = 0., 1.                 # Muscle length (m) (arbitraire)
+
     taumin,   taumax   = -200, 200
 
     _l = None              # Current muscle length (m)
@@ -41,7 +47,7 @@ class MuscleModel:
 
     def T(self, a, l, v):
         """Muscle tension (unitless ???)"""
-        T = self.A(a, l) * (self.Fl(l) * self.Fv(l, v) + self.Fp(l))
+        T = self.fa(l, a) * (self.fl(l) * self.fv(l, v) + self.fp(l))
         return T
 
     def MA(self, theta):
@@ -57,33 +63,33 @@ class MuscleModel:
 
         return MA
 
-    # ???
-    def A(self, a, l):
-        A = 1 - np.exp(-(a / 0.56 * self.Nf(l)) ** self.Nf(l))
-        return A
+    # Activation-frequency relationship
+    def fa(self, lm, ut):
+        fa = 1 - np.exp(-(ut / (0.56 * self.nf(lm))) ** self.nf(lm))
+        return fa
 
     # ???
-    def Nf(self, l):
-        Nf = 2.11 + 4.16 * (1/l - 1)
-        return Nf
+    def nf(self, lm):
+        nf = 2.11 + 4.16 * (1./lm - 1.)
+        return nf
 
-    # ???
-    def Fl(self, l):
-        Fl = np.exp(-1 * np.abs((l**1.93 - 1) / 1.03) ** 1.87)
-        return Fl
+    # Force-length relationship
+    def fl(self, lm):
+        fl = np.exp(-1 * np.abs((lm**1.93 - 1) / 1.03) ** 1.87)
+        return fl
 
-    # ???
-    def Fv(self, l, v):
-        if v<=0:
-            Fv = (-5.72 - v) / (-5.72 + v * (1.38 + 2.09 * l))
+    # Force-velocity relationship
+    def fv(self, lm, dlm):
+        if dlm<=0:
+            fv = (-5.72 - dlm) / (-5.72 + dlm * (1.38 + 2.09 * lm))
         else:
-            Fv = (0.62 - (-3.12 + 4.21 * l - 2.67 * l**2) * v) / (0.62 + v)
-        return Fv
+            fv = (0.62 - (-3.12 + 4.21 * lm - 2.67 * lm**2) * dlm) / (0.62 + dlm)
+        return fv
 
-    # ???
-    def Fp(self, l):
-        Fp = -0.02 * np.exp(13.8 - 18.7 * l)
-        return Fp
+    # Elastic force
+    def fp(self, lm):
+        fp = -0.02 * np.exp(13.8 - 18.7 * lm)
+        return fp
 
     def a(self, u):  # TODO u = neural input
         """Muscle activation ([0;1] ???)"""
@@ -92,6 +98,7 @@ class MuscleModel:
 
     def l(self, theta):
         "Compute muscle length (m)."
-        l = self.lm - np.dot(self.A, theta)
+        l = np.ones(6)
+        #l = self.lm - np.dot(self.fa, theta)
         return l
 

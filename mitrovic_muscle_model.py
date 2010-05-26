@@ -49,9 +49,11 @@ class MuscleModel:
     [7] Todorov & Li
     """
 
+    name = 'Mitrovic'
+
     _l = None              # Current muscle length (m)
 
-    lm = np.ones(6) * 0.1  # Muscle length when the joint angle = 0 (m)
+    _lm = np.ones(6) * 0.1  # Muscle length when the joint angle = 0 (m)
     l0 = np.ones(6) * 0.1  # Intrinsic rest length (for u = 0) (m)
 
     # Muscle parameters from [6] p.356-357
@@ -68,7 +70,7 @@ class MuscleModel:
                    [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T
 
     def __init__(self, theta):
-        self._l = self.l(theta)
+        self._l = self.lm(theta)
 
         # Init datas to plot (title, xlabel, ylabel)
         fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
@@ -81,7 +83,7 @@ class MuscleModel:
         u = np.array(input_signal)[0:6]
 
         fl = self._l                      # Former muscle length
-        self._l = self.l(theta)
+        self._l = self.lm(theta)
         v  = self.v(self._l, fl, dt)
 
         K  = self.K(u)
@@ -97,9 +99,9 @@ class MuscleModel:
         return tau
 
 
-    def l(self, theta):
+    def lm(self, theta):
         "Compute muscle length (m)."
-        l = self.lm - np.dot(self.A, theta)
+        l = self._lm - np.dot(self.A, theta)
         return l
 
     def v(self, l, fl, dt):

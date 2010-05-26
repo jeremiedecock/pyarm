@@ -49,6 +49,8 @@ class ArmModel:
     [7] Todorov & Li
     """
 
+    name = 'Mitrovic'
+
     # Min and max joint angles (rd) from [6] p.357
     theta_limit = [{'min': math.radians(-90), 'max': math.radians(180)}, 
                    {'min': math.radians(0),   'max': math.radians(180)}] 

@@ -126,30 +126,36 @@ Le simulateur est composé de 5 modules :
 
 Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
 
-\[l_m = l_{m0} - A q\]
-\[\dot{l_m} = \frac{\delta l_m}{\delta t}\]
+\[l_m(q) = l_{m0} - A(q) q\]
+\[\dot{l_m}(q, \dot{q}) = \frac{\delta l_m(q)}{\delta t}\]
 
 \begin{small}
 \begin{tabular}{lcl}
-    $l_m \in \mathbb{R}^6$     & = & Longueur constatée des muscles $(m)$ \\
-    $l_{m0} \in \mathbb{R}^6$  & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
+    $l_m(q) \in \mathbb{R}^6$                  & = & Longueur constatée des muscles $(m)$ \\
+    $\dot{l_m}(q, \dot{q}) \in \mathbb{R}^6$   & = & Vitesse de contraction des muscles $(m \cdot s^{-1})$ \\
+    \\
+
+    $A(q) \in \mathbb{R}^{6 \times 2}$   & = & Matrice des bras de levier \\
+    $l_{m0} \in \mathbb{R}^6$            & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
+    $q \in \mathbb{R}^2$                 & = & Angle des articulations $(rad)$ \\
+    $\dot{q} \in \mathbb{R}^2$           & = & Vitesse angulaire des articulations $(rad \cdot s^{-1})$ \\
 \end{tabular}
 \end{small}
+
+\begin{center}
+        \includegraphics[width=.50\linewidth]{fig/muscle_length}
+\end{center}
+
+% TODO
+Dans les modèles de Mitrovic et de Kambara, la longueur du bras de levier est constante.% Elle correspond au rayon ...
+%Sous réserve que la longueur de l'arc soit toujours positive (...)
+% TODO
     
 \begin{figure}[h]
     \centering
     \subfigure{\includegraphics[width=.40\linewidth]{fig/moment_arm}}~~~
     \subfigure{\includegraphics[width=.40\linewidth]{fig/arm_shin}}~~~
 \end{figure}
-
-% TODO
-Dans les modèles de Mitrovic et Kambara, la longueur du bras d'inertie est constante. Elle correspond au rayon ...
-Sous réserve que la longueur de l'arc soit toujours positive (...)
-% TODO
-
-\begin{center}
-        \includegraphics[width=.50\linewidth]{fig/muscle_length}
-\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -183,9 +189,9 @@ Kambara~:
 \paragraph{}
 \begin{small}
 \begin{tabular}{lcl}
-    $\tau_i \in \mathbb{R}^2$            & = & Couple total exercé sur les articulations \\
+    $\tau \in \mathbb{R}^2$              & = & Couple total exercé sur les articulations \\
     $A \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier \\
-    $t(l, \dot{l}, u) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
+    $t(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
     \\
     $k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m)$ & = & Force élastique des muscles (raideur $\cdot$ étirement) \\
     \\
@@ -284,42 +290,53 @@ A =
 \end{center}
 
 \begin{tabular}{lcl}
-    $CE$  & = & éléments contractiles \\
-    $SE$  & = & élasticité des tendons (ignorée) \\
-    $PE$  & = & élasticité du muscle \\
-    $PE1$ & = & résistance à l'étirement du muscle passif \\
-    $PE2$ & = & résistance à la compression du muscle actif \\
+    $CE$  & = & Éléments contractiles \\
+    $SE$  & = & Élasticité des tendons (ignorée) \\
+    $PE$  & = & Élasticité du muscle \\
+    $PE1$ & = & Résistance à l'étirement du muscle passif \\
+    $PE2$ & = & Résistance à la compression du muscle actif \\
 \end{tabular}
 
-\paragraph{}
+\[
+\left\{
 \begin{tabular}{lcl}
-    $\tau$ & = & $M(q) T(a, l(q), v(q, \dot{q}))$ \\
+    $\tau$ & = & $a(q) t_i(l_m, \dot{l_m}, \tilde{u})$ \\
     \\
-    $T(a, l, v)$ & = & $A(a,l)(F_L(l) F_V(l,v) + F_P(l))$ \\
-    $A(a, l)$    & = & $1 - \exp \left(- \left(\frac{a}{0.56 N_f(l)}\right)^{N_f(l)}\right)$ \\
-    $N_f(l)$     & = & $2.11 + 4.16 \left(\frac{1}{l} - 1\right)$ \\
-    $F_L(l)$     & = & $\exp \left(-\left|\frac{l^{1.93} - 1}{1.03}\right|^{1.87}\right)$ \\
-    $F_V(l, v)$  & = & $\left\{ 
+    $t_i(l_m, \dot{l_m}, \tilde{u})$ & = & $f_a(l_m, \tilde{u})(f_e(l_m) + f_l(l_m) f_v(l_m, \dot{l_m}))$ \\
+    $f_a(l_m, \tilde{u})$          & = & $1 - \exp \left(- \left(\frac{\tilde{u}}{0.56 n_f(l_m)}\right)^{n_f(l_m)}\right)$ \\
+    $n_f(l_m)$                     & = & $2.11 + 4.16 \left(\frac{1}{l_m} - 1\right)$ \\
+    $f_l(l_m)$                     & = & $\exp \left(-\left|\frac{l_m^{1.93} - 1}{1.03}\right|^{1.87}\right)$ \\
+    $f_v(l_m, \dot{l_m})$          & = & 
+        $\left\{ 
         \begin{array}{l}
-            \frac{-5.72 - v}{-5.72 + (1.38 + 2.09 l) v}, v \leq 0 \\
-            \frac{0.62 - \left(-3.12 + 4.21 l - 2.67 l^2\right) v}{0.62 + v}, v > 0 \\
+            \frac{-5.72 - \dot{l_m}}{-5.72 + (1.38 + 2.09 l_m) \dot{l_m}}, \dot{l_m} \leq 0 \\
+            \frac{0.62 - \left(-3.12 + 4.21 l_m - 2.67 l_m^2\right) \dot{l_m}}{0.62 + \dot{l_m}}, \dot{l_m} > 0 \\
         \end{array}
         \right.$ \\
-    $F_P(l)$     & = & $-0.02 \exp(13.8 - 18.7 l)$ \\
+    $f_e(l_m)$                     & = & $-0.02 \exp(13.8 - 18.7 l_m)$ \\
 \end{tabular}
+\right.
+\]
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M(q)$  & = & matrice des bras de levier $(a + b \cos (c q))$ \\
-    $T(a, l, v)$ & = & tension exercée par le muscle \\
-    $A(a, l)$    & = & relation activation-fréquence \\
-%    $N_f(l)$     & = &  \\
-    $F_L(l)$     & = & relation force-longueur \\
-    $F_V(l, v)$  & = & relation force-vitesse \\
-    $F_P(l)$     & = & force élastique du muscle \\ % TODO ???
-    $a$          & = & signaux d'activation filtrés du muscle \\
-    $l$          & = & longueur du muscle \\
-    $v$          & = & vitesse de contraction du muscle \\
+    $\tau \in \mathbb{R}^2$                & = & Couple total exercé sur les articulations \\
+    $a(q) \in \mathbb{R}^2$                & = & Bras de levier $(c_1 + c_2 \cos (c_3 q))$ \\
+    $t_i(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}$    & = & Tension exercée par le muscle $i$ \\
+    \\
+
+    $f_a(\tilde{u}, l_m) \in \mathbb{R}$   & = & Relation activation-fréquence \\
+    $f_l(l_m) \in \mathbb{R}$              & = & Relation force-longueur \\
+    $f_v(l_m, \dot{l_m}) \in \mathbb{R}$   & = & Relation force-vitesse \\
+    $f_e(l_m) \in \mathbb{R}$              & = & Force élastique du muscle \\ % TODO ???
+    \\
+
+    $l_m \in \mathbb{R}$                   & = & Longueur constatée du muscle $i$ $(m)$ \\
+    $\dot{l_m} \in \mathbb{R}$             & = & Vitesse de contraction du muscle $i$ $(m \cdot s^{-1})$ \\
+    \\
+
+    $u \in \mathbb{R}$                     & = & Signaux d'activation du muscle $i$ $(u_i \in [0;1])$ \\
+    $\tilde{u} \in \mathbb{R}$             & = & Signaux d'activation filtrés $(\tilde{u_i} \in [0;1])$ \\
 \end{tabular}
 
 
@@ -345,14 +362,14 @@ Dynamique~:
 %\]
 
 \begin{tabular}{lcl}
-    $M(q) \in \mathbb{R}^{2 \times 2}$  & = & matrice des moments d'inertie \\ % TODO
-    $C(q, \dot{q}) \in \mathbb{R}^{2}$  & = & force de Coriolis et force centripète \\
-    $B(\dot{q}) \in \mathbb{R}^{2}$     & = & force de viscosité et de friction \\ % TODO
-    $G(q) \in \mathbb{R}^{2}$           & = & force de gravité \\
-    $\tau \in \mathbb{R}^{2}$           & = & couple total exercé sur les articulations ($N \cdot m$) \\
-    $\ddot{q} \in \mathbb{R}^{2}$       & = & accélération angulaire ($rd \cdot s^{-2}$) \\
-    $\dot{q} \in \mathbb{R}^{2}$        & = & vitesse angulaire ($rd \cdot s^{-1}$)\\
-    $q \in \mathbb{R}^{2}$              & = & angle ($rd$)\\
+    $M(q) \in \mathbb{R}^{2 \times 2}$  & = & Matrice des moments d'inertie \\ % TODO
+    $C(q, \dot{q}) \in \mathbb{R}^{2}$  & = & Force de Coriolis et force centripète \\
+    $B(\dot{q}) \in \mathbb{R}^{2}$     & = & Force de viscosité et de friction \\ % TODO
+    $G(q) \in \mathbb{R}^{2}$           & = & Force de gravité \\
+    $\tau \in \mathbb{R}^{2}$           & = & Couple total exercé sur les articulations ($N \cdot m$) \\
+    $\ddot{q} \in \mathbb{R}^{2}$       & = & Accélération angulaire des articulations ($rd \cdot s^{-2}$) \\
+    $\dot{q} \in \mathbb{R}^{2}$        & = & Vitesse angulaire des articulations ($rd \cdot s^{-1}$)\\
+    $q \in \mathbb{R}^{2}$              & = & Angle des articulations ($rd$)\\
 \end{tabular}
 
 \subsection{Modèles étudiés}
@@ -411,19 +428,19 @@ Dynamique~:
     $d_2$ & = & $m_f l_u \gamma_f$ \\
     $d_3$ & = & $\iota_e$ \\
     \\
-    $m_i$ & = & masse du membre $i$ ($kg$) \\
-    $l_i$ & = & longueur du membre $i$ ($m$) \\
-    $\gamma_i$ & = & distance séparant le centre de l'articulation au centre de masse du membre $i$ ($m$) \\
-    $\iota_j$ & = & moment d'inertie de l'articulation $j$ ($kg \cdot m^2$) \\
-    $\hat{g}$ & = & champ de pesanteur ($m \cdot s^{-2}$) \\
+    $m_i$      & = & Masse du membre $i$ ($kg$) \\
+    $l_i$      & = & Longueur du membre $i$ ($m$) \\
+    $\gamma_i$ & = & Distance séparant le centre de l'articulation au centre de masse du membre $i$ ($m$) \\
+    $\iota_j$  & = & Moment d'inertie de l'articulation $j$ ($kg \cdot m^2$) \\
+    $\hat{g}$  & = & Champ de pesanteur ($m \cdot s^{-2}$) \\
     \\
 %Indices :\\
 
-    $u$ & = & bras (supérieur)\\
-    $f$ & = & avant-bras\\
+    $u$ & = & Bras (supérieur)\\
+    $f$ & = & Avant-bras\\
 
-    $s$ & = & épaule\\
-    $e$ & = & coude\\
+    $s$ & = & Épaule\\
+    $e$ & = & Coude\\
 \end{tabular}
 
 \paragraph{}

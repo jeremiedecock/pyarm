@@ -7,6 +7,8 @@ import fig
 
 class MuscleModel:
 
+    name = 'Kambara'
+
     umin,     umax     = 0, 1
     lmin,     lmax     = 0, 0.5
     lrestmin, lrestmax = 0, 0.5
@@ -36,7 +38,7 @@ class MuscleModel:
 
 
     def __init__(self, theta):
-        self.length = self.l(theta)        # Current muscle length (m)
+        self.length = self.lm(theta)        # Current muscle length (m)
         self.v      = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (m/s)
 
         # Init datas to plot (title, xlabel, ylabel)
@@ -50,7 +52,7 @@ class MuscleModel:
 
         # Muscle length
         former_length = self.length
-        self.length = self.l(theta)
+        self.length = self.lm(theta)
         delta_length = self.length - former_length
 
         fig.append('length', self.length)
@@ -86,7 +88,7 @@ class MuscleModel:
 
         return u
 
-    def l(self, theta):
+    def lm(self, theta):
         """Muscle length (m)."""
         if theta.shape != (2,): raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
 
@@ -112,7 +114,7 @@ class MuscleModel:
 
         return B
 
-    def lrest(self, u):
+    def lr(self, u):
         """Muscle rest length (m)."""
         if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
 
@@ -130,9 +132,9 @@ class MuscleModel:
 
         K = self.K(u)
         B = self.B(u)
-        lrest = self.lrest(u)
+        lr = self.lr(u)
 
-        T = K * (l-lrest) + B * v
+        T = K * (l-lr) + B * v
 
         assert T.min() >= self.Tmin and T.max() <= self.Tmax, 'Muscle Tension'
 

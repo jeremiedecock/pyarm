@@ -21,6 +21,8 @@ class ArmModel:
     publisher={Elsevier}
     """
 
+    name = 'Kambara'
+
     theta_limit = [{'min':-1.75, 'max':0.52},  # Min and max joint angles (rd) (cf. H.Kambara)
     #               {'min':-0.35, 'max':1.92}]
                    {'min':0., 'max':1.92}]
