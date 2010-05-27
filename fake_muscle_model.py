@@ -7,7 +7,7 @@ import fig
 
 class MuscleModel:
 
-    tau_value = 7
+    tau_value = 1
 
     def __init__(self, theta):
         fig.subfig('torque', 'Torque', 'tick number', 'Torque (N.m)', 'fill')

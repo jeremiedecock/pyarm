@@ -111,7 +111,7 @@ def plot_lm(arm, muscle):
 
     # Build datas ###############
     n = 50
-    q = np.linspace(arm.theta_limit[1]['min'], arm.theta_limit[1]['max'], n)
+    q = np.linspace(arm.theta_bounds[1]['min'], arm.theta_bounds[1]['max'], n)
 
     lm = np.zeros([len(q), 6])
     for i in range(len(q)):
@@ -242,7 +242,7 @@ def plot_c_forearm(arm):
 
     # Build datas ###############
     n = 50
-    x = np.linspace(arm.theta_limit[1]['min'], arm.theta_limit[1]['max'], n)
+    x = np.linspace(arm.theta_bounds[1]['min'], arm.theta_bounds[1]['max'], n)
     y = np.linspace(arm.omegamin, arm.omegamax, n)
 
     z = np.zeros([len(x), len(y)])
@@ -273,7 +273,7 @@ def plot_c_upperarm(arm):
 
     o1 = np.linspace(arm.omegamin, arm.omegamax, n)
     o2 = np.linspace(arm.omegamin, arm.omegamax, n)
-    t2 = np.linspace(arm.theta_limit[1]['min'], arm.theta_limit[1]['max'], nf)
+    t2 = np.linspace(arm.theta_bounds[1]['min'], arm.theta_bounds[1]['max'], nf)
 
     o1_, o2_ = np.meshgrid(o1, o2)
 
