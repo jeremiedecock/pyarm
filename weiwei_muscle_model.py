@@ -10,15 +10,17 @@ class MuscleModel:
     name = 'Weiwei'
 
     # Bound values for assert
-    ml_min, ml_max = 0.01, 0.4        # Muscle length (m) (arbitraire)
+    ml_min, ml_max = 0.01, 0.6        # Muscle length (m) (arbitraire)
     mv_min, mv_max = 0., 1.           # Muscle velocity (m/s) (arbitraire)
 
     tau_min, tau_max = -200, 200
 
-    muscles_length = None             # Current muscle length (m)
+    muscle_length_0 = np.ones(6) * 0.4  # Muscle length when the joint angle = 0 (m) # TODO
+    current_muscle_length = None
 
     def __init__(self, theta):
-        self.current_muscle_length = self.muscle_length(theta)
+        moment_arm = self.moment_arm(theta)
+        self.current_muscle_length = self.muscle_length(moment_arm, theta)
 
         # Init datas to plot (title, xlabel, ylabel)
         fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
@@ -28,13 +30,12 @@ class MuscleModel:
 
         # Fetch control signal (motor command) :
         # 6 elements vector (value taken in [0,1])
-        u = np.array(input_signal)
-        u = u[0:6]
+        control_signal = np.array(input_signal)[0:6]
 
         # Dynamics ##################################################
 
         # Control signal array (6x1)
-        muscle_activation = self.muscle_activation(u)
+        muscle_activation = self.muscle_activation(control_signal)
         if muscle_activation.shape != (6,):
             raise TypeError('Control_signal : shape is ' \
                             + str(muscle_activation.shape) + ' ((6,) expected)')
@@ -52,22 +53,27 @@ class MuscleModel:
         self.current_muscle_length = self.muscle_length(moment_arm, theta)
         if self.current_muscle_length.shape != (6,):
             raise TypeError('Muscle_length : shape is ' \
-                            + str(self.current_muscle_length.shape) + ' ((6,) expected)')
+                            + str(self.current_muscle_length.shape) \
+                            + ' ((6,) expected)')
+        assert self.current_muscle_length.min() >= self.ml_min \
+            and self.current_muscle_length.max() <= self.ml_max, 'Muscle length'
 
         # Muscle velocity array (6x1)
-        muscle_velocity = self.muscle_velocity(self.current_muscle_length, former_muscle_length, delta_time)
+        muscle_velocity = self.muscle_velocity(self.current_muscle_length, \
+                                               former_muscle_length, delta_time)
         if muscle_velocity.shape != (6,):
             raise TypeError('Muscle_velocity : shape is ' \
                             + str(muscle_velocity.shape) + ' ((6,) expected)')
 
         # Muscle tension array (6x1)
-        muscle_tension = self.muscle_tension(self.current_muscle_length, muscle_velocity, muscle_activation)
+        muscle_tension = self.muscle_tension(self.current_muscle_length, \
+                                             muscle_velocity, muscle_activation)
         if muscle_tension.shape != (6,):
             raise TypeError('Muscle_tension : shape is ' \
                             + str(muscle_tension.shape) + ' ((6,) expected)')
 
         # Torque array (2x1)
-        torque = np.dot(moment_arm, muscle_tension)
+        torque = np.dot(moment_arm.T, muscle_tension)
 
         fig.append('torque', torque)
         assert torque.min() >= self.tau_min \
@@ -84,7 +90,9 @@ class MuscleModel:
 
     def fa(self, ml, ut):
         "Activation-frequency relationship."
+        #print ml
         fa = 1 - np.exp(-(ut / (0.56 * self.nf(ml))) ** self.nf(ml))
+        #fa = np.ones(6) * 0.001
         return fa
 
 
@@ -121,35 +129,23 @@ class MuscleModel:
         return fe
 
 
-
-
-    def moment_arm(self, theta):
-        "Moment arm of a muscle (m ???)"
-        a = 1 # TODO ???
-        b = 1 # TODO ???
-        c = 1 # TODO ???
-        MA = a + b * np.cos(c * theta)
-        
-        ###
-        moment_arm  = np.array([[4., -4., 0., 0., 2.8, -3.5],
-                                [0., 0., 2.5, -2.5, 2.8, -3.5]]).T
-        ###
-
+    def moment_arm(self, theta):     # TODO
+        "Moment arm of a muscle (m)"
+        moment_arm  = np.array([[0.04, -0.04, 0.   ,  0.   , 0.028, -0.035],
+                                [0.  ,  0.  , 0.025, -0.025, 0.028, -0.035]]).T
         return moment_arm
 
-    def muscle_activation(self, control_signal):  # TODO u = neural input
-        "Muscle activation ([0;1] ???)"
-        muscle_activation = control_signal # TODO ???
+    def muscle_activation(self, control_signal):  # TODO
+        "Muscle activation."
+        muscle_activation = control_signal
         return muscle_activation
 
-    def muscle_length(self, moment_arm, theta):
+    def muscle_length(self, moment_arm, theta): # TODO
         "Compute muscle length (m)."
-        l = np.ones(6)
-        l = self.current_muscle_length - np.dot(moment_arm, theta)
-        #l = self.ml - np.dot(self.fa, theta)
-        return l
+        muscle_length = self.muscle_length_0 - np.dot(moment_arm, theta)
+        return muscle_length
 
-    def muscle_velocity(self, length, former_length, delta_time):
+    def muscle_velocity(self, length, former_length, delta_time): # TODO
         "Compute muscle contraction velocity (muscle length derivative) (m/s)."
         delta_length = length - former_length
         velocity  = delta_length / delta_time

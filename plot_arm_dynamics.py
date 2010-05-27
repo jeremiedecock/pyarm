@@ -153,16 +153,16 @@ def plot_fp(muscle):
     n = 50
     lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
 
-    fp = muscle.fp(lm)
+    fe = muscle.fe(lm)
 
     # Plot data #################
     plt.xlabel('Muscle length (m)')
-    plt.ylabel('fp : Elastic force')
+    plt.ylabel('fe : Elastic force')
     plt.title(muscle.name)
     #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
-    plt.plot(lm, fp)
+    plt.plot(lm, fe)
 
-    plt.savefig('muscle_' + muscle.name + '_fp.png')
+    plt.savefig('muscle_' + muscle.name + '_fe.png')
 
 def plot_fl(muscle):
     
@@ -195,7 +195,7 @@ def plot_fv(muscle):
     for i in range(len(x)):
         for j in range(len(y)):
             # !!! c'est bien z[j, i] et non pas z[i, j] (sinon, c pas en phase ac le meshgrid) !!!
-            z[j, i] = muscle.fv(x[i], y[j])
+            z[j, i] = muscle.fv(np.ones(6) * x[i], np.ones(6) * y[j])[0]
 
     x, y = np.meshgrid(x, y)
 
