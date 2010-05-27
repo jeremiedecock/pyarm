@@ -29,7 +29,7 @@ class GUI:
         self.arm = arm
 
         # Create the main window
-        self.window = sf.RenderWindow(sf.VideoMode(800, 600), "pyArm")
+        self.window = sf.RenderWindow(sf.VideoMode(800, 600), 'pyArm (' + muscle.name + ' - ' + arm.name + ')')
 
         self.background_color = sf.Color(255, 255, 255, 255)
         self.foreground_color = sf.Color(0, 0, 0, 255)

@@ -9,7 +9,9 @@ import fig
 class MuscleModel:
     """Muscle model.
     
-    Djordje Mitrovic :
+    References :
+
+    Djordje Mitrovic
     http://www.ipab.informatics.ed.ac.uk/slmc/SLMCpeople/Mitrovic_D.html
 
     [1] Djordje Mitrovic, Stefan Klanke, and Sethu Vijayakumar,
@@ -37,14 +39,9 @@ class MuscleModel:
 
     This model is based on [6] and [7]
 
-    [6] M. Katayama and M. Kawato , "Virtual trajectory and stiffness ellipse
-    during multijoint arm movement predicted by neural inverse models",
-    journal={Biological Cybernetics},
-    volume={69},
-    number={5},
-    pages={353--362},
-    year={1993},
-    publisher={Springer}
+    [6] M. Katayama and M. Kawato (1993), "Virtual trajectory and stiffness
+    ellipse during multijoint arm movement predicted by neural inverse models".
+    Biological Cybernetics, 69:353-362.
 
     [7] Todorov & Li
     """

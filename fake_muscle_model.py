@@ -7,6 +7,8 @@ import fig
 
 class MuscleModel:
 
+    name = 'Fake'
+
     tau_value = 1
 
     def __init__(self, theta):

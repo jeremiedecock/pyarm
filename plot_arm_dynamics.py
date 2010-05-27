@@ -132,7 +132,7 @@ def plot_nf(muscle):
 
     # Build datas ###############
     n = 50
-    lm = np.linspace(muscle.lm_min, muscle.lm_max, n)
+    lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
 
     nf = muscle.nf(lm)
 
@@ -151,7 +151,7 @@ def plot_fp(muscle):
 
     # Build datas ###############
     n = 50
-    lm = np.linspace(muscle.lm_min, muscle.lm_max, n)
+    lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
 
     fp = muscle.fp(lm)
 
@@ -170,7 +170,7 @@ def plot_fl(muscle):
 
     # Build datas ###############
     n = 50
-    lm = np.linspace(muscle.lm_min, muscle.lm_max, n)
+    lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
 
     fl = muscle.fl(lm)
 
@@ -188,8 +188,8 @@ def plot_fv(muscle):
 
     # Build datas ###############
     n = 50
-    x = np.linspace(muscle.lm_min, muscle.lm_max, n)
-    y = np.linspace(muscle.dlm_min, muscle.dlm_max, n)
+    x = np.linspace(muscle.ml_min, muscle.ml_max, n)
+    y = np.linspace(muscle.mv_min, muscle.mv_max, n)
 
     z = np.zeros([len(x), len(y)])
     for i in range(len(x)):
@@ -215,7 +215,7 @@ def plot_fa(muscle):
 
     # Build datas ###############
     n = 50
-    x = np.linspace(muscle.lm_min, muscle.lm_max, n)
+    x = np.linspace(muscle.ml_min, muscle.ml_max, n)
     y = np.linspace(0., 1., n)
 
     z = np.zeros([len(x), len(y)])
