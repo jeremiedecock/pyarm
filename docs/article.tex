@@ -46,7 +46,7 @@
 \subsection{Présentation}
 
 \begin{center}
-        \includegraphics[width=.40\linewidth]{fig/arm}
+        \includegraphics[width=.90\linewidth]{fig/muscle4c}
 \end{center}
 
 \begin{itemize}
@@ -88,14 +88,11 @@ Trois modèles ont été étudiés~:
     \item Implémente les 3 modèles
 \end{itemize}
 
-%\begin{center}
-%    \includegraphics[width=.40\linewidth]{fig/pyarm1}
-%\end{center}
-\begin{figure}
-    \centering
-    \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm2}}~~~
-    \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm3}}~~~
-\end{figure}
+%\begin{figure}
+%    \centering
+%    \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm2}}~~~
+%    \subfigure{\includegraphics[width=.50\linewidth]{fig/pyarm3}}~~~
+%\end{figure}
 
 \paragraph{}
 Le simulateur est composé de 5 modules :
@@ -103,13 +100,13 @@ Le simulateur est composé de 5 modules :
     \item Filtre sur signal d'entrée
     \item Modèle de bras
     \begin{itemize}
-        \item Cinématique
-        \item Dynamique
+        \item Cinématique directe
+        \item Dynamique directe
     \end{itemize}
     \item Modèle de muscle
     \begin{itemize}
         \item Cinématique inverse
-        \item Dynamique
+        \item Dynamique directe
     \end{itemize}
 \end{itemize}
 
@@ -126,21 +123,21 @@ Le simulateur est composé de 5 modules :
 
 Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
 
-\[l_m(q) = l_{m0} - A(q) q\]
-\[\dot{l_m}(q, \dot{q}) = \frac{\delta l_m(q)}{\delta t}\]
-
+\paragraph{}
 \begin{small}
-\begin{tabular}{lcl}
-    $l_m(q) \in \mathbb{R}^6$                  & = & Longueur constatée des muscles $(m)$ \\
-    $\dot{l_m}(q, \dot{q}) \in \mathbb{R}^6$   & = & Vitesse de contraction des muscles $(m \cdot s^{-1})$ \\
-    \\
+\begin{tabular}{ll}
+    $l_m(q) \in \mathbb{R}^6$                  & Longueur constatée des muscles $(m)$ \\
+    $\dot{l_m}(q, \dot{q}) \in \mathbb{R}^6$   & Vitesse de contraction des muscles $(m \cdot s^{-1})$ \\
 
-    $A(q) \in \mathbb{R}^{6 \times 2}$   & = & Matrice des bras de levier \\
-    $l_{m0} \in \mathbb{R}^6$            & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
-    $q \in \mathbb{R}^2$                 & = & Angle des articulations $(rad)$ \\
-    $\dot{q} \in \mathbb{R}^2$           & = & Vitesse angulaire des articulations $(rad \cdot s^{-1})$ \\
+    $A(q) \in \mathbb{R}^{6 \times 2}$   &  Matrice des bras de levier $(m)$\\
+    $l_{m0} \in \mathbb{R}^6$            &  Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
+    $q \in \mathbb{R}^2$                 &  Angle des articulations $(rad)$ \\
+    $\dot{q} \in \mathbb{R}^2$           &  Vitesse angulaire des articulations $(rad \cdot s^{-1})$ \\
 \end{tabular}
 \end{small}
+
+\[l_m(q) = l_{m0} - A(q) q\]
+\[\dot{l_m}(q, \dot{q}) = \frac{\delta l_m(q)}{\delta t}\]
 
 \begin{center}
         \includegraphics[width=.50\linewidth]{fig/muscle_length}
@@ -165,13 +162,13 @@ Dans les modèles de Mitrovic et de Kambara, la longueur du bras de levier est c
 
 \paragraph{}
 Mitrovic~:
-\[ \tau = -A^T t(l_m, \dot{l_m}, \tilde{u}) \]
-\[ t(l_m, \dot{l_m}, \tilde{u}) = k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
+\[ \tau = -A^T T(l_m, \dot{l_m}, \tilde{u}) \]
+\[ T(l_m, \dot{l_m}, \tilde{u}) = k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
 
 \paragraph{}
 Kambara~:
-\[ \tau = A^T t(l_m, \dot{l_m}, \tilde{u}) \]
-\[ t(l_m, \dot{l_m}, \tilde{u}) = -k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
+\[ \tau = A^T T(l_m, \dot{l_m}, \tilde{u}) \]
+\[ T(l_m, \dot{l_m}, \tilde{u}) = -k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
 
 \paragraph{}
 \begin{tabular}{lcl}
@@ -191,7 +188,7 @@ Kambara~:
 \begin{tabular}{lcl}
     $\tau \in \mathbb{R}^2$              & = & Couple total exercé sur les articulations \\
     $A \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier \\
-    $t(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
+    $T(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
     \\
     $k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m)$ & = & Force élastique des muscles (raideur $\cdot$ étirement) \\
     \\
@@ -289,20 +286,39 @@ A =
         \includegraphics[width=.40\linewidth]{fig/brown}
 \end{center}
 
-\begin{tabular}{lcl}
-    $CE$  & = & Éléments contractiles \\
-    $SE$  & = & Élasticité des tendons (ignorée) \\
-    $PE$  & = & Élasticité du muscle \\
-    $PE1$ & = & Résistance à l'étirement du muscle passif \\
-    $PE2$ & = & Résistance à la compression du muscle actif \\
+\begin{tabular}{ll}
+    $CE$  & Éléments contractiles \\
+    $SE$  & Élasticité des tendons (ignorée) \\
+    $PE$  & Élasticité du muscle \\
+    $PE1$ & Résistance à l'étirement du muscle passif \\
+    $PE2$ & Résistance à la compression du muscle actif \\
+    \\
+
+    $\tau \in \mathbb{R}^2$                & Couple total exercé sur les articulations \\
+    $a(q) \in \mathbb{R}^2$                & Bras de levier $(c_1 + c_2 \cos (c_3 q))$ \\
+    $T_i(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}$    & Tension exercée par le muscle $i$ \\
+    \\
+
+    $f_a(\tilde{u}, l_m) \in \mathbb{R}$   & Relation activation-fréquence \\
+    $f_l(l_m) \in \mathbb{R}$              & Relation force-longueur \\
+    $f_v(l_m, \dot{l_m}) \in \mathbb{R}$   & Relation force-vitesse \\
+    $f_e(l_m) \in \mathbb{R}$              & Force élastique du muscle \\ % TODO ???
+    \\
+
+    $l_m \in \mathbb{R}$                   & Longueur constatée du muscle $i$ $(m)$ \\
+    $\dot{l_m} \in \mathbb{R}$             & Vitesse de contraction du muscle $i$ $(m \cdot s^{-1})$ \\
+    \\
+
+    $u \in \mathbb{R}$                     & Signaux d'activation du muscle $i$ $(u_i \in [0;1])$ \\
+    $\tilde{u} \in \mathbb{R}$             & Signaux d'activation filtrés $(\tilde{u_i} \in [0;1])$ \\
 \end{tabular}
 
 \[
 \left\{
 \begin{tabular}{lcl}
-    $\tau$ & = & $a(q) t_i(l_m, \dot{l_m}, \tilde{u})$ \\
+    $\tau$ & = & $a(q) T_i(l_m, \dot{l_m}, \tilde{u})$ \\
     \\
-    $t_i(l_m, \dot{l_m}, \tilde{u})$ & = & $f_a(l_m, \tilde{u})(f_e(l_m) + f_l(l_m) f_v(l_m, \dot{l_m}))$ \\
+    $T_i(l_m, \dot{l_m}, \tilde{u})$ & = & $f_a(l_m, \tilde{u})(f_e(l_m) + f_l(l_m) f_v(l_m, \dot{l_m}))$ \\
     $f_a(l_m, \tilde{u})$          & = & $1 - \exp \left(- \left(\frac{\tilde{u}}{0.56 n_f(l_m)}\right)^{n_f(l_m)}\right)$ \\
     $n_f(l_m)$                     & = & $2.11 + 4.16 \left(\frac{1}{l_m} - 1\right)$ \\
     $f_l(l_m)$                     & = & $\exp \left(-\left|\frac{l_m^{1.93} - 1}{1.03}\right|^{1.87}\right)$ \\
@@ -318,27 +334,22 @@ A =
 \right.
 \]
 
-\paragraph{}
-\begin{tabular}{lcl}
-    $\tau \in \mathbb{R}^2$                & = & Couple total exercé sur les articulations \\
-    $a(q) \in \mathbb{R}^2$                & = & Bras de levier $(c_1 + c_2 \cos (c_3 q))$ \\
-    $t_i(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}$    & = & Tension exercée par le muscle $i$ \\
-    \\
+\begin{figure}[h]
+    \centering
+    \subfigure[$f_a$ : activation-fréquence]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fa}}~~~
+    \subfigure[$n_f$]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_nf}}~~~
+\end{figure}
 
-    $f_a(\tilde{u}, l_m) \in \mathbb{R}$   & = & Relation activation-fréquence \\
-    $f_l(l_m) \in \mathbb{R}$              & = & Relation force-longueur \\
-    $f_v(l_m, \dot{l_m}) \in \mathbb{R}$   & = & Relation force-vitesse \\
-    $f_e(l_m) \in \mathbb{R}$              & = & Force élastique du muscle \\ % TODO ???
-    \\
+\begin{figure}[h]
+    \centering
+    \subfigure[$f_l$ : force-longueur]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fl}}~~~
+    \subfigure[$f_v$ : force-vitesse]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fv}}~~~
+\end{figure}
 
-    $l_m \in \mathbb{R}$                   & = & Longueur constatée du muscle $i$ $(m)$ \\
-    $\dot{l_m} \in \mathbb{R}$             & = & Vitesse de contraction du muscle $i$ $(m \cdot s^{-1})$ \\
-    \\
-
-    $u \in \mathbb{R}$                     & = & Signaux d'activation du muscle $i$ $(u_i \in [0;1])$ \\
-    $\tilde{u} \in \mathbb{R}$             & = & Signaux d'activation filtrés $(\tilde{u_i} \in [0;1])$ \\
-\end{tabular}
-
+\begin{figure}[h]
+    \centering
+    \subfigure[$f_l$ : force élastique]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fe}}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -348,32 +359,30 @@ A =
 
 \subsection{Cas général}
 
+\begin{tabular}{ll}
+    $M(q) \in \mathbb{R}^{2 \times 2}$  & Matrice des moments d'inertie \\ % TODO
+    $C(q, \dot{q}) \in \mathbb{R}^{2}$  & Force de Coriolis et force centripète \\
+    $B(\dot{q}) \in \mathbb{R}^{2}$     & Force de viscosité et de friction \\ % TODO
+    $G(q) \in \mathbb{R}^{2}$           & Force de gravité \\
+    $\tau \in \mathbb{R}^{2}$           & Couple total exercé sur les articulations ($N \cdot m$) \\
+    $\ddot{q} \in \mathbb{R}^{2}$       & Accélération angulaire des articulations ($rd \cdot s^{-2}$) \\
+    $\dot{q} \in \mathbb{R}^{2}$        & Vitesse angulaire des articulations ($rd \cdot s^{-1}$)\\
+    $q \in \mathbb{R}^{2}$              & Angle des articulations ($rd$)\\
+\end{tabular}
+
+\paragraph{}
 Dynamique inverse~:
-%\begin{equation}
-%\label{dynamique inverse}
-%\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q)
-%\end{equation}
 \[\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q)\]
 
-Dynamique~:
+\paragraph{}
+Dynamique directe~:
 \[\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q))\]
-%\[
-%(\ref{dynamique inverse}) \Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q))
-%\]
 
-\begin{tabular}{lcl}
-    $M(q) \in \mathbb{R}^{2 \times 2}$  & = & Matrice des moments d'inertie \\ % TODO
-    $C(q, \dot{q}) \in \mathbb{R}^{2}$  & = & Force de Coriolis et force centripète \\
-    $B(\dot{q}) \in \mathbb{R}^{2}$     & = & Force de viscosité et de friction \\ % TODO
-    $G(q) \in \mathbb{R}^{2}$           & = & Force de gravité \\
-    $\tau \in \mathbb{R}^{2}$           & = & Couple total exercé sur les articulations ($N \cdot m$) \\
-    $\ddot{q} \in \mathbb{R}^{2}$       & = & Accélération angulaire des articulations ($rd \cdot s^{-2}$) \\
-    $\dot{q} \in \mathbb{R}^{2}$        & = & Vitesse angulaire des articulations ($rd \cdot s^{-1}$)\\
-    $q \in \mathbb{R}^{2}$              & = & Angle des articulations ($rd$)\\
-\end{tabular}
+%%%%%%%%
 
 \subsection{Modèles étudiés}
 
+\paragraph{}
 \begin{tabular}{|c|l|l|}
     \hline
     Mitrovic & $\tau = M(q)\ddot{q} + C(q, \dot{q})$
@@ -387,13 +396,35 @@ Dynamique~:
     \hline
 \end{tabular}
 
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/arm}
+\end{center}
+
+\paragraph{}
+\begin{tabular}{ll}
+    $m_i$      & Masse du membre $i$ ($kg$) \\
+    $l_i$      & Longueur du membre $i$ ($m$) \\
+    $\gamma_i$ & Distance séparant le centre de l'articulation au centre de masse du membre $i$ ($m$) \\
+    $\iota_j$  & Moment d'inertie de l'articulation $j$ ($kg \cdot m^2$) \\
+    $g$        & Champ de pesanteur ($m \cdot s^{-2}$) \\
+\end{tabular}
+
+\paragraph{}
+\begin{tabular}{ll}
+    Indices & \\
+    $u$ & Bras (supérieur)\\
+    $f$ & Avant-bras\\
+    $s$ & Épaule\\
+    $e$ & Coude\\
+\end{tabular}
+
 \paragraph{}
 \begin{tabular}{lcl}
     $M(q)$ & = &
     $
     \begin{pmatrix}
-        d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
-        d_3 + d_2 \cos(q_e) & d_3 \\
+        f_1 + 2 f_2 \cos(q_e)  & f_3 + f_2 \cos(q_e) \\
+        f_3 + f_2 \cos(q_e) & f_3 \\
     \end{pmatrix}
     $ \\
 
@@ -403,7 +434,7 @@ Dynamique~:
         -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
         \dot{q}_s^2 \\
     \end{pmatrix}
-    d_2 \sin(q_e)
+    f_2 \sin(q_e)
     $\\
 
     $B(\dot{q})$ & = &
@@ -418,48 +449,35 @@ Dynamique~:
     $G(q)$ & = &
     $
     \begin{pmatrix}
-        m_u \hat{g}  \gamma_u \cos(q_s) + m_f \hat{g} (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e)) \\
-        m_f \hat{g}  \gamma_f \cos(q_s + q_e) \\
+        m_u g  \gamma_u \cos(q_s) + m_f g (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e)) \\
+        m_f g  \gamma_f \cos(q_s + q_e) \\
     \end{pmatrix}
     $ \\
 
     \\
-    $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
-    $d_2$ & = & $m_f l_u \gamma_f$ \\
-    $d_3$ & = & $\iota_e$ \\
-    \\
-    $m_i$      & = & Masse du membre $i$ ($kg$) \\
-    $l_i$      & = & Longueur du membre $i$ ($m$) \\
-    $\gamma_i$ & = & Distance séparant le centre de l'articulation au centre de masse du membre $i$ ($m$) \\
-    $\iota_j$  & = & Moment d'inertie de l'articulation $j$ ($kg \cdot m^2$) \\
-    $\hat{g}$  & = & Champ de pesanteur ($m \cdot s^{-2}$) \\
-    \\
-%Indices :\\
-
-    $u$ & = & Bras (supérieur)\\
-    $f$ & = & Avant-bras\\
-
-    $s$ & = & Épaule\\
-    $e$ & = & Coude\\
+    $f_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+    $f_2$ & = & $m_f l_u \gamma_f$ \\
+    $f_3$ & = & $\iota_e$ \\
 \end{tabular}
 
 \paragraph{}
 \begin{small}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
     \hline
-             & $m_u$  & $m_f$  & $l_u$ & $l_f$  & $\gamma_u$ & $\gamma_f$ & $\iota_s$            & $\iota_f$            & $\hat{g}$ \\
+             & $m_u$  & $m_f$  & $l_u$ & $l_f$  & $\gamma_u$ & $\gamma_f$ & $\iota_s$            & $\iota_e$            & $g$ \\
     \hline
     Mitrovic \cite{katayama1993} (p.356) 
              & $1.59$ & $1.44$ & $0.3$ & $0.35$ & $0.18$     & $0.21$     & $4.77 \cdot 10^{-2}$ & $5.88 \cdot 10^{-2}$ & - \\
     \hline
     Kambara  \cite{kambara2009} (p.359)
-             & $1.59$ & $1.44$ & $0.3$ & $0.35$ & $0.18$     & $0.21$     & $6.78 \cdot 10^{-2}$ & $7.99 \cdot 10^{-2}$ & N/A \\
+             & $1.59$ & $1.44$ & $0.3$ & $0.35$ & $0.18$     & $0.21$     & $6.78 \cdot 10^{-2}$ & $7.99 \cdot 10^{-2}$ & N/C \\
     \hline
     Weiwei   \cite{li2006} (p.23)
              & $1.4$  & $1.1$  & $0.3$ & $0.33$ & $0.11$     & $0.16$     & $2.5 \cdot 10^{-2}$  & $4.5 \cdot 10^{-2}$  & - \\
     \hline
 \end{tabular}
 \end{small}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -552,8 +570,8 @@ $
         $M(q)$ & = &
         $
         \begin{pmatrix}
-            d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
-            d_3 + d_2 \cos(q_e) & d_3 \\
+            f_1 + 2 f_2 \cos(q_e)  & f_3 + f_2 \cos(q_e) \\
+            f_3 + f_2 \cos(q_e) & f_3 \\
         \end{pmatrix}
         $ \\
 
@@ -563,12 +581,12 @@ $
             -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
             \dot{q}_s^2 \\
         \end{pmatrix}
-        d_2 \sin(q_e)
+        f_2 \sin(q_e)
         $\\
 
-        $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
-        $d_2$ & = & $m_f l_u \gamma_f$ \\
-        $d_3$ & = & $\iota_e$ \\
+        $f_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+        $f_2$ & = & $m_f l_u \gamma_f$ \\
+        $f_3$ & = & $\iota_e$ \\
     \end{tabular}
 \right .
 $
@@ -615,14 +633,14 @@ $
     $C(q, \dot{q})$ & = &
     $
     \begin{pmatrix}
-        -d_2 \sin(q_e) \dot{q}_e^2 - 2 d_2 \sin(q_e)\dot{q}_s\dot{q}_e \\
-        d_2 \sin(q_e) \dot{q}_s^2 \\
+        -f_2 \sin(q_e) \dot{q}_e^2 - 2 f_2 \sin(q_e)\dot{q}_s\dot{q}_e \\
+        f_2 \sin(q_e) \dot{q}_s^2 \\
     \end{pmatrix} =
     \begin{pmatrix}
         -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
         \dot{q}_s^2 \\
     \end{pmatrix}
-    d_2 \sin(q_e)
+    f_2 \sin(q_e)
     $\\
 
     $G(q)$ & = &
@@ -634,20 +652,20 @@ $
     $ \\
     \\
 
-    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)) = d_1 + 2 d_2 \cos(q_e)$ \\
-    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = d_3 + d_2 \cos(q_e)$ \\
-    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = d_3 + d_2 \cos(q_e)$ \\
-    $M_{22}$ & = & $\iota_e = d_3$ \\
+    $M_{11}$ & = & $\iota_s + \iota_e + m_f(l_u^2 + 2 l_u \gamma_f \cos(q_e)) = f_1 + 2 f_2 \cos(q_e)$ \\
+    $M_{12}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = f_3 + f_2 \cos(q_e)$ \\
+    $M_{21}$ & = & $\iota_e + m_f l_u \gamma_f \cos(q_e) = f_3 + f_2 \cos(q_e)$ \\
+    $M_{22}$ & = & $\iota_e = f_3$ \\
     $h_{122}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
     $h_{112}$ & = & $-m_f l_u \gamma_f \sin(q_e)$ \\
     $h_{211}$ & = & $m_f l_u  \gamma_f \sin(q_e)$ \\
-    $g_1$ & = & $m_u \hat{g}  \gamma_u \cos(q_s) + m_f \hat{g} (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e))$ \\
-    $g_2$ & = & $m_f \hat{g}  \gamma_f \cos(q_s + q_e)$ \\
+    $g_1$ & = & $m_u g  \gamma_u \cos(q_s) + m_f g (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e))$ \\
+    $g_2$ & = & $m_f g  \gamma_f \cos(q_s + q_e)$ \\
     \\
 
-    $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
-    $d_2$ & = & $m_f l_u \gamma_f$ \\
-    $d_3$ & = & $\iota_e$ \\
+    $f_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+    $f_2$ & = & $m_f l_u \gamma_f$ \\
+    $f_3$ & = & $\iota_e$ \\
 \end{tabular}
 
 %%%%%%%%
@@ -663,8 +681,8 @@ $
     $M(q)$ & = &
     $
     \begin{pmatrix}
-        d_1 + 2 d_2 \cos(q_e)  & d_3 + d_2 \cos(q_e) \\
-        d_3 + d_2 \cos(q_e) & d_3 \\
+        f_1 + 2 f_2 \cos(q_e)  & f_3 + f_2 \cos(q_e) \\
+        f_3 + f_2 \cos(q_e) & f_3 \\
     \end{pmatrix}
     $ \\
 
@@ -674,7 +692,7 @@ $
         -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
         \dot{q}_s^2 \\
     \end{pmatrix}
-    d_2 \sin(q_e)
+    f_2 \sin(q_e)
     $\\
 
     $B(\dot{q})$ & = &
@@ -687,10 +705,135 @@ $
     $ \\
     \\
 
-    $d_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
-    $d_2$ & = & $m_f l_u \gamma_f$ \\
-    $d_3$ & = & $\iota_e$ \\
+    $f_1$ & = & $\iota_s + \iota_e + m_f l_u^2$ \\
+    $f_2$ & = & $m_f l_u \gamma_f$ \\
+    $f_3$ & = & $\iota_e$ \\
 \end{tabular}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Anatomie du bras}
+
+\subsubsection{Ostéologie}
+
+\begin{itemize}
+    \item (Clavicle)
+    \item (Scapula)
+    \item (Humerus)
+    \item (Radius)
+    \item (Ulna)
+\end{itemize}
+
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/Human_arm_bones_diagram}
+\end{center}
+
+\subsubsection{Myologie}
+
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/Gray409}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/Gray410}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/Gray411}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.80\linewidth]{fig/Gray412}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.40\linewidth]{fig/Gray414}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.40\linewidth]{fig/Gray415}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.40\linewidth]{fig/Gray418}
+\end{center}
+
+\begin{center}
+        \includegraphics[width=.40\linewidth]{fig/Gray419}
+\end{center}
+
+\paragraph{}
+Muscles de l'épaule
+\begin{itemize}
+    \item Fléchisseur
+    \begin{itemize}
+        \item 
+    \end{itemize}
+    \item Extenseur
+    \begin{itemize}
+        \item 
+    \end{itemize}
+
+    \item Muscle deltoïde (deltoid)
+    \item Muscle sus-épineux ()
+    \item Muscle sous-épineux ()
+    \item Muscle petit rond ()
+    \item 
+    \item 
+\end{itemize}
+
+\paragraph{}
+Muscles du coude
+\begin{itemize}
+    \item Fléchisseur
+    \begin{itemize}
+        \item 
+    \end{itemize}
+    \item Extenseur
+    \begin{itemize}
+        \item 
+    \end{itemize}
+
+    \item Muscle brachial antérieur ()
+    \item Muscle long supinateur ()
+%    \item in front, the Brachialis
+%    \item in front, the Brachioradialis
+%    \item behind, the Triceps brachii
+%    \item behind, the Anconæus
+%    \item laterally, the Supinator
+%    \item laterally, the common tendon of origin of the Extensor muscles
+%    \item medially, the common tendon of origin of the Flexor muscles
+%    \item medially, the Flexor carpi ulnaris
+    \item 
+    \item 
+\end{itemize}
+
+\paragraph{}
+Muscles bi-articulaire
+\begin{itemize}
+    \item Fléchisseur
+    \begin{itemize}
+        \item Muscle biceps brachial (Biceps brachii)
+    \end{itemize}
+    \item Extenseur
+    \begin{itemize}
+        \item Muscle triceps brachial (Triceps brachii)
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Arthrologie}
+
+\begin{itemize}
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
