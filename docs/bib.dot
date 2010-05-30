@@ -1,0 +1,52 @@
+digraph bib {
+    rankstep = 0.75;
+
+    {
+        node [shape=plaintext];
+        "past" -> 1989 -> 1990 -> 1991 -> 1993 -> 1998 -> 1999 -> 2000 -> 2004 -> 2006 -> 2008 -> 2009 -> 2010;
+    }
+
+    { rank = same; "past"; "Flash"; "Mussa-Ivaldi"; "Bennett"; "..."; }
+    { rank = same; 1989; "Zajac"; }
+    { rank = same; 1990; "Feldman et al."; }
+    { rank = same; 1991; "Ozkaya and Nordin"; }
+    { rank = same; 1993; "Katayama and Kawato"; "Flanagan et al."; }
+    { rank = same; 1998; "Gribble et al."; }
+    { rank = same; 1999; "Brown"; "Osu and Gomi"; }
+    { rank = same; 2000; "Prilutsky"; }
+    { rank = same; 2004; "Li and Todorov"; } // 2004 ou 2005 ???
+    { rank = same; 2006; "Li"; }
+    { rank = same; 2008; "Mitrovic"; "Shin et al."; } // 2008 ou 2009 ???
+    { rank = same; 2009; "Kambara"; }
+    { rank = same; 2010; "Pyarm"; }
+
+    "Flash" -> "Katayama and Kawato";
+    "Mussa-Ivaldi" -> "Katayama and Kawato";
+    "Bennett" -> "Katayama and Kawato";
+    "..." -> "Katayama and Kawato";
+
+    "Zajac" -> "Brown";
+
+    "Brown" -> "Li and Todorov";
+    "Brown" -> "Li";
+    "Katayama and Kawato" -> "Mitrovic";
+    "Li and Todorov" -> "Mitrovic";
+    "Li and Todorov" -> "Li";
+    "Ozkaya and Nordin" -> "Mitrovic";
+    "Ozkaya and Nordin" -> "Kambara";
+
+    "Flanagan et al." -> "Shin et al."
+    "Feldman et al." -> "Shin et al."
+    "Gribble et al." -> "Shin et al."
+    "Katayama and Kawato" -> "Shin et al."
+    "Osu and Gomi" -> "Shin et al."
+    "Prilutsky" -> "Shin et al."
+
+//    "Li and Todorov" -> "Decock";
+//    "Mitrovic" -> "Decock";
+//    "Kambara" -> "Decock";
+    "Li" -> "Pyarm";
+    "Mitrovic" -> "Pyarm";
+    "Kambara" -> "Pyarm";
+    "Shin et al." -> "Pyarm";
+}
