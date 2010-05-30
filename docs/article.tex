@@ -27,6 +27,9 @@
 }
 
 %\newcommand{\reels}{\mathbb{R}}
+\newcommand{\vs}[1]{\boldsymbol{#1}} % vector symbol (\boldsymbol, \textbf or \vec)
+\newcommand{\ms}[1]{\boldsymbol{#1}} % matrix symbol (\boldsymbol, \textbf)
+
 \numberwithin{equation}{subsection}
 
 \begin{document}
@@ -86,6 +89,7 @@ Trois modèles ont été étudiés~:
 \begin{itemize}
     \item Codé en Python
     \item Implémente les 3 modèles
+    \item \url{http://code.google.com/p/pyarm/}
 \end{itemize}
 
 %\begin{figure}
@@ -126,18 +130,18 @@ Cette méthode de résolution numérique est la plus simple : elle se base sur l
 \paragraph{}
 \begin{small}
 \begin{tabular}{ll}
-    $l_m(q) \in \mathbb{R}^6$                  & Longueur constatée des muscles $(m)$ \\
-    $\dot{l_m}(q, \dot{q}) \in \mathbb{R}^6$   & Vitesse de contraction des muscles $(m \cdot s^{-1})$ \\
+    $\vs{l_m}(\vs{q}) \in \mathbb{R}^6$                  & Longueur constatée des muscles $(m)$ \\
+    $\vs{\dot{l_m}}(\vs{q}, \vs{\dot{q}}) \in \mathbb{R}^6$   & Vitesse de contraction des muscles $(m \cdot s^{-1})$ \\
 
-    $A(q) \in \mathbb{R}^{6 \times 2}$   &  Matrice des bras de levier $(m)$\\
-    $l_{m0} \in \mathbb{R}^6$            &  Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
-    $q \in \mathbb{R}^2$                 &  Angle des articulations $(rad)$ \\
-    $\dot{q} \in \mathbb{R}^2$           &  Vitesse angulaire des articulations $(rad \cdot s^{-1})$ \\
+    $\ms{A}(\vs{q}) \in \mathbb{R}^{6 \times 2}$   &  Matrice des bras de levier $(m)$\\
+    $\vs{l_{m0}} \in \mathbb{R}^6$            &  Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
+    $\vs{q} \in \mathbb{R}^2$                 &  Angle des articulations $(rad)$ \\
+    $\vs{\dot{q}} \in \mathbb{R}^2$           &  Vitesse angulaire des articulations $(rad \cdot s^{-1})$ \\
 \end{tabular}
 \end{small}
 
-\[l_m(q) = l_{m0} - A(q) q\]
-\[\dot{l_m}(q, \dot{q}) = \frac{\delta l_m(q)}{\delta t}\]
+\[\vs{l_m}(\vs{q}) = \vs{l_{m0}} - \ms{A}(\vs{q}) \vs{q}\]
+\[\vs{\dot{l_m}}(\vs{q}, \vs{\dot{q}}) = \frac{\delta \vs{l_m}(\vs{q})}{\delta t}\]
 
 \begin{center}
         \includegraphics[width=.50\linewidth]{fig/muscle_length}
@@ -162,19 +166,19 @@ Dans les modèles de Mitrovic et de Kambara, la longueur du bras de levier est c
 
 \paragraph{}
 Mitrovic~:
-\[ \tau = -A^T T(l_m, \dot{l_m}, \tilde{u}) \]
-\[ T(l_m, \dot{l_m}, \tilde{u}) = k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
+\[ \vs{\tau} = -\ms{A}^T \vs{T}(\vs{l_m}, \vs{\dot{l_m}}, \vs{\tilde{u}}) \]
+\[ \vs{T}(\vs{l_m}, \vs{\dot{l_m}}, \vs{\tilde{u}}) = \vs{k}(\vs{\tilde{u}})  \cdot (\vs{l_r}(\vs{\tilde{u}}) - \vs{l_m}) + \vs{\nu}(\vs{\tilde{u}}) \cdot \vs{\dot{l_m}} \]
 
 \paragraph{}
 Kambara~:
-\[ \tau = A^T T(l_m, \dot{l_m}, \tilde{u}) \]
-\[ T(l_m, \dot{l_m}, \tilde{u}) = -k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m) + \nu(\tilde{u}) \cdot \dot{l_m} \]
+\[ \vs{\tau} = \ms{A}^T \vs{T}(\vs{l_m}, \vs{\dot{l_m}}, \vs{\tilde{u}}) \]
+\[ \vs{T}(\vs{l_m}, \vs{\dot{l_m}}, \vs{\tilde{u}}) = -\vs{k}(\vs{\tilde{u}}) \cdot (\vs{l_r}(\vs{\tilde{u}}) - \vs{l_m}) + \vs{\nu}(\vs{\tilde{u}}) \cdot \vs{\dot{l_m}} \]
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $k(\tilde{u})$    & = &  $k_0 + k_1 \cdot \tilde{u}$ \\
-    $\nu(\tilde{u})$  & = &  $\nu_0 + \nu_1 \cdot \tilde{u}$ \\
-    $l_r(\tilde{u})$  & = &  $l_{r0} - l_{r1} \cdot \tilde{u}$ \\
+    $\vs{k}  (\vs{\tilde{u}})$  & = &  $\vs{k_0}    + \vs{k_1}    \cdot \vs{\tilde{u}}$ \\
+    $\vs{\nu}(\vs{\tilde{u}})$  & = &  $\vs{\nu_0}  + \vs{\nu_1}  \cdot \vs{\tilde{u}}$ \\
+    $\vs{l_r}(\vs{\tilde{u}})$  & = &  $\vs{l_{r0}} - \vs{l_{r1}} \cdot \vs{\tilde{u}}$ \\
 \end{tabular}
 
 \begin{figure}[h]
@@ -186,41 +190,41 @@ Kambara~:
 \paragraph{}
 \begin{small}
 \begin{tabular}{lcl}
-    $\tau \in \mathbb{R}^2$              & = & Couple total exercé sur les articulations \\
-    $A \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier \\
-    $T(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}^6$  & = & Tension exercée par les muscles \\
+    $\vs{\tau} \in \mathbb{R}^2$              & = & Couple total exercé sur les articulations $(N \cdot m)$ \\
+    $\ms{A} \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier $(m)$ \\
+    $\vs{T}(\vs{l_m}, \vs{\dot{l_m}}, \vs{\tilde{u}}) \in \mathbb{R}^6$  & = & Tension exercée par les muscles $(N)$ \\
     \\
-    $k(\tilde{u}) \cdot (l_r(\tilde{u}) - l_m)$ & = & Force élastique des muscles (raideur $\cdot$ étirement) \\
-    \\
-
-    $k(\tilde{u}) \in \mathbb{R}^6$      & = & Raideur des muscles \\
-    $k_0 \in \mathbb{R}^6$               & = & Raideur intrinsèque des muscles $(N/m)$ \\
-    $k_1 \in \mathbb{R}^6$               & = & Coefficient de variation de l'élasticité des muscles $(N/m)$ \\
+    $\vs{k}(\vs{\tilde{u}}) \cdot (\vs{l_r}(\vs{\tilde{u}}) - \vs{l_m})$ & = & Force élastique des muscles (raideur $\cdot$ étirement) \\
     \\
 
-    $\nu(\tilde{u}) \in \mathbb{R}^6$    & = & Viscosité des muscles \\
-    $\nu_0 \in \mathbb{R}^6$             & = & Viscosité intrinsèque des muscles $(N \cdot s/m)$ \\
-    $\nu_1 \in \mathbb{R}^6$             & = & Coefficient de variation de la viscosité des muscles $(N \cdot s/m)$ \\
+    $\vs{k}(\vs{\tilde{u}}) \in \mathbb{R}^6$      & = & Raideur des muscles \\
+    $\vs{k_0} \in \mathbb{R}^6$               & = & Raideur intrinsèque des muscles $(N/m)$ \\
+    $\vs{k_1} \in \mathbb{R}^6$               & = & Coefficient de variation de l'élasticité des muscles $(N/m)$ \\
     \\
 
-    $l_r(\tilde{u}) \in \mathbb{R}^6$    & = & Longueur des muscles au repos pour un taux d'activation donné $(m)$ \\
-    $l_{r0} \in \mathbb{R}^6$            & = & Longueur intrinsèque des muscles au repos $(m)$ \\
-    $l_{r1} \in \mathbb{R}^6$            & = & Coefficient de variation de la longueur des muscles au repos $(m)$ \\
+    $\vs{\nu}(\vs{\tilde{u}}) \in \mathbb{R}^6$    & = & Viscosité des muscles \\
+    $\vs{\nu_0} \in \mathbb{R}^6$             & = & Viscosité intrinsèque des muscles $(N \cdot s/m)$ \\
+    $\vs{\nu_1} \in \mathbb{R}^6$             & = & Coefficient de variation de la viscosité des muscles $(N \cdot s/m)$ \\
     \\
 
-    $l_m \in \mathbb{R}^6$               & = & Longueur constatée des muscles $(m)$ \\
-    $l_{m0} \in \mathbb{R}^6$            & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
+    $\vs{l_r}(\vs{\tilde{u}}) \in \mathbb{R}^6$    & = & Longueur des muscles au repos pour un taux d'activation donné $(m)$ \\
+    $\vs{l_{r0}} \in \mathbb{R}^6$            & = & Longueur intrinsèque des muscles au repos $(m)$ \\
+    $\vs{l_{r1}} \in \mathbb{R}^6$            & = & Coefficient de variation de la longueur des muscles au repos $(m)$ \\
     \\
 
-    $u \in \mathbb{R}^6$                 & = & Signaux d'activation des muscles $(u_i \in [0;1])$ \\
-    $\tilde{u} \in \mathbb{R}^6$         & = & Signaux d'activation filtrés $(\tilde{u_i} \in [0;1])$ \\
+    $\vs{l_m} \in \mathbb{R}^6$               & = & Longueur constatée des muscles $(m)$ \\
+    $\vs{l_{m0}} \in \mathbb{R}^6$            & = & Longueur des muscles quand les articulations sont d'angle nul $(m)$ \\
+    \\
+
+    $\vs{u} \in \mathbb{R}^6$                 & = & Signaux d'activation des muscles $(u_i \in [0;1])$ \\
+    $\vs{\tilde{u}} \in \mathbb{R}^6$         & = & Signaux d'activation filtrés $(\tilde{u_i} \in [0;1])$ \\
 \end{tabular}
 \end{small}
 
 \paragraph{}
 Mitrovic \cite{katayama1993} (p.356-357)~: 
 \[
-A =
+\ms{A} =
 \begin{pmatrix}
     0.04 & 0.04 & 0     & 0     & 0.028 & 0.035 \\
     0    & 0    & 0.025 & 0.025 & 0.028 & 0.035 \\
@@ -250,7 +254,7 @@ A =
 \paragraph{}
 Kambara  \cite{kambara2009} (p.359-360)~:
 \[
-A =
+\ms{A} =
 \begin{pmatrix}
     0.04 & -0.04 & 0     & 0      & 0.028 & -0.035 \\
     0    & 0     & 0.025 & -0.025 & 0.028 & -0.035 \\
@@ -294,9 +298,9 @@ A =
     $PE2$ & Résistance à la compression du muscle actif \\
     \\
 
-    $\tau \in \mathbb{R}^2$                & Couple total exercé sur les articulations \\
-    $a(q) \in \mathbb{R}^2$                & Bras de levier $(c_1 + c_2 \cos (c_3 q))$ \\
-    $T_i(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}$    & Tension exercée par le muscle $i$ \\
+    $\vs{\tau_i} \in \mathbb{R}^2$                   & Couple total exercé sur les articulations par le muscle $i$ $(N \cdot m)$ \\
+    $\vs{a_i}(\vs{q}) \in \mathbb{R}^2$              & Bras de levier du muscle $i$ sur les deux articulations $(c_1 + c_2 \cos (c_3 \vs{q}))$ $(m)$ \\
+    $T_i(l_m, \dot{l_m}, \tilde{u}) \in \mathbb{R}$  & Tension exercée par le muscle $i$ $(N)$ \\
     \\
 
     $f_a(\tilde{u}, l_m) \in \mathbb{R}$   & Relation activation-fréquence \\
@@ -316,7 +320,8 @@ A =
 \[
 \left\{
 \begin{tabular}{lcl}
-    $\tau$ & = & $a(q) T_i(l_m, \dot{l_m}, \tilde{u})$ \\
+    $\vs{\tau_{total}}$ & = & $\sum_{i = 0}^{6} \vs{\tau_i}$ \\
+    $\vs{\tau_i}$ & = & $\vs{a_i}(\vs{q}) T_i(l_m, \dot{l_m}, \tilde{u})$ \\
     \\
     $T_i(l_m, \dot{l_m}, \tilde{u})$ & = & $f_a(l_m, \tilde{u})(f_e(l_m) + f_l(l_m) f_v(l_m, \dot{l_m}))$ \\
     $f_a(l_m, \tilde{u})$          & = & $1 - \exp \left(- \left(\frac{\tilde{u}}{0.56 n_f(l_m)}\right)^{n_f(l_m)}\right)$ \\
@@ -360,23 +365,23 @@ A =
 \subsection{Cas général}
 
 \begin{tabular}{ll}
-    $M(q) \in \mathbb{R}^{2 \times 2}$  & Matrice des moments d'inertie \\ % TODO
-    $C(q, \dot{q}) \in \mathbb{R}^{2}$  & Force de Coriolis et force centripète \\
-    $B(\dot{q}) \in \mathbb{R}^{2}$     & Force de viscosité et de friction \\ % TODO
-    $G(q) \in \mathbb{R}^{2}$           & Force de gravité \\
-    $\tau \in \mathbb{R}^{2}$           & Couple total exercé sur les articulations ($N \cdot m$) \\
-    $\ddot{q} \in \mathbb{R}^{2}$       & Accélération angulaire des articulations ($rd \cdot s^{-2}$) \\
-    $\dot{q} \in \mathbb{R}^{2}$        & Vitesse angulaire des articulations ($rd \cdot s^{-1}$)\\
-    $q \in \mathbb{R}^{2}$              & Angle des articulations ($rd$)\\
+    $\ms{M}(\vs{q}) \in \mathbb{R}^{2 \times 2}$  & Matrice des moments d'inertie \\ % TODO
+    $\vs{C}(\vs{q}, \vs{\dot{q}}) \in \mathbb{R}^{2}$  & Force de Coriolis et force centripète \\
+    $\vs{B}(\vs{\dot{q}}) \in \mathbb{R}^{2}$     & Force de viscosité et de friction \\ % TODO
+    $\vs{G}(\vs{q}) \in \mathbb{R}^{2}$           & Force de gravité \\
+    $\vs{\tau} \in \mathbb{R}^{2}$           & Couple total exercé sur les articulations ($N \cdot m$) \\
+    $\vs{\ddot{q}} \in \mathbb{R}^{2}$       & Accélération angulaire des articulations ($rd \cdot s^{-2}$) \\
+    $\vs{\dot{q}} \in \mathbb{R}^{2}$        & Vitesse angulaire des articulations ($rd \cdot s^{-1}$)\\
+    $\vs{q} \in \mathbb{R}^{2}$              & Angle des articulations ($rd$)\\
 \end{tabular}
 
 \paragraph{}
 Dynamique inverse~:
-\[\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q}) + G(q)\]
+\[\vs{\tau} = \ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}}) + \vs{B}(\vs{\dot{q}}) + \vs{G}(\vs{q})\]
 
 \paragraph{}
 Dynamique directe~:
-\[\Leftrightarrow \ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}) - G(q))\]
+\[\Leftrightarrow \vs{\ddot{q}} = \ms{M}(\vs{q})^{-1} (\vs{\tau} - \vs{C}(\vs{q}, \vs{\dot{q}}) - \vs{B}(\vs{\dot{q}}) - \vs{G}(\vs{q}))\]
 
 %%%%%%%%
 
@@ -385,14 +390,14 @@ Dynamique directe~:
 \paragraph{}
 \begin{tabular}{|c|l|l|}
     \hline
-    Mitrovic & $\tau = M(q)\ddot{q} + C(q, \dot{q})$
-             & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}))$ \\
+    Mitrovic & $\vs{\tau} = \ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}})$
+             & $\vs{\ddot{q}} = \ms{M}(\vs{q})^{-1} (\vs{\tau} - \vs{C}(\vs{q}, \vs{\dot{q}}))$ \\
     \hline
-    Kambara  & $\tau = M(q)\ddot{q} + C(q, \dot{q}) + G(q)$
-             & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - G(q))$ \\
+    Kambara  & $\vs{\tau} = \ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}}) + \vs{G}(\vs{q})$
+             & $\vs{\ddot{q}} = \ms{M}(\vs{q})^{-1} (\vs{\tau} - \vs{C}(\vs{q}, \vs{\dot{q}}) - \vs{G}(\vs{q}))$ \\
     \hline
-    Weiwei   & $\tau = M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q})$
-             & $\ddot{q} = M(q)^{-1} (\tau - C(q, \dot{q}) - B(\dot{q}))$ \\
+    Weiwei   & $\vs{\tau} = \ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}}) + \vs{B}(\vs{\dot{q}})$
+             & $\vs{\ddot{q}} = \ms{M}(\vs{q})^{-1} (\vs{\tau} - \vs{C}(\vs{q}, \vs{\dot{q}}) - \vs{B}(\vs{\dot{q}}))$ \\
     \hline
 \end{tabular}
 
@@ -420,7 +425,7 @@ Dynamique directe~:
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M(q)$ & = &
+    $\ms{M}(\vs{q})$ & = &
     $
     \begin{pmatrix}
         f_1 + 2 f_2 \cos(q_e)  & f_3 + f_2 \cos(q_e) \\
@@ -428,7 +433,7 @@ Dynamique directe~:
     \end{pmatrix}
     $ \\
 
-    $C(q, \dot{q})$ & = &
+    $\vs{C}(\vs{q}, \vs{\dot{q}})$ & = &
     $
     \begin{pmatrix}
         -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
@@ -437,16 +442,16 @@ Dynamique directe~:
     f_2 \sin(q_e)
     $\\
 
-    $B(\dot{q})$ & = &
+    $\vs{B}(\vs{\dot{q}})$ & = &
     $
     \begin{pmatrix}
         0.05  & 0.025 \\
         0.025 & 0.05 \\
     \end{pmatrix}
-    \dot{q}
+    \vs{\dot{q}}
     $\\
 
-    $G(q)$ & = &
+    $\vs{G}(\vs{q})$ & = &
     $
     \begin{pmatrix}
         m_u g  \gamma_u \cos(q_s) + m_f g (l_u \cos(q_s) + \gamma_f \cos(q_s + q_e)) \\
@@ -529,10 +534,10 @@ $
 \Leftrightarrow 
 \left \{
     \begin{tabular}{rcl}
-        $\tau$ & = &
-        $M(q)\ddot{q} + C(q, \dot{q})$ \\
+        $\vs{\tau}$ & = &
+        $\ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}})$ \\
 
-        $M(q)$
+        $\ms{M}(\vs{q})$
         & = &
         $
         \begin{pmatrix}
@@ -542,7 +547,7 @@ $
         $
         \\
 
-        $C(q, \dot{q})$
+        $\vs{C}(\vs{q}, \vs{\dot{q}})$
         & = &
         $
         m_f l_u \gamma_f \sin(q_e)
@@ -564,10 +569,10 @@ $
 \Leftrightarrow 
 \left \{
     \begin{tabular}{rcl}
-        $\tau$ & = &
-        $M(q)\ddot{q} + C(q, \dot{q})$ \\
+        $\vs{\tau}$ & = &
+        $\ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}})$ \\
 
-        $M(q)$ & = &
+        $\ms{M}(\vs{q})$ & = &
         $
         \begin{pmatrix}
             f_1 + 2 f_2 \cos(q_e)  & f_3 + f_2 \cos(q_e) \\
@@ -575,7 +580,7 @@ $
         \end{pmatrix}
         $ \\
 
-        $C(q, \dot{q})$ & = &
+        $\vs{C}(\vs{q}, \vs{\dot{q}})$ & = &
         $
         \begin{pmatrix}
             -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
@@ -617,12 +622,12 @@ $
         g_1 \\
         g_2 \\
     \end{pmatrix}\\
-    & = M(q) \ddot{q} + C(q, \dot{q}) + G(q)
+    & = \ms{M}(\vs{q}) \vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}}) + \vs{G}(\vs{q})
 \end{align*}
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $M(q)$ & = &
+    $\ms{M}(\vs{q})$ & = &
     $
     \begin{pmatrix}
         M_{11} & M_{12} \\
@@ -630,7 +635,7 @@ $
     \end{pmatrix}
     $ \\
 
-    $C(q, \dot{q})$ & = &
+    $\vs{C}(\vs{q}, \vs{\dot{q}})$ & = &
     $
     \begin{pmatrix}
         -f_2 \sin(q_e) \dot{q}_e^2 - 2 f_2 \sin(q_e)\dot{q}_s\dot{q}_e \\
@@ -643,7 +648,7 @@ $
     f_2 \sin(q_e)
     $\\
 
-    $G(q)$ & = &
+    $\vs{G}(\vs{q})$ & = &
     $
     \begin{pmatrix}
         g_1 \\
@@ -675,10 +680,10 @@ $
 
 \paragraph{}
 \begin{tabular}{lcl}
-    $\tau$ & = & $M(q)\ddot{q} + C(q, \dot{q}) + B(\dot{q})$ \\
+    $\vs{\tau}$ & = & $\ms{M}(\vs{q})\vs{\ddot{q}} + \vs{C}(\vs{q}, \vs{\dot{q}}) + \vs{B}(\vs{\dot{q}})$ \\
     \\
 
-    $M(q)$ & = &
+    $\ms{M}(\vs{q})$ & = &
     $
     \begin{pmatrix}
         f_1 + 2 f_2 \cos(q_e)  & f_3 + f_2 \cos(q_e) \\
@@ -686,7 +691,7 @@ $
     \end{pmatrix}
     $ \\
 
-    $C(q, \dot{q})$ & = &
+    $\vs{C}(\vs{q}, \vs{\dot{q}})$ & = &
     $
     \begin{pmatrix}
         -\dot{q}_e (2 \dot{q}_s + \dot{q}_e) \\
@@ -695,13 +700,13 @@ $
     f_2 \sin(q_e)
     $\\
 
-    $B(\dot{q})$ & = &
+    $\vs{B}(\vs{\dot{q}})$ & = &
     $
     \begin{pmatrix}
         0.05  & 0.025 \\
         0.025 & 0.05 \\
     \end{pmatrix}
-    \dot{q}
+    \vs{\dot{q}}
     $ \\
     \\
 

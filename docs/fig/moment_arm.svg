@@ -13,8 +13,8 @@
    height="744.09448"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="moment_arm_2.svg"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="moment_arm.svg"
    inkscape:export-filename="/home/decock/git_pub/pyarm/docs/fig/arm.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -301,6 +301,20 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2945"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2970"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -310,22 +324,22 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710678"
-     inkscape:cx="681.24388"
-     inkscape:cy="410.63405"
+     inkscape:cx="685.8281"
+     inkscape:cy="484.00301"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="false"
-     inkscape:window-width="1440"
-     inkscape:window-height="826"
+     inkscape:window-width="1024"
+     inkscape:window-height="716"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:snap-object-midpoints="false"
-     inkscape:snap-center="false"
-     inkscape:snap-midpoints="false"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true"
+     inkscape:snap-midpoints="true"
      inkscape:snap-grids="false">
     <sodipodi:guide
        orientation="1,0"
@@ -360,7 +374,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -369,17 +383,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-308.2677)">
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
-       x="848.95685"
-       y="632.5481"
-       id="text2904-6"><tspan
-         sodipodi:role="line"
-         id="tspan2906-1"
-         x="848.95685"
-         y="632.5481"
-         style="font-size:32px;font-weight:bold;-inkscape-font-specification:Bitstream Charter Bold">F</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:1,2;stroke-dashoffset:0"
        d="m 229.70133,680.31494 763.67383,0"
@@ -415,7 +418,7 @@
        sodipodi:cy="301.23734"
        sodipodi:rx="169.16588"
        sodipodi:ry="169.16588"
-       d="m 349.16588,301.23734 a 169.16588,169.16588 0 1 1 -338.331758,0 169.16588,169.16588 0 1 1 338.331758,0 z"
+       d="m 349.16588,301.23734 c 0,93.42773 -75.73815,169.16587 -169.16588,169.16587 -93.427735,0 -169.165878,-75.73814 -169.165878,-169.16587 0,-93.42774 75.738143,-169.16588 169.165878,-169.16588 93.42773,0 169.16588,75.73814 169.16588,169.16588 z"
        transform="matrix(0.73773098,-0.82852557,0.82852557,0.73773098,143.80668,607.21743)" />
     <path
        sodipodi:type="arc"
@@ -425,7 +428,7 @@
        sodipodi:cy="359.80878"
        sodipodi:rx="2.0939512"
        sodipodi:ry="2.0939512"
-       d="m 182.09395,359.80878 a 2.0939512,2.0939512 0 1 1 -4.1879,0 2.0939512,2.0939512 0 1 1 4.1879,0 z"
+       d="m 182.09395,359.80878 c 0,1.15645 -0.93749,2.09395 -2.09395,2.09395 -1.15646,0 -2.09395,-0.9375 -2.09395,-2.09395 0,-1.15646 0.93749,-2.09395 2.09395,-2.09395 1.15646,0 2.09395,0.93749 2.09395,2.09395 z"
        transform="matrix(0.73773098,-0.82852557,0.82852557,0.73773098,95.27875,564.00746)" />
     <text
        xml:space="preserve"
@@ -479,62 +482,84 @@
        d="m 682.04729,572.36128 81.24803,114.91746"
        id="path5723"
        sodipodi:nodetypes="cc" />
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
-       x="844.99255"
-       y="613.24884"
-       id="text6127"><tspan
-         sodipodi:role="line"
-         id="tspan6129"
+    <g
+       id="g2924">
+      <text
+         id="text2904-6"
+         y="632.5481"
+         x="850.43982"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           style="font-size:32px;font-weight:bold;-inkscape-font-specification:Bitstream Charter Bold"
+           y="632.5481"
+           x="850.43982"
+           id="tspan2906-1"
+           sodipodi:role="line">F</tspan></text>
+      <text
+         id="text6127"
+         y="613.24884"
          x="844.99255"
-         y="613.24884"></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
-       x="735.88824"
-       y="510.36163"
-       id="text2904-6-9"><tspan
-         sodipodi:role="line"
-         id="tspan2906-1-6"
-         x="735.88824"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           y="613.24884"
+           x="844.99255"
+           id="tspan6129"
+           sodipodi:role="line"></tspan></text>
+    </g>
+    <g
+       id="g2917"
+       transform="translate(-11.313709,219.2031)">
+      <text
+         id="text2904-6-9"
          y="510.36163"
-         style="font-size:32px;font-weight:bold;-inkscape-font-specification:Bitstream Charter Bold">F<tspan
-   style="font-size:20px"
-   id="tspan6212">t</tspan></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
-       x="738.92627"
-       y="489.69537"
-       id="text6127-4"><tspan
-         sodipodi:role="line"
-         id="tspan6129-0"
-         x="738.92627"
-         y="489.69537"></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
-       x="729.52429"
-       y="730.33063"
-       id="text2904-6-9-9"><tspan
-         sodipodi:role="line"
-         id="tspan2906-1-6-0"
-         x="729.52429"
+         x="737.98242"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           style="font-size:32px;font-weight:bold;-inkscape-font-specification:Bitstream Charter Bold"
+           y="510.36163"
+           x="737.98242"
+           id="tspan2906-1-6"
+           sodipodi:role="line">F<tspan
+   id="tspan6212"
+   style="font-size:20px">t</tspan></tspan></text>
+      <text
+         id="text6127-4"
+         y="489.69537"
+         x="738.71191"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           y="489.69537"
+           x="738.71191"
+           id="tspan6129-0"
+           sodipodi:role="line"></tspan></text>
+    </g>
+    <g
+       id="g2930"
+       transform="translate(-1.4142135,-219.2031)">
+      <text
+         id="text2904-6-9-9"
          y="730.33063"
-         style="font-size:32px;font-weight:bold;-inkscape-font-specification:Bitstream Charter Bold">F<tspan
-   style="font-size:20px"
-   id="tspan6214">r</tspan></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
-       x="731.85516"
-       y="711.07861"
-       id="text6127-4-7"><tspan
-         sodipodi:role="line"
-         id="tspan6129-0-4"
+         x="730.74481"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           style="font-size:32px;font-weight:bold;-inkscape-font-specification:Bitstream Charter Bold"
+           y="730.33063"
+           x="730.74481"
+           id="tspan2906-1-6-0"
+           sodipodi:role="line">F<tspan
+   id="tspan6214"
+   style="font-size:20px">r</tspan></tspan></text>
+      <text
+         id="text6127-4-7"
+         y="711.07861"
          x="731.85516"
-         y="711.07861"></tspan></text>
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         xml:space="preserve"><tspan
+           y="711.07861"
+           x="731.85516"
+           id="tspan6129-0-4"
+           sodipodi:role="line"></tspan></text>
+    </g>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
@@ -602,7 +627,7 @@
        sodipodi:cy="263.96899"
        sodipodi:rx="35.355339"
        sodipodi:ry="35.355339"
-       d="m 709.55289,244.20638 a 35.355339,35.355339 0 0 1 4.12334,31.24292"
+       d="m 709.55289,244.20638 c 6.19648,9.19197 7.72294,20.7581 4.12334,31.24292"
        transform="translate(0,308.2677)"
        sodipodi:start="5.6900409"
        sodipodi:end="6.6138927"
@@ -618,5 +643,29 @@
          x="720.71857"
          y="577.36322"
          style="font-size:32px">ϴ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+       x="620.14539"
+       y="590.32861"
+       id="text6638-4"><tspan
+         sodipodi:role="line"
+         id="tspan6640-7"
+         x="620.14539"
+         y="590.32861"
+         style="font-size:32px">ϴ</tspan></text>
+    <path
+       transform="translate(0,308.2677)"
+       sodipodi:type="arc"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path6636-8"
+       sodipodi:cx="680.23669"
+       sodipodi:cy="263.96899"
+       sodipodi:rx="35.355339"
+       sodipodi:ry="35.355339"
+       d="m 651.41762,284.44974 a 35.355339,35.355339 0 0 1 -4.30709,-32.83621"
+       sodipodi:start="2.5237438"
+       sodipodi:end="3.498593"
+       sodipodi:open="true" />
   </g>
 </svg>

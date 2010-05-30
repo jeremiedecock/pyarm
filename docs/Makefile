@@ -4,7 +4,7 @@ article.pdf: article.tex article.aux bib.png
 	pdflatex article.tex
 	pdflatex article.tex
 
-article.aux: article.bib
+article.aux: article.bib bib.png
 	pdflatex article.tex
 	bibtex article
 
