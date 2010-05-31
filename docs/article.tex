@@ -1,7 +1,7 @@
 % Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-\documentclass[pdftex,a4paper,11pt]{article} 
-%\documentclass[pdftex,a4paper,11pt]{report} 
+%\documentclass[pdftex,a4paper,11pt]{article} 
+\documentclass[pdftex,a4paper,11pt]{report} 
 \usepackage[utf8]{inputenc}
 \usepackage[frenchb]{babel}
 \usepackage[pdftex]{graphicx}
@@ -43,6 +43,14 @@
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter*{Introduction}
+
+\dots
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Modèles de muscles et modèles de bras}
 
 \section{Présentation des modèles}
 
@@ -123,7 +131,7 @@ Le simulateur est composé de 5 modules :
 
 \section{Cinématique inverse du muscle}
 
-\subsection{Résolution numérique par la méthode d'Euler}
+\subsection{Résolution numérique par la méthode des différences finies du premier ordre}
 
 Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
 
@@ -152,10 +160,38 @@ Dans les modèles de Mitrovic et de Kambara, la longueur du bras de levier est c
 %Sous réserve que la longueur de l'arc soit toujours positive (...)
 % TODO
     
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     \subfigure{\includegraphics[width=.40\linewidth]{fig/moment_arm}}~~~
     \subfigure{\includegraphics[width=.40\linewidth]{fig/arm_shin}}~~~
+\end{figure}
+
+\begin{footnotesize}
+\begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}}|l|r|r|r|r|r|r|}
+    \hline
+                            & Mitrovic &  &  & Kambara &  &  \\
+    \hline
+                            & $a_s$ & $a_e$ & $l_{m0}$ & $a_s$   &  $a_e$  & $l_{m0}$ \\
+    \hline
+    fléchisseur de l'épaule &  0.04 &     0 &    0.337 &    0.04 &      0  &  0.337 \\
+    \hline
+    extenseur de l'épaule   &  0.04 &     0 &    0.388 &   -0.04 &      0  &  0.388 \\
+    \hline
+    fléchisseur du coude    &     0 & 0.025 &    0.375 &       0 &  0.025  &  0.375 \\
+    \hline
+    extenseur du coude      &     0 & 0.025 &    0.315 &       0 & -0.025  &  0.315 \\
+    \hline
+    double fléchisseur      & 0.028 & 0.028 &    0.257 &   0.028 &  0.028  &  0.257 \\
+    \hline
+    double extenseur        & 0.035 & 0.035 &    0.256 &  -0.035 & -0.035  &  0.256 \\
+    \hline
+\end{tabular*}
+\end{footnotesize}
+
+\begin{figure}[h!]
+    \centering
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Mitrovic_lm}}~~~
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Kambara_lm}}~~~
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -281,14 +317,38 @@ Kambara  \cite{kambara2009} (p.359-360)~:
 \end{tabular*}
 \end{small}
 
+\begin{figure}[h!]
+    \centering
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Mitrovic_k}}~~~
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Kambara_k}}~~~
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Mitrovic_v}}~~~
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Kambara_v}}~~~
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Mitrovic_lr}}~~~
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/muscle_Kambara_lr}}~~~
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/arm_Mitrovic_c_forearm}}~~~
+    \subfigure{\includegraphics[width=.50\linewidth]{fig/arm_Kambara_c_forearm}}~~~
+\end{figure}
 
 %%%%%%%%
 
 \subsection{Brown (Weiwei)}
 
-\begin{center}
-        \includegraphics[width=.40\linewidth]{fig/brown}
-\end{center}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=.30\linewidth]{fig/brown}
+\end{figure}
 
 \begin{tabular}{ll}
     $CE$  & Éléments contractiles \\
@@ -488,7 +548,7 @@ Dynamique directe~:
 
 \section{Cinématique du bras}
 
-\subsection{Résolution numérique par la méthode d'Euler}
+\subsection{Résolution numérique par la méthode des différences finies du premier ordre}
 
 Cette méthode de résolution numérique est la plus simple : elle se base sur la discrétisation de l'intervalle d'étude en un certain nombre de pas.
 
@@ -497,13 +557,17 @@ Cette méthode de résolution numérique est la plus simple : elle se base sur l
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Annexe}
+\chapter{Apprentissage du contrôle moteur}
 
-\subsection{Modèle du bras}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter*{Annexe}
+
+\section{Modèle du bras}
 
 %%%%%%%%
 
-\subsubsection{Mitrovic}
+\subsection{Mitrovic}
 Écriture originale \cite{katayama1993} (p.355).
 
 \begin{align*}
@@ -598,7 +662,7 @@ $
 
 %%%%%%%%
 
-\subsubsection{Kambara}
+\subsection{Kambara}
 Écriture originale \cite{kambara2009} (p.360).
 
 \begin{align*}
@@ -675,7 +739,7 @@ $
 
 %%%%%%%%
 
-\subsubsection{Weiwei}
+\subsection{Weiwei}
 Écriture originale \cite{li2006} (p.22).
 
 \paragraph{}
@@ -717,9 +781,9 @@ $
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Anatomie du bras}
+\section{Anatomie du bras}
 
-\subsubsection{Ostéologie}
+\subsection{Ostéologie}
 
 \begin{itemize}
     \item (Clavicle)
@@ -733,7 +797,7 @@ $
         \includegraphics[width=.80\linewidth]{fig/Human_arm_bones_diagram}
 \end{center}
 
-\subsubsection{Myologie}
+\subsection{Myologie}
 
 \begin{center}
         \includegraphics[width=.80\linewidth]{fig/Gray409}
@@ -826,7 +890,7 @@ Muscles bi-articulaire
     \end{itemize}
 \end{itemize}
 
-\subsubsection{Arthrologie}
+\subsection{Arthrologie}
 
 \begin{itemize}
     \item 
@@ -842,7 +906,7 @@ Muscles bi-articulaire
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Bibliographie}
+%\chapter*{Bibliographie}
 
 %\cite{clef_de_référence}
 

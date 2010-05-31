@@ -50,8 +50,9 @@ class MuscleModel:
 
     _l = None              # Current muscle length (m)
 
-    _lm = np.ones(6) * 0.1  # Muscle length when the joint angle = 0 (m)
-    l0 = np.ones(6) * 0.1  # Intrinsic rest length (for u = 0) (m)
+    _lm = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])   # Muscle length when the joint angle = 0 (m)
+
+    l0 = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237]) # Intrinsic rest length (for u = 0) (m)
 
     # Muscle parameters from [6] p.356-357
     b  = np.ones(6) * 108.1     # Viscosity coefficient             (N.s/m)

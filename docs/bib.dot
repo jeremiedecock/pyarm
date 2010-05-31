@@ -12,13 +12,13 @@ digraph bib {
     { rank = same; 1991; "Ozkaya and Nordin"; }
     { rank = same; 1993; "Katayama and Kawato"; "Flanagan et al."; }
     { rank = same; 1998; "Gribble et al."; }
-    { rank = same; 1999; "Brown"; "Osu and Gomi"; }
+    { rank = same; 1999; "Brown"; "Osu and Gomi"; "Spoelstra et al."; }
     { rank = same; 2000; "Prilutsky"; }
     { rank = same; 2004; "Li and Todorov"; } // 2004 ou 2005 ???
     { rank = same; 2006; "Li"; }
     { rank = same; 2008; "Mitrovic"; "Shin et al."; } // 2008 ou 2009 ???
     { rank = same; 2009; "Kambara"; }
-    { rank = same; 2010; "Pyarm"; }
+    { rank = same; 2010; "Decock"; }
 
     "Flash" -> "Katayama and Kawato";
     "Mussa-Ivaldi" -> "Katayama and Kawato";
@@ -42,11 +42,13 @@ digraph bib {
     "Osu and Gomi" -> "Shin et al."
     "Prilutsky" -> "Shin et al."
 
+    "Katayama and Kawato" -> "Spoelstra et al."
+
 //    "Li and Todorov" -> "Decock";
 //    "Mitrovic" -> "Decock";
 //    "Kambara" -> "Decock";
-    "Li" -> "Pyarm";
-    "Mitrovic" -> "Pyarm";
-    "Kambara" -> "Pyarm";
-    "Shin et al." -> "Pyarm";
+    "Li" -> "Decock";
+    "Mitrovic" -> "Decock";
+    "Kambara" -> "Decock";
+    "Shin et al." -> "Decock";
 }

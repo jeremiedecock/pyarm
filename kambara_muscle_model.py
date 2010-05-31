@@ -25,10 +25,10 @@ class MuscleModel:
     b0 = np.ones(6) * 50.                                      # Intrinsic viscosity   (for u = 0) (N.s/m)
     b1 = np.ones(6) * 100.                                     # Variation rate of viscosity       (N.s/m)
 
-    l0rest = np.ones(6) * 0.1                                  # Intrinsic rest length (for u = 0) (m)TODO : ???
-    l1rest = np.ones(6) * 0.15                                 # Rest length (m) # TODO
-    ld     = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])  # ??? (m) # TODO
-    l0     = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])  # Intrinsic length (for u = 0) (m) # TODO
+    l0rest = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237]) # Intrinsic rest length (for u = 0) (m)TODO : ???
+    l1rest = np.ones(6) * 0.15                                  # Rest length (m) # TODO
+    ld     = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])   # ??? (m) # TODO
+    l0     = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])   # Intrinsic length (for u = 0) (m) # TODO
 
     A  = np.array([[ 0.04 , -0.04 ,  0.   ,  0.   ,  0.028, -0.035],
                    [ 0.   ,  0.   ,  0.025, -0.025,  0.028, -0.035]]).T   # Moment arm (constant matrix) (m)
