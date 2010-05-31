@@ -70,28 +70,28 @@ def main():
     # Main ############################
 
     if muscle == 'fake':
-        import fake_muscle_model as muscle_mod
+        from model.muscle.forward_dynamics import fake_muscle_model as muscle_mod
     elif muscle == 'kambara':
-        import kambara_muscle_model as muscle_mod
+        from model.muscle.forward_dynamics import kambara_muscle_model as muscle_mod
     elif muscle == 'mitrovic':
-        import mitrovic_muscle_model as muscle_mod
+        from model.muscle.forward_dynamics import mitrovic_muscle_model as muscle_mod
     elif muscle == 'weiwei':
-        import weiwei_muscle_model as muscle_mod
+        from model.muscle.forward_dynamics import weiwei_muscle_model as muscle_mod
     else:
         usage()
         sys.exit(2)
 
     if arm == 'kambara':
-        import kambara_arm_model as arm_mod
+        from model.arm.forward_dynamics import kambara_arm_model as arm_mod
     elif arm == 'mitrovic':
-        import mitrovic_arm_model as arm_mod
+        from model.arm.forward_dynamics import mitrovic_arm_model as arm_mod
     elif arm == 'weiwei':
-        import weiwei_arm_model as arm_mod
+        from model.arm.forward_dynamics import weiwei_arm_model as arm_mod
     else:
         usage()
         sys.exit(2)
 
-    import sfmlGui as view
+    import sfml_gui as view
 
     arm_model = arm_mod.ArmModel(has_theta_limit)
     muscle_model = muscle_mod.MuscleModel(arm_model.theta)

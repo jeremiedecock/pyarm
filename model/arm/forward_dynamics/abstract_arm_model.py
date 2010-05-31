@@ -22,8 +22,10 @@ class AbstractArmModel:
     theta = None              # Joint angle (rd)
 
     # Min and max joint angles (rd)
-    theta_bounds = [{'min': math.radians(-90), 'max': math.radians(180)}, 
-                    {'min': math.radians(0),   'max': math.radians(180)}] 
+    theta_bounds = [{'min': math.radians(-30), 'max': math.radians(90)}, 
+                    {'min': math.radians(0),   'max': math.radians(140)}] 
+    #theta_bounds = [{'min': math.radians(-90), 'max': math.radians(180)}, 
+    #                {'min': math.radians(0),   'max': math.radians(180)}] 
 
     # Initial joint angles : functional standard posture (rd) from [6] p.356-357
     theta_init = [math.radians(45), math.radians(70)]

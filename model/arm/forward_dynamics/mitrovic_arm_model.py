@@ -53,6 +53,9 @@ class ArmModel(AbstractArmModel):
     omega = None              # Angular velocity (rd/s)
     theta = None              # Joint angle (rd)
 
+    theta_bounds = [{'min': math.radians(-90), 'max': math.radians(180)}, 
+                    {'min': math.radians(0),   'max': math.radians(180)}] 
+
     ## Min and max joint angles (rd) (from [3] p.19)
 
     # Bound values for assert
