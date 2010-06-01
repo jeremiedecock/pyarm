@@ -30,9 +30,11 @@ class ArmModel(AbstractArmModel):
     omega = None              # Angular velocity (rd/s)
     theta = None              # Joint angle (rd)
 
-    theta_bounds = [{'min':-1.75, 'max':0.52},  # Min and max joint angles (rd) (cf. H.Kambara)
-    #               {'min':-0.35, 'max':1.92}]
-                    {'min':0., 'max':1.92}]
+    #theta_bounds = [{'min':-1.75, 'max':0.52},  # Min and max joint angles (rd) (cf. H.Kambara)
+    ##               {'min':-0.35, 'max':1.92}]
+    #                {'min':0., 'max':1.92}]
+    theta_bounds = [{'min': math.radians(-50), 'max': math.radians(180)}, 
+                    {'min': math.radians(0),   'max': math.radians(160)}] 
 
     theta_init = [0., 0.]                      # Orientation (rd)
 
@@ -97,7 +99,7 @@ class ArmModel(AbstractArmModel):
             self.bound_joint_angles()
         fig.append('theta', self.theta)
 
-        return self.alpha.tolist(), self.omega.tolist(), (self.theta % (2 * math.pi)).tolist()
+        return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()
 
 
     def G(self, theta):

@@ -74,5 +74,5 @@ class ArmModel(AbstractArmModel):
             self.bound_joint_angles()
         fig.append('theta', self.theta)
 
-        return self.alpha.tolist(), self.omega.tolist(), (self.theta % (2 * math.pi)).tolist()
+        return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()
 

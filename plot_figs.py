@@ -111,14 +111,18 @@ def plot_lm(arm, muscle):
 
     # Build datas ###############
     n = 50
-    q = np.linspace(arm.theta_bounds[1]['min'], arm.theta_bounds[1]['max'], n)
+    qmin = min(arm.theta_bounds[0]['min'], arm.theta_bounds[1]['min'])
+    qmax = max(arm.theta_bounds[0]['max'], arm.theta_bounds[1]['max'])
+    q = np.linspace(qmin, qmax, n)
 
     lm = np.zeros([len(q), 6])
     for i in range(len(q)):
-        lm[i] = muscle.lm(np.ones(2) * q[i])
+        arm.theta = np.ones(2) * q[i]
+        arm.bound_joint_angles()
+        lm[i] = muscle.lm(arm.theta)
 
     # Plot data #################
-    plt.xlabel('Control signal')
+    plt.xlabel('Angle')
     plt.ylabel('Muscle length')
     plt.title(muscle.name)
     #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))

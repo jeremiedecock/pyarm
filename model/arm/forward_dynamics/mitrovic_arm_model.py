@@ -53,8 +53,8 @@ class ArmModel(AbstractArmModel):
     omega = None              # Angular velocity (rd/s)
     theta = None              # Joint angle (rd)
 
-    theta_bounds = [{'min': math.radians(-90), 'max': math.radians(180)}, 
-                    {'min': math.radians(0),   'max': math.radians(180)}] 
+    #theta_bounds = [{'min': math.radians(-90), 'max': math.radians(180)}, 
+    #                {'min': math.radians(0),   'max': math.radians(180)}] 
 
     ## Min and max joint angles (rd) (from [3] p.19)
 
@@ -121,5 +121,5 @@ class ArmModel(AbstractArmModel):
 
         fig.append('theta', self.theta)
 
-        return self.alpha.tolist(), self.omega.tolist(), (self.theta % (2 * math.pi)).tolist()
+        return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()
 
