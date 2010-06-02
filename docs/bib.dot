@@ -1,54 +1,104 @@
 digraph bib {
     rankstep = 0.75;
+    rankdir  = BT;
 
     {
         node [shape=plaintext];
-        "past" -> 1989 -> 1990 -> 1991 -> 1993 -> 1998 -> 1999 -> 2000 -> 2004 -> 2006 -> 2008 -> 2009 -> 2010;
+        1966 -> 1969 -> 1979 -> 1981 -> 1982 -> 1984 -> 1985 -> 1986 -> 1987 -> 1989 -> 1990 -> 1991 -> 1992 -> 1993 -> 1996 -> 1998 -> 1999 -> 2000 -> 2003 -> 2004 -> 2005 -> 2006 -> 2007 -> 2008 -> 2009 -> 2010;
     }
 
-    { rank = same; "past"; "Flash"; "Mussa-Ivaldi"; "Bennett"; "..."; }
-    { rank = same; 1989; "Zajac"; }
-    { rank = same; 1990; "Feldman et al."; }
-    { rank = same; 1991; "Ozkaya and Nordin"; }
-    { rank = same; 1993; "Katayama and Kawato"; "Flanagan et al."; }
+    { rank = same; 1966; "Fel'dman" [style=dotted]; }
+    { rank = same; 1969; "Rack and Westbury"; "Joyce et al."; }
+    { rank = same; 1979; "Hatze" [style=dotted,shape=box]; "Amis et al." [style=dotted,shape=box]; }
+    { rank = same; 1981; "Morasso"; "Houk and Rymer"; }
+    { rank = same; 1982; "Lacquaniti et al."[style=dotted]; }
+    { rank = same; 1984; Hogan1984 [label="Hogan"]; }
+    { rank = same; 1985; "Mussa-Ivaldi, Hogan and Bizzi"; Hogan1985 [label="Hogan",style=dotted]; }
+    { rank = same; 1986; "MacKay et al." [style=dotted,shape=box]; }
+    { rank = same; 1987; "Högfors et al." [style=dotted,shape=box]; "Engin and Peindl" [style=dotted,shape=box]; }
+    { rank = same; 1989; "Zajac" [style=dotted,shape=box]; Wood1989a [label="Wood et al.",style=dotted,shape=box]; Wood1989b [label="Wood et al.",style=dotted,shape=box]; }
+    { rank = same; 1990; "Feldman et al."; "Flash and Mussa-Ivaldi" [style=dotted]; }
+    { rank = same; 1991; Katayama1991a [label="Katayama and Kawato",style=dotted]; Katayama1991b [label="Katayama and Kawato"]; "Ozkaya and Nordin"[style=dotted,shape=box]; "Bennett" [style=dotted]; }
+    { rank = same; 1992; "Bennett et al." [style=dotted]; "Gomi et al." [style=dotted]; }
+    { rank = same; 1993; Katayama1993 [label="Katayama and Kawato",style=filled,shape=box]; "Flanagan et al."; }
     { rank = same; 1998; "Gribble et al."; }
-    { rank = same; 1999; "Brown"; "Osu and Gomi"; "Spoelstra et al."; }
+    { rank = same; 1996; "Pigeon et al."; }
+    { rank = same; 1999; "Brown" [style=filled,shape=box]; "Osu and Gomi"; "Spoelstra et al."; }
     { rank = same; 2000; "Prilutsky"; }
-    { rank = same; 2004; "Li and Todorov"; } // 2004 ou 2005 ???
-    { rank = same; 2006; "Li"; }
-    { rank = same; 2008; "Mitrovic"; "Shin et al."; } // 2008 ou 2009 ???
-    { rank = same; 2009; "Kambara"; }
-    { rank = same; 2010; "Decock"; }
+    { rank = same; 2003; Todorov2003[label="Todorov and Li"]; }
+    { rank = same; 2004; "Li and Todorov"; }
+    { rank = same; 2005; Todorov2005[label="Todorov and Li"]; }
+    { rank = same; 2006; "Li"; Mitrovic2006[label="Mitrovic",shape=none] }
+    { rank = same; 2007; Guigon2007[label="Guigon et al.",shape=box]; }
+    { rank = same; 2008; Mitrovic2008[label="Mitrovic et al."]; "Shin et al."[shape=box]; Guigon2008[label="Guigon et al."]; "Sigaud et al."; }
+    { rank = same; 2009; Mitrovic2009[label="Mitrovic et al."]; "Kambara"; Guigon2009[label="Guigon",shape=box]; "Marin and Sigaud"; "Salaün et al."; "Koos et al."; "Libeau et al."; }
+    { rank = same; 2010; "Decock"; Mitrovic2010b[label="Mitrovic et al."]; Mitrovic2010a[label="Mitrovic et al."]; }
 
-    "Flash" -> "Katayama and Kawato";
-    "Mussa-Ivaldi" -> "Katayama and Kawato";
-    "Bennett" -> "Katayama and Kawato";
-    "..." -> "Katayama and Kawato";
+    "Rack and Westbury" -> Katayama1993;
+    "Fel'dman" -> Katayama1993;
+    Hogan1984 -> Katayama1993;
+    Hogan1985 -> Katayama1993;
+    "Mussa-Ivaldi, Hogan and Bizzi" -> Katayama1993;
+    "Bennett" -> Katayama1993;
+    "Bennett et al." -> Katayama1993;
+    "Gomi et al." -> Katayama1993;
+    Katayama1991a -> Katayama1993;
+    Katayama1991b -> Katayama1993;
+    "Flash and Mussa-Ivaldi" -> Katayama1993;
+    "Morasso" -> Katayama1993;
+    "Hatze" -> Katayama1993;
+    "Amis et al." -> Katayama1993;
+    Wood1989a -> Katayama1993;
+    Wood1989b -> Katayama1993;
+    "Lacquaniti et al." -> Katayama1993;
+    "MacKay et al." -> Katayama1993;
+    "Joyce et al." -> Katayama1993;
+    "Houk and Rymer" -> Katayama1993;
 
     "Zajac" -> "Brown";
 
+    "Engin and Peindl" -> "Li";
+    "Högfors et al." -> "Li";
     "Brown" -> "Li and Todorov";
     "Brown" -> "Li";
-    "Katayama and Kawato" -> "Mitrovic";
-    "Li and Todorov" -> "Mitrovic";
+    Katayama1993 -> Mitrovic2010b;
+    "Li and Todorov" -> Mitrovic2010b;
     "Li and Todorov" -> "Li";
-    "Ozkaya and Nordin" -> "Mitrovic";
+    "Ozkaya and Nordin" -> Mitrovic2010b;
     "Ozkaya and Nordin" -> "Kambara";
+    "Ozkaya and Nordin" -> Katayama1993;
 
-    "Flanagan et al." -> "Shin et al."
-    "Feldman et al." -> "Shin et al."
-    "Gribble et al." -> "Shin et al."
-    "Katayama and Kawato" -> "Shin et al."
-    "Osu and Gomi" -> "Shin et al."
-    "Prilutsky" -> "Shin et al."
+    "Flanagan et al." -> "Shin et al.";
+    "Feldman et al." -> "Shin et al.";
+    "Gribble et al." -> "Shin et al.";
+    Katayama1993 -> "Shin et al.";
+    "Osu and Gomi" -> "Shin et al.";
+    "Prilutsky" -> "Shin et al.";
 
-    "Katayama and Kawato" -> "Spoelstra et al."
+    Katayama1993 -> "Spoelstra et al.";
 
-//    "Li and Todorov" -> "Decock";
-//    "Mitrovic" -> "Decock";
-//    "Kambara" -> "Decock";
+    "Li" -> Guigon2007;
+    "Li" -> Guigon2008;
+    "Li" -> Guigon2009;
+    "Li" -> Mitrovic2010b;
+
+    "Kambara" -> "Marin and Sigaud"
+
+    Mitrovic2008 -> Mitrovic2009;
+    Mitrovic2008 -> Mitrovic2010a;
+
+    Mitrovic2010b -> Mitrovic2009;
+    Mitrovic2010b -> "Salaün et al.";
+    Mitrovic2010b -> "Koos et al.";
+    Mitrovic2010b -> "Libeau et al.";
+    Mitrovic2010b -> "Sigaud et al.";
+
+    Katayama1993 -> "Decock";
+    "Brown" -> "Decock";
+    Guigon2007 -> "Decock";
+    "Pigeon et al." -> "Decock";
     "Li" -> "Decock";
-    "Mitrovic" -> "Decock";
+    Mitrovic2010b -> "Decock";
     "Kambara" -> "Decock";
     "Shin et al." -> "Decock";
 }
