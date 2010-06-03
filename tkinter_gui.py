@@ -23,8 +23,8 @@ class GUI:
     str_var1 = None
     str_var2 = None
 
-    forearm_position  = [0., 0., 0., 0.]
-    upperarm_position = [0., 0., 0., 0.]
+    canevas_width = 800
+    canevas_height = 600
     LENGTH_SCALE = 300. # px/m (pixels per meter)
 
     keyboard_flags = [0, 0, 0, 0, 0, 0]
@@ -56,7 +56,7 @@ class GUI:
         self.str_var2.set('-')
 
         # Canvas
-        self.canvas = Tkinter.Canvas(self.root, width=800, height=600)
+        self.canvas = Tkinter.Canvas(self.root, width=self.canevas_width, height=self.canevas_height)
         self.canvas.pack()
 
         self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
@@ -103,9 +103,18 @@ class GUI:
             self.keyboard_flags[5] = 0
 
     def update_shapes_position(self, shoulder_angle, elbow_angle):
+        xcenter = self.canevas_width / 2.
+        ycenter = self.canevas_height / 2.
+
+        self.forearm_position  = [xcenter,
+                                  ycenter,
+                                  xcenter + math.cos(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
+                                  ycenter + math.sin(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE]
+        self.upperarm_position = [xcenter + math.cos(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
+                                  ycenter + math.sin(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
+                                  80,
+                                  90]
         # TODO
-        self.forearm_position  = [400 + shoulder_angle * 80, 300, 30, 80]
-        self.upperarm_position = [500 + elbow_angle * 80, 400, 80, 90]
 
     def draw_shapes(self):
         # TODO : optimiser l'affichage (le nb de FPS chute très vite), surveiller consomation memoire
