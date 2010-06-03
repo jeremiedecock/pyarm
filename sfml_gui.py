@@ -9,7 +9,7 @@ import fig
 
 class GUI:
 
-    delta_time  = 0.01                          # The state of the arm is updated at every tick_duration time (s)
+    delta_time  = 0.01      # The state of the arm is updated at every tick_duration time (s)
     former_time = 0.
     realtime = True
 

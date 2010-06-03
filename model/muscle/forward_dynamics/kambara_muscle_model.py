@@ -78,9 +78,6 @@ class MuscleModel:
 
         Return a 6 elements vector (array) with value taken in [0, 1]"""
 
-        if isinstance(input_signal, list):
-            raise TypeError('Motor command : type is ' + str(type(input_signal)) + ' (list expected)')
-
         u = np.array(input_signal)
         u = u[0:6]
 

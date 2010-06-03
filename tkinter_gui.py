@@ -4,6 +4,8 @@
 
 import Tkinter
 import math
+import time
+import fig
 
 class GUI:
 
@@ -17,8 +19,15 @@ class GUI:
     muscle = None
 
     root = None
-    canv = None
+    canvas = None
+    str_var1 = None
+    str_var2 = None
+
+    forearm_position  = [0., 0., 0., 0.]
+    upperarm_position = [0., 0., 0., 0.]
     LENGTH_SCALE = 300. # px/m (pixels per meter)
+
+    keyboard_flags = [0, 0, 0, 0, 0, 0]
 
     def __init__(self, muscle, arm, realtime):
         self.muscle = muscle
@@ -28,38 +37,83 @@ class GUI:
         self.root = Tkinter.Tk()
         self.root.resizable(False, False)
 
-        # See "man bind" for more info
+        # Set listenters (see "man bind" for more info)
         self.root.bind("<KeyPress>", self.keypress_callback)
         self.root.bind("<KeyRelease>", self.keyrelease_callback)
 
+        # Label 1
+        self.str_var1 = Tkinter.StringVar() 
+        label1 = Tkinter.Label(self.root, textvariable=self.str_var1)
+        label1.pack()
+
+        self.str_var1.set('-')
+
+        # Label 2
+        self.str_var2 = Tkinter.StringVar() 
+        label2 = Tkinter.Label(self.root, textvariable=self.str_var2)
+        label2.pack()
+
+        self.str_var2.set('-')
+
         # Canvas
-        canv = Tkinter.Canvas(self.root, width=800, height=600)
-        canv.pack()
+        self.canvas = Tkinter.Canvas(self.root, width=800, height=600)
+        self.canvas.pack()
 
-        canv.create_rectangle((2,2,199,199), fill="white", outline="black")
-        canv.create_line((10,30,30,80), fill="red", width=2)
-        canv.create_oval((30,10,60,30), fill="yellow", outline="cyan")
-        canv.create_polygon((40,40, 55,50, 70,40, 60,55, 70,70, 55,60, 40,70, 50,55), fill="green")
-
-        # Label
-        str_var = Tkinter.StringVar() 
-        label = Tkinter.Label(self.root, textvariable=str_var)
-        label.pack()
-
-        str_var.set('Label')
+        self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
 
         # Button
         quit_button = Tkinter.Button(self.root, text="Quit", command=self.quit_callback)
         quit_button.pack()
+
+        self.realtime = realtime
+        self.former_time = time.time()         # Former time (s)
+
+    def __del__(self):
+        fig.show()
     
     def quit_callback(self):
         self.running = False
 
-    def keyrelease_callback(self, event):
-        print "release ", event.char
-
     def keypress_callback(self, event):
-        print "press ", event.char
+        if event.char == '1':
+            self.keyboard_flags[0] = 1
+        elif event.char == '2':
+            self.keyboard_flags[1] = 1
+        elif event.char == '3':
+            self.keyboard_flags[2] = 1
+        elif event.char == '4':
+            self.keyboard_flags[3] = 1
+        elif event.char == '5':
+            self.keyboard_flags[4] = 1
+        elif event.char == '6':
+            self.keyboard_flags[5] = 1
+
+    def keyrelease_callback(self, event):
+        if event.char == '1':
+            self.keyboard_flags[0] = 0
+        elif event.char == '2':
+            self.keyboard_flags[1] = 0
+        elif event.char == '3':
+            self.keyboard_flags[2] = 0
+        elif event.char == '4':
+            self.keyboard_flags[3] = 0
+        elif event.char == '5':
+            self.keyboard_flags[4] = 0
+        elif event.char == '6':
+            self.keyboard_flags[5] = 0
+
+    def update_shapes_position(self, shoulder_angle, elbow_angle):
+        # TODO
+        self.forearm_position  = [400 + shoulder_angle * 80, 300, 30, 80]
+        self.upperarm_position = [500 + elbow_angle * 80, 400, 80, 90]
+
+    def draw_shapes(self):
+        # TODO : optimiser l'affichage (le nb de FPS chute très vite), surveiller consomation memoire
+        self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
+        self.canvas.create_line(self.upperarm_position, fill="black", width=5)
+        self.canvas.create_line(self.forearm_position, fill="black", width=5)
+        #self.canvas.create_oval((30,10,60,30), fill="yellow", outline="cyan")
+        #self.canvas.create_polygon((40,40, 55,50, 70,40, 60,55), fill="gray")
 
     def run(self):
         # The main loop
@@ -67,16 +121,26 @@ class GUI:
             while self.running:
                 # Get events
 
+                # Compute delta time
+                current_time = time.time()
+
+                if self.realtime:
+                    self.delta_time = current_time - self.former_time
 
                 # Update thetas (physics)
-#                self.armModel.tick(input)
+                input = self.keyboard_flags
+                tau = self.muscle.update(input, self.arm.theta, self.delta_time)
+                alpha, omega, theta = self.arm.update(tau, self.delta_time)
 
-#                theta = self.armModel.getTheta()
-#                omega = self.armModel.getOmega()
-#                alpha = self.armModel.getAlpha()
-#                tau   = self.armModel.getTau()
+                # Update clock
+                self.former_time = current_time
 
                 # Update the caneva
+                self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     acceleration = %1.2frd/s/s     torque = %03dN.m" % (theta[0], math.degrees(theta[0]), omega[0], alpha[0], tau[0]))
+                self.str_var2.set("Elbow : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     acceleration = %1.2frd/s/s     torque = %03dN.m" % (theta[1], math.degrees(theta[1]), omega[1], alpha[1], tau[1]))
+                self.update_shapes_position(*theta)
+                self.draw_shapes()
+
                 self.root.update_idletasks() # redraw
                 self.root.update() # process events
         except Tkinter.TclError:
