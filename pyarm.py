@@ -21,7 +21,7 @@ def usage():
         the arm model to use (kambara, mitrovic or weiwei)
 
     -g, --gui
-        the graphical user interface to use (tk, sfml, none)
+        the graphical user interface to use (tk, sfml, gtk, cairo, none)
 
     -r, --realtime
         realtime simulation (framerate dependant)
@@ -67,7 +67,7 @@ def main():
 
     if muscle not in ('fake', 'kambara', 'mitrovic', 'weiwei') \
         or arm not in ('kambara', 'mitrovic', 'weiwei') \
-        or gui not in ('sfml', 'tk', 'none'):
+        or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
 
@@ -99,6 +99,10 @@ def main():
         import sfml_gui as gui_mod
     elif gui == 'tk':
         import tkinter_gui as gui_mod
+    elif gui == 'gtk':
+        raise NotImplementedError()
+    elif gui == 'cairo':
+        raise NotImplementedError()
     elif gui == 'none':
         raise NotImplementedError()
     else:

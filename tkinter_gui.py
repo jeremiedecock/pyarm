@@ -11,6 +11,8 @@ class GUI:
     former_time = 0.
     realtime = True
 
+    running = True
+
     arm = None
     muscle = None
 
@@ -25,7 +27,8 @@ class GUI:
         # Create the main window
         self.root = Tkinter.Tk()
         self.root.resizable(False, False)
-        #self.root.bind("<Key>", self.keyboard_callback)
+
+        # See "man bind" for more info
         self.root.bind("<KeyPress>", self.keypress_callback)
         self.root.bind("<KeyRelease>", self.keyrelease_callback)
 
@@ -46,43 +49,36 @@ class GUI:
         str_var.set('Label')
 
         # Button
-        quit_button = Tkinter.Button(self.root, text="Quitter", command=self.root.quit)
+        quit_button = Tkinter.Button(self.root, text="Quit", command=self.quit_callback)
         quit_button.pack()
     
-    def keypress_callback(self, event):
-        # ['__doc__', '__module__', 'char', 'delta', 'height', 'keycode', 'keysym', 'keysym_num', 'num', 'send_event', 'serial', 'state', 'time', 'type', 'widget', 'width', 'x', 'x_root', 'y', 'y_root']
-        print "press ", event.char
+    def quit_callback(self):
+        self.running = False
 
     def keyrelease_callback(self, event):
-        # ['__doc__', '__module__', 'char', 'delta', 'height', 'keycode', 'keysym', 'keysym_num', 'num', 'send_event', 'serial', 'state', 'time', 'type', 'widget', 'width', 'x', 'x_root', 'y', 'y_root']
         print "release ", event.char
 
-    def keyboard_callback(self, event):
-        # ['__doc__', '__module__', 'char', 'delta', 'height', 'keycode', 'keysym', 'keysym_num', 'num', 'send_event', 'serial', 'state', 'time', 'type', 'widget', 'width', 'x', 'x_root', 'y', 'y_root']
-        print event.char
+    def keypress_callback(self, event):
+        print "press ", event.char
 
     def run(self):
         # The main loop
-        running = True
+        try:
+            while self.running:
+                # Get events
 
-        self.root.mainloop()
 
-#        try:
-#            while running:
-#                # Get events
-#
-#
-#                # Update thetas (physics)
-##                self.armModel.tick(input)
-#
-##                theta = self.armModel.getTheta()
-##                omega = self.armModel.getOmega()
-##                alpha = self.armModel.getAlpha()
-##                tau   = self.armModel.getTau()
-#
-#                # Update the caneva
-#                self.root.update_idletasks() # redraw
-#                self.root.update() # process events
-#        except Tkinter.TclError:
-#            pass # to avoid errors when the window is closed
+                # Update thetas (physics)
+#                self.armModel.tick(input)
+
+#                theta = self.armModel.getTheta()
+#                omega = self.armModel.getOmega()
+#                alpha = self.armModel.getAlpha()
+#                tau   = self.armModel.getTau()
+
+                # Update the caneva
+                self.root.update_idletasks() # redraw
+                self.root.update() # process events
+        except Tkinter.TclError:
+            pass # to avoid errors when the window is closed
 
