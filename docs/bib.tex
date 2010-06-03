@@ -1,0 +1,90 @@
+% Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
+
+\documentclass[pdftex,a4paper,11pt]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref}
+
+\hypersetup{
+	pdftoolbar=true,                    % show Acrobat’s toolbar ?
+	pdfmenubar=true,                    % show Acrobat’s menu ?
+	pdffitwindow=true,                  % page fit to window when opened
+	pdftitle={Pyarm},                   % title
+	pdfauthor={Jérémie DECOCK},         % author
+	pdfsubject={Pyarm},                 % subject of the document
+	pdfnewwindow=true,                  % links in new window
+	pdfkeywords={Pyarm},                % list of keywords
+	colorlinks=true,                    % false: boxed links; true: colored links
+	linkcolor=black,                    % color of internal links
+	citecolor=black,                    % color of links to bibliography
+	filecolor=black,                    % color of file links
+	urlcolor=black                      % color of external links
+}
+
+\begin{document}
+
+\title{Pyarm}
+\author{
+	Jérémie \bsc{Decock}
+}
+\date{\today{}}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Références}
+
+% Insert full bib here with vim : r!sh makebib.sh
+\cite{
+kambara2009,
+mitrovic2010adaptive,
+mitrovic2010optimal,
+mitrovic2009,
+mitrovic2008,
+katayama1993,
+brown1999,
+li2006,
+todorov2003optimal,
+li2004,
+todorov2005,
+ozkaya1999,
+kapandji2008,
+feldman1966functional,
+hogan1984organizing,
+rack1969effects,
+mussa1985neural,
+bennett1991relationship,
+bennett1992time,
+gomi1992human,
+katayama1990learning,
+hogan1985mechanics,
+flash1990human,
+katayama1991virtual,
+morasso1981spatial,
+hatze1979model,
+hatze1980mathematical,
+amis1979muscle,
+pigeon1996moment,
+wood1989Aquantitation,
+wood1989Bquantitation,
+engin1987biomechanics,
+hogfors1987biomechanical,
+guigon2007coding,
+guigon2008optimality,
+guigon-computational,
+marin-apprentissage,
+zajac1989muscle,
+lacquaniti1982mechanical,
+mackay1986measurements,
+joyce1969mechanical,
+houk1981neural,
+salaun2009two,
+libeau2009transfer,
+sigaud-model}
+
+\bibliographystyle{plain}
+\bibliography{article}
+
+\end{document}

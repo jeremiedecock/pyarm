@@ -15,6 +15,18 @@ slides.pdf: slides.tex
 	pdflatex slides.tex
 	pdflatex slides.tex
 
+
+
+bib.pdf: bib.tex bib.aux
+	pdflatex bib.tex
+	pdflatex bib.tex
+
+bib.aux: article.bib
+	pdflatex bib.tex
+	bibtex bib
+
+
+
 clean:
 	@echo "suppression des fichiers de compilation"
 	@rm -f *.log *.aux *.dvi *.toc *.lot *.lof *.out *.nav *.snm *.bbl *.blg bib.png

@@ -37,14 +37,12 @@ class ArmModel(AbstractArmModel):
     B     = np.array([[0.05, 0.025], [0.025, 0.05]]) # Joint friction matrix (???)
 
 
-    def __init__(self, has_theta_limit):
+    def __init__(self):
         self.alpha = np.zeros(2)               # Angular acceleration (rd/s²)
         self.omega = np.zeros(2)               # Angular velocity (rd/s)
         self.theta = np.array(self.theta_init) # Orientation (rd)
 
-        self.has_theta_limit = has_theta_limit
-        if self.has_theta_limit:
-            self.bound_joint_angles()
+        self.bound_joint_angles()
 
         # Init datas to plot (name, title, xlabel, ylabel)
         fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'Angular acceleration (rad/s/s)')
@@ -70,8 +68,7 @@ class ArmModel(AbstractArmModel):
 
         # Joint angle (rad) ###########
         self.theta += self.omega * dt
-        if self.has_theta_limit:
-            self.bound_joint_angles()
+        self.bound_joint_angles()
         fig.append('theta', self.theta)
 
         return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()

@@ -10,7 +10,7 @@ import getopt
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm -m muscle -a arm
+    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-g GUI] [-r]
     
     A robotic arm model and simulator.
 
@@ -20,8 +20,8 @@ def usage():
     -a, --arm
         the arm model to use (kambara, mitrovic or weiwei)
 
-    -n, --nolimit
-        ignore joint angles limits
+    -g, --gui
+        the graphical user interface to use (tk, sfml, none)
 
     -r, --realtime
         realtime simulation (framerate dependant)
@@ -29,20 +29,24 @@ def usage():
 
 
 def main():
-    """The main function"""
+    """The main function.
+    
+    The purpose of this function is to get the list of modules to load and
+    launch the simulator."""
 
     # Parse options ###################
     muscle = 'kambara'
     arm    = 'kambara'
-    has_theta_limit = True
+    gui    = 'sfml'
     realtime = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   'm:a:nrh',
-                                   ["muscle=", "arm=", "nolimit", "realtime", "help"])
+                     'm:a:g:rh',
+                     ["muscle=", "arm=", "gui=", "realtime", "help"])
     except getopt.GetoptError, err:
-        print str(err) # will print something like "option -x not recognized"
+        # will print something like "option -x not recognized"
+        print str(err) 
         usage()
         sys.exit(1)
 
@@ -54,16 +58,16 @@ def main():
             muscle = a
         elif o in ("-a", "--arm"):
             arm = a
-        elif o in ("-n", "--nolimit"):
-            has_theta_limit = False
+        elif o in ("-g", "--gui"):
+            gui = a
         elif o in ("-r", "--realtime"):
             realtime = True
         else:
             assert False, "unhandled option"
 
     if muscle not in ('fake', 'kambara', 'mitrovic', 'weiwei') \
-        or arm not in ('kambara', 'mitrovic', 'weiwei'):
-
+        or arm not in ('kambara', 'mitrovic', 'weiwei') \
+        or gui not in ('sfml', 'tk', 'none'):
         usage()
         sys.exit(2)
 
@@ -91,11 +95,19 @@ def main():
         usage()
         sys.exit(2)
 
-    import sfml_gui as view
+    if gui == 'sfml':
+        import sfml_gui as gui_mod
+    elif gui == 'tk':
+        import tkinter_gui as gui_mod
+    elif gui == 'none':
+        raise NotImplementedError()
+    else:
+        usage()
+        sys.exit(2)
 
-    arm_model = arm_mod.ArmModel(has_theta_limit)
+    arm_model = arm_mod.ArmModel()
     muscle_model = muscle_mod.MuscleModel(arm_model.theta)
-    gui = view.GUI(muscle_model, arm_model, realtime)
+    gui = gui_mod.GUI(muscle_model, arm_model, realtime)
     gui.run()
 
 

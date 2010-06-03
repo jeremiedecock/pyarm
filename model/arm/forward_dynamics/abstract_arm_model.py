@@ -30,8 +30,6 @@ class AbstractArmModel:
     # Initial joint angles : functional standard posture (rd) from [6] p.356-357
     theta_init = [math.radians(45), math.radians(70)]
 
-    has_theta_limit = True
-
     # Arm parameters ##########################################################
 
     shoulder_inertia = None   # Moment of inertia at shoulder join (kg·m²)
@@ -44,7 +42,7 @@ class AbstractArmModel:
     # Distance from the forearm joint center to the forearm center of mass (m)
     forearm_cog = None 
 
-    def __init__(self, has_theta_limit):
+    def __init__(self):
         raise NotImplementedError("Abstract class.")
 
 

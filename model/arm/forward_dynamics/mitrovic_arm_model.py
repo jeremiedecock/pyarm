@@ -77,14 +77,12 @@ class ArmModel(AbstractArmModel):
     forearm_cog = 0.21 
 
 
-    def __init__(self, has_theta_limit):
+    def __init__(self):
         self.alpha = np.zeros(2)               # Angular acceleration (rd/s²)
         self.omega = np.zeros(2)               # Angular velocity (rd/s)
         self.theta = np.array(self.theta_init) # Joint angle (rd)
 
-        self.has_theta_limit = has_theta_limit
-        if self.has_theta_limit:
-            self.bound_joint_angles()
+        self.bound_joint_angles()
 
         # Init datas to plot (name, title, xlabel, ylabel)
         fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'Angular acceleration (rad/s/s)')
@@ -116,8 +114,7 @@ class ArmModel(AbstractArmModel):
         # Joint angle #################
         self.theta += self.omega * dt
 
-        if self.has_theta_limit:
-            self.bound_joint_angles()
+        self.bound_joint_angles()
 
         fig.append('theta', self.theta)
 
