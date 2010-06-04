@@ -2,7 +2,7 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-import Tkinter
+import Tkinter as tk
 import math
 import time
 import fig
@@ -23,6 +23,7 @@ class GUI:
     str_var1 = None
     str_var2 = None
 
+    points = None
     canevas_width = 800
     canevas_height = 600
     LENGTH_SCALE = 300. # px/m (pixels per meter)
@@ -34,7 +35,7 @@ class GUI:
         self.arm = arm
 
         # Create the main window
-        self.root = Tkinter.Tk()
+        self.root = tk.Tk()
         self.root.resizable(False, False)
 
         # Set listenters (see "man bind" for more info)
@@ -42,27 +43,27 @@ class GUI:
         self.root.bind("<KeyRelease>", self.keyrelease_callback)
 
         # Label 1
-        self.str_var1 = Tkinter.StringVar() 
-        label1 = Tkinter.Label(self.root, textvariable=self.str_var1)
+        self.str_var1 = tk.StringVar() 
+        label1 = tk.Label(self.root, textvariable=self.str_var1)
         label1.pack()
 
         self.str_var1.set('-')
 
         # Label 2
-        self.str_var2 = Tkinter.StringVar() 
-        label2 = Tkinter.Label(self.root, textvariable=self.str_var2)
+        self.str_var2 = tk.StringVar() 
+        label2 = tk.Label(self.root, textvariable=self.str_var2)
         label2.pack()
 
         self.str_var2.set('-')
 
         # Canvas
-        self.canvas = Tkinter.Canvas(self.root, width=self.canevas_width, height=self.canevas_height)
+        self.canvas = tk.Canvas(self.root, width=self.canevas_width, height=self.canevas_height)
         self.canvas.pack()
 
         self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
 
         # Button
-        quit_button = Tkinter.Button(self.root, text="Quit", command=self.quit_callback)
+        quit_button = tk.Button(self.root, text="Quit", command=self.quit_callback)
         quit_button.pack()
 
         self.realtime = realtime
@@ -103,26 +104,24 @@ class GUI:
             self.keyboard_flags[5] = 0
 
     def update_shapes_position(self, shoulder_angle, elbow_angle):
-        xcenter = self.canevas_width / 2.
-        ycenter = self.canevas_height / 2.
-
-        self.forearm_position  = [xcenter,
-                                  ycenter,
-                                  xcenter + math.cos(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
-                                  ycenter + math.sin(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE]
-        self.upperarm_position = [xcenter + math.cos(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
-                                  ycenter + math.sin(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
-                                  80,
-                                  90]
-        # TODO
+        p0 = (self.canevas_width / 2., self.canevas_height / 2.)
+        p1 = (p0[0] + math.cos(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE,
+              p0[1] + math.sin(shoulder_angle) * self.arm.upperarm_length * self.LENGTH_SCALE)
+        p2 = (p1[0] + math.cos(shoulder_angle + elbow_angle) * self.arm.forearm_length * self.LENGTH_SCALE,
+              p1[1] + math.sin(shoulder_angle + elbow_angle) * self.arm.forearm_length * self.LENGTH_SCALE)
+        self.points  = (p0, p1, p2)
 
     def draw_shapes(self):
         # TODO : optimiser l'affichage (le nb de FPS chute très vite), surveiller consomation memoire
+        for tag in self.canvas.find_all():
+            self.canvas.delete(tag)
+
         self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
-        self.canvas.create_line(self.upperarm_position, fill="black", width=5)
-        self.canvas.create_line(self.forearm_position, fill="black", width=5)
-        #self.canvas.create_oval((30,10,60,30), fill="yellow", outline="cyan")
-        #self.canvas.create_polygon((40,40, 55,50, 70,40, 60,55), fill="gray")
+
+        self.canvas.create_line(self.points[0] + self.points[1], fill="black", width=5)
+        self.canvas.create_line(self.points[1] + self.points[2], fill="black", width=5)
+
+        #self.canvas.create_oval(self.points[0] + (20, 20), outline="black")
 
     def run(self):
         # The main loop
@@ -152,6 +151,6 @@ class GUI:
 
                 self.root.update_idletasks() # redraw
                 self.root.update() # process events
-        except Tkinter.TclError:
+        except tk.TclError:
             pass # to avoid errors when the window is closed
 
