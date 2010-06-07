@@ -7,7 +7,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-import numbers
+#import numbers
 
 _subfigs  = {}
 _timeref  = time.time()
@@ -20,19 +20,23 @@ def append(name, y, x=None):
         if x is None:
             x = time.time() - _timeref
 
-        if isinstance(x, numbers.Number):
+        #if isinstance(x, numbers.Number):
+        if not hasattr(x, 'copy'):
             _subfigs[name]['xdata'].append(x)
-        elif isinstance(x, np.ndarray):
+        #elif isinstance(x, np.ndarray):
+        else:
             _subfigs[name]['xdata'].append(x.copy())
-        else:
-            raise TypeError('x type is ' + str(type(x)) + ' (number or array expected)')
+        #else:
+        #    raise TypeError('x type is ' + str(type(x)) + ' (number or array expected)')
 
-        if isinstance(y, numbers.Number):
+        #if isinstance(y, numbers.Number):
+        if not hasattr(y, 'copy'):
             _subfigs[name]['ydata'].append(y)
-        elif isinstance(y, np.ndarray):
-            _subfigs[name]['ydata'].append(y.copy())
+        #elif isinstance(y, np.ndarray):
         else:
-            raise TypeError('y type is ' + str(type(y)) + ' (number or array expected)')
+            _subfigs[name]['ydata'].append(y.copy())
+        #else:
+        #    raise TypeError('y type is ' + str(type(y)) + ' (number or array expected)')
 
     else:
         warnings.warn('"' + str(name) + '" has not been declared with fig.subfig(). "' + str(name) + '" is not defined in _subfigs.')

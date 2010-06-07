@@ -125,6 +125,9 @@ class GUI:
         self.canvas.create_line(arrow_point1.tolist() + arrow_point3.tolist())
 
         #####
+        abs_shoulder_angle = self.initial_angle + shoulder_angle
+        abs_elbow_angle = self.initial_angle + shoulder_angle + elbow_angle
+
         p0 = np.array([self.canevas_width, self.canevas_height]) / 2.
         p1 = np.array([math.cos(self.initial_angle + shoulder_angle),  \
                        math.sin(self.initial_angle + shoulder_angle)]) \
@@ -133,16 +136,35 @@ class GUI:
                        math.sin(self.initial_angle + shoulder_angle + elbow_angle)]) \
              * self.arm.upperarm_length * self.LENGTH_SCALE + p1
 
-        # Draw angles
+        # Draw angles bounds
         shoulder_oval_point1 = p0 - 25
         shoulder_oval_point2 = p0 + 25
         self.canvas.create_arc(shoulder_oval_point1.tolist() + shoulder_oval_point2.tolist(),
-                               start=0, extent=270, fill="red")
+                               start=math.degrees(-self.initial_angle - self.arm.theta_bounds[0]['min']),
+                               extent=math.degrees(-self.arm.theta_bounds[0]['max'] + self.arm.theta_bounds[0]['min']),
+                               outline="white",
+                               fill="gray")
 
         elbow_oval_point1 = p1 - 25
         elbow_oval_point2 = p1 + 25
         self.canvas.create_arc(elbow_oval_point1.tolist() + elbow_oval_point2.tolist(),
-                               start=0, extent=270, fill="red")
+                               start=math.degrees(-self.initial_angle - shoulder_angle - self.arm.theta_bounds[1]['min']),
+                               extent=math.degrees(-self.arm.theta_bounds[1]['max'] + self.arm.theta_bounds[1]['min']),
+                               outline="white",
+                               fill="gray")
+
+        # Draw angles
+        shoulder_oval_point1 = p0 - 25
+        shoulder_oval_point2 = p0 + 25
+        self.canvas.create_arc(shoulder_oval_point1.tolist() + shoulder_oval_point2.tolist(),
+                               start=math.degrees(-self.initial_angle),
+                               extent=math.degrees(-shoulder_angle))
+
+        elbow_oval_point1 = p1 - 25
+        elbow_oval_point2 = p1 + 25
+        self.canvas.create_arc(elbow_oval_point1.tolist() + elbow_oval_point2.tolist(),
+                               start=math.degrees(-self.initial_angle - shoulder_angle),
+                               extent=math.degrees(-elbow_angle))
 
         angle_point1 = p0
         angle_point2 = np.array([math.cos(self.initial_angle),  \
@@ -155,8 +177,6 @@ class GUI:
 
         self.canvas.create_line(angle_point1.tolist() + angle_point2.tolist(), width=1)
         self.canvas.create_line(angle_point3.tolist() + angle_point4.tolist(), width=1)
-
-        # Draw angles bounds
 
         # Draw limbs
         self.canvas.create_line(p0.tolist() + p1.tolist(), fill="black", width=5)

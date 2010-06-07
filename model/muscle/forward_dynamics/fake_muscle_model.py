@@ -23,12 +23,12 @@ class MuscleModel:
         i = np.array(input_signal)
         if i[0]:
             tau[0] = self.tau_value
-        elif i[3]:
+        elif i[1]:
             tau[0] = -self.tau_value
 
-        if i[1]:
+        if i[2]:
             tau[1] = self.tau_value
-        elif i[4]:
+        elif i[3]:
             tau[1] = -self.tau_value
 
         fig.append('torque', tau)
