@@ -9,8 +9,10 @@ import time
 import fig
 
 class GUI:
+    "Tkinter graphical user interface."
 
-    delta_time  = 0.01                          # The state of the arm is updated at every tick_duration time (s)
+    # The state of the arm is updated at every tick_duration time (s)
+    delta_time  = 0.01 
     former_time = 0.
     realtime = True
 
@@ -25,13 +27,18 @@ class GUI:
     str_var2 = None
 
     initial_angle = 0
-    #initial_angle = math.pi / 2
+    #initial_angle = -math.pi / 2
 
     canevas_width = 800
     canevas_height = 600
-    LENGTH_SCALE = 450. # px/m (pixels per meter)
+    scale = 450. # px/m (pixels per meter)
 
     keyboard_flags = [0, 0, 0, 0, 0, 0]
+
+    draw_angles_bounds = True
+    draw_angles = True
+    draw_joints = True
+    draw_muscles = True
 
     def __init__(self, muscle, arm, realtime):
         self.muscle = muscle
@@ -60,13 +67,19 @@ class GUI:
         self.str_var2.set('-')
 
         # Canvas
-        self.canvas = tk.Canvas(self.root, width=self.canevas_width, height=self.canevas_height)
+        self.canvas = MathCanvas(self.root,
+                                 width=self.canevas_width,
+                                 height=self.canevas_height)
         self.canvas.pack()
 
-        self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
+        self.canvas.create_rectangle((1, 1, 800, 600),
+                                     fill="white",
+                                     outline="black")
 
         # Button
-        quit_button = tk.Button(self.root, text="Quit", command=self.quit_callback)
+        quit_button = tk.Button(self.root,
+                                text="Quit",
+                                command=self.quit_callback)
         quit_button.pack()
 
         self.realtime = realtime
@@ -107,96 +120,114 @@ class GUI:
             self.keyboard_flags[5] = 0
 
     def draw_shapes(self, shoulder_angle, elbow_angle):
-        # TODO : only delete moving parts (not the background rectangle of example)
+    
+        # Compute limb points and angles ########
+
+        global_shoulder_angle = self.initial_angle + shoulder_angle
+        global_elbow_angle = global_shoulder_angle + elbow_angle
+
+        shoulder_point = np.array([self.canevas_width, self.canevas_height]) / 2.
+        elbow_point = np.array([math.cos(global_shoulder_angle),  \
+                       math.sin(global_shoulder_angle)]) \
+             * self.arm.upperarm_length * self.scale + shoulder_point
+        wrist_point = np.array([math.cos(global_elbow_angle),  \
+                       math.sin(global_elbow_angle)]) \
+             * self.arm.upperarm_length * self.scale + elbow_point
+
+        # Draw parts ############################
+
+        # Clear the canvas
+        # TODO : only delete moving parts (eg. not the background rectangle of
+        #        example)
         for tag in self.canvas.find_all():
             self.canvas.delete(tag)
 
-        self.canvas.create_rectangle((1,1,800,600), fill="white", outline="black")
-
-        # Draw the initial angle arrow
-        arrow_point1 = np.array([10, 10]) + self.LENGTH_SCALE / 10
-        arrow_point2 = np.array([math.cos(self.initial_angle),  \
-                                 math.sin(self.initial_angle)]) \
-                       * self.LENGTH_SCALE / 10 + arrow_point1
-        arrow_point3 = np.array([math.cos(self.initial_angle + math.pi/2),  \
-                                 math.sin(self.initial_angle + math.pi/2)]) \
-                       * self.LENGTH_SCALE / 20 + arrow_point1
-        self.canvas.create_line(arrow_point1.tolist() + arrow_point2.tolist())
-        self.canvas.create_line(arrow_point1.tolist() + arrow_point3.tolist())
-
-        #####
-        abs_shoulder_angle = self.initial_angle + shoulder_angle
-        abs_elbow_angle = self.initial_angle + shoulder_angle + elbow_angle
-
-        p0 = np.array([self.canevas_width, self.canevas_height]) / 2.
-        p1 = np.array([math.cos(self.initial_angle + shoulder_angle),  \
-                       math.sin(self.initial_angle + shoulder_angle)]) \
-             * self.arm.upperarm_length * self.LENGTH_SCALE + p0
-        p2 = np.array([math.cos(self.initial_angle + shoulder_angle + elbow_angle),  \
-                       math.sin(self.initial_angle + shoulder_angle + elbow_angle)]) \
-             * self.arm.upperarm_length * self.LENGTH_SCALE + p1
+        # Draw white background
+        self.canvas.create_rectangle((1, 1, 800, 600),
+                                     fill="white",
+                                     outline="black")
 
         # Draw angles bounds
-        shoulder_oval_point1 = p0 - 25
-        shoulder_oval_point2 = p0 + 25
-        self.canvas.create_arc(shoulder_oval_point1.tolist() + shoulder_oval_point2.tolist(),
-                               start=math.degrees(-self.initial_angle - self.arm.theta_bounds[0]['min']),
-                               extent=math.degrees(-self.arm.theta_bounds[0]['max'] + self.arm.theta_bounds[0]['min']),
-                               outline="white",
-                               fill="gray")
+        if self.draw_angles_bounds:
+            # Shoulder
+            angle_start = math.degrees(self.initial_angle + self.arm.theta_bounds[0]['min'])
+            angle_extent = math.degrees(self.arm.theta_bounds[0]['max'] - self.arm.theta_bounds[0]['min'])
+            self.canvas.draw_arc(shoulder_point[0].tolist(),
+                                 shoulder_point[1].tolist(),
+                                 25,
+                                 start=angle_start,
+                                 extent=angle_extent,
+                                 outline="white",
+                                 fill="gray")
 
-        elbow_oval_point1 = p1 - 25
-        elbow_oval_point2 = p1 + 25
-        self.canvas.create_arc(elbow_oval_point1.tolist() + elbow_oval_point2.tolist(),
-                               start=math.degrees(-self.initial_angle - shoulder_angle - self.arm.theta_bounds[1]['min']),
-                               extent=math.degrees(-self.arm.theta_bounds[1]['max'] + self.arm.theta_bounds[1]['min']),
-                               outline="white",
-                               fill="gray")
+            # Elbow
+            angle_start = math.degrees(global_shoulder_angle + self.arm.theta_bounds[1]['min'])
+            angle_extent = math.degrees(self.arm.theta_bounds[1]['max'] - self.arm.theta_bounds[1]['min'])
+            self.canvas.draw_arc(elbow_point[0].tolist(),
+                                 elbow_point[1].tolist(),
+                                 25,
+                                 start=angle_start,
+                                 extent=angle_extent,
+                                 outline="white",
+                                 fill="gray")
 
         # Draw angles
-        shoulder_oval_point1 = p0 - 25
-        shoulder_oval_point2 = p0 + 25
-        self.canvas.create_arc(shoulder_oval_point1.tolist() + shoulder_oval_point2.tolist(),
-                               start=math.degrees(-self.initial_angle),
-                               extent=math.degrees(-shoulder_angle))
+        if self.draw_angles:
+            # Shoulder arc angle
+            self.canvas.draw_arc(shoulder_point[0].tolist(),
+                                 shoulder_point[1].tolist(),
+                                 25,
+                                 start=math.degrees(self.initial_angle),
+                                 extent=math.degrees(shoulder_angle))
 
-        elbow_oval_point1 = p1 - 25
-        elbow_oval_point2 = p1 + 25
-        self.canvas.create_arc(elbow_oval_point1.tolist() + elbow_oval_point2.tolist(),
-                               start=math.degrees(-self.initial_angle - shoulder_angle),
-                               extent=math.degrees(-elbow_angle))
+            # Elbow arc angle
+            self.canvas.draw_arc(elbow_point[0].tolist(),
+                                 elbow_point[1].tolist(),
+                                 25,
+                                 start=math.degrees(global_shoulder_angle),
+                                 extent=math.degrees(elbow_angle))
 
-        angle_point1 = p0
-        angle_point2 = np.array([math.cos(self.initial_angle),  \
-                                 math.sin(self.initial_angle)]) \
-                       * 30 + p0
-        angle_point3 = p1
-        angle_point4 = np.array([math.cos(self.initial_angle + shoulder_angle),  \
-                                 math.sin(self.initial_angle + shoulder_angle)]) \
-                       * 30 + p1
+            # Shoulder initial line
+            point1 = shoulder_point
+            point2 = np.array([math.cos(self.initial_angle), 
+                               math.sin(self.initial_angle)]) \
+                     * 30 + shoulder_point
+            self.canvas.draw_line(point1.tolist() + point2.tolist(),
+                                    width=1)
 
-        self.canvas.create_line(angle_point1.tolist() + angle_point2.tolist(), width=1)
-        self.canvas.create_line(angle_point3.tolist() + angle_point4.tolist(), width=1)
+            # Elbow initial line
+            point1 = elbow_point
+            point2 = np.array([math.cos(global_shoulder_angle), 
+                               math.sin(global_shoulder_angle)]) \
+                     * 30 + elbow_point
+            self.canvas.draw_line(point1.tolist() + point2.tolist(),
+                                    width=1)
 
         # Draw limbs
-        self.canvas.create_line(p0.tolist() + p1.tolist(), fill="black", width=5)
-        self.canvas.create_line(p1.tolist() + p2.tolist(), fill="black", width=5)
+        self.canvas.draw_line(shoulder_point.tolist() + elbow_point.tolist(),
+                                fill="black",
+                                width=5)
+        self.canvas.draw_line(elbow_point.tolist() + wrist_point.tolist(),
+                                fill="black",
+                                width=5)
 
         # Draw joints
-        if hasattr(self.muscle, 'A'):
-            shoulder_point1 = p0 - self.muscle.A[0,0] * self.LENGTH_SCALE
-            shoulder_point2 = p0 + self.muscle.A[0,0] * self.LENGTH_SCALE
-            shoulder_point3 = p0 - self.muscle.A[4,0] * self.LENGTH_SCALE
-            shoulder_point4 = p0 + self.muscle.A[4,0] * self.LENGTH_SCALE
-            self.canvas.create_oval(shoulder_point1.tolist() + shoulder_point2.tolist())
-            self.canvas.create_oval(shoulder_point3.tolist() + shoulder_point4.tolist())
+        if self.draw_joints and hasattr(self.muscle, 'A'):
+            # Shoulder
+            self.canvas.draw_circle(shoulder_point[0].tolist(),
+                                    shoulder_point[1].tolist(),
+                                    self.muscle.A[0, 0] * self.scale)
+            self.canvas.draw_circle(shoulder_point[0].tolist(),
+                                    shoulder_point[1].tolist(),
+                                    self.muscle.A[4, 0] * self.scale)
 
-            elbow_point1 = p1 - self.muscle.A[2,1] * self.LENGTH_SCALE
-            elbow_point2 = p1 + self.muscle.A[2,1] * self.LENGTH_SCALE
-            elbow_point3 = p1 - self.muscle.A[4,1] * self.LENGTH_SCALE
-            elbow_point4 = p1 + self.muscle.A[4,1] * self.LENGTH_SCALE
-            self.canvas.create_oval(elbow_point1.tolist() + elbow_point2.tolist())
-            self.canvas.create_oval(elbow_point3.tolist() + elbow_point4.tolist())
+            # Elbow
+            self.canvas.draw_circle(elbow_point[0].tolist(),
+                                    elbow_point[1].tolist(),
+                                    self.muscle.A[2, 1] * self.scale)
+            self.canvas.draw_circle(elbow_point[0].tolist(),
+                                    elbow_point[1].tolist(),
+                                    self.muscle.A[4, 1] * self.scale)
 
     def run(self):
         # The main loop
@@ -211,8 +242,10 @@ class GUI:
                     self.delta_time = current_time - self.former_time
 
                 # Update thetas (physics)
-                input = self.keyboard_flags
-                tau = self.muscle.update(input, self.arm.theta, self.delta_time)
+                input_signal = self.keyboard_flags
+                tau = self.muscle.update(input_signal,
+                                         self.arm.theta,
+                                         self.delta_time)
                 alpha, omega, theta = self.arm.update(tau, self.delta_time)
 
                 # Update clock
@@ -227,4 +260,44 @@ class GUI:
                 self.root.update() # process events
         except tk.TclError:
             pass # to avoid errors when the window is closed
+
+
+class MathCanvas(tk.Canvas):
+    "A canvas where the origin is placed at the bottom left corner."
+
+    def draw_line(self, *args, **kw):
+        points = np.array(args[0])
+        points_array = points.reshape((2, points.shape[0] / 2))
+        points_array[:,1] *= -1
+        points_array[:,1] += self.winfo_height()      # TODO : self.canevas_height  self.winfo_height()   self.winfo_reqheight()
+        points = points_array.reshape(points_array.shape[0] \
+                                      * points_array.shape[1])
+        args = points.tolist()
+        return self.create_line(args, kw)
+
+    def draw_arc(self, x_point, y_point, radius, **kw):
+        radius = abs(radius)
+        y_point *= -1
+        y_point += self.winfo_height() # TODO
+        args = (x_point + radius,
+                y_point + radius,
+                x_point - radius,
+                y_point - radius)
+        return self.create_arc(args, kw)
+
+    def draw_circle(self, x_point, y_point, radius, **kw):
+        radius = abs(radius)
+        y_point *= -1
+        y_point += self.winfo_height() # TODO
+        args = (x_point + radius,
+                y_point + radius,
+                x_point - radius,
+                y_point - radius)
+        return self.create_oval(args, kw)
+
+    def draw_text(self, x_point, y_point, **kw):
+        y_point *= -1
+        y_point += self.winfo_height() # TODO
+        args = (x_point, y_point)
+        return self.create_text(args, kw)
 
