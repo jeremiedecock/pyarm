@@ -20,6 +20,9 @@ def usage():
     -a, --arm
         the arm model to use (kambara, mitrovic or weiwei)
 
+    -A, --agent
+        the agent to use (oscillator)
+
     -g, --gui
         the graphical user interface to use (tk, sfml, gtk, cairo, none)
 
@@ -35,15 +38,16 @@ def main():
     launch the simulator."""
 
     # Parse options ###################
-    muscle = 'kambara'
-    arm    = 'kambara'
+    muscle = 'fake'
+    arm    = 'weiwei'
+    agent  = 'oscillator'
     gui    = 'sfml'
     realtime = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:g:rh',
-                     ["muscle=", "arm=", "gui=", "realtime", "help"])
+                     'm:a:A:g:rh',
+                     ["muscle=", "arm=", "agent=", "gui=", "realtime", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
         print str(err) 
@@ -58,6 +62,8 @@ def main():
             muscle = a
         elif o in ("-a", "--arm"):
             arm = a
+        elif o in ("-A", "--agent"):
+            agent = a
         elif o in ("-g", "--gui"):
             gui = a
         elif o in ("-r", "--realtime"):
@@ -67,6 +73,7 @@ def main():
 
     if muscle not in ('fake', 'kambara', 'mitrovic', 'weiwei') \
         or arm not in ('kambara', 'mitrovic', 'weiwei') \
+        or agent not in ('oscillator') \
         or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
@@ -95,6 +102,12 @@ def main():
         usage()
         sys.exit(2)
 
+    if agent == 'oscillator':
+        from agent.oscillator import oscillator_agent as agent_mod
+    else:
+        usage()
+        sys.exit(2)
+
     if gui == 'sfml':
         import sfml_gui as gui_mod
     elif gui == 'tk':
@@ -111,7 +124,7 @@ def main():
 
     arm_model = arm_mod.ArmModel()
     muscle_model = muscle_mod.MuscleModel(arm_model.theta)
-    gui = gui_mod.GUI(muscle_model, arm_model, realtime)
+    gui = gui_mod.GUI(muscle_model, arm_model, agent=agent_mod, realtime=realtime)
     gui.run()
 
 

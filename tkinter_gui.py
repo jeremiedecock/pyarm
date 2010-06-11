@@ -18,6 +18,7 @@ class GUI:
 
     running = True
 
+    agent = None
     arm = None
     muscle = None
 
@@ -40,9 +41,10 @@ class GUI:
     draw_joints = True
     draw_muscles = True
 
-    def __init__(self, muscle, arm, realtime):
-        self.muscle = muscle
+    def __init__(self, muscle, arm, agent=None, realtime=False):
         self.arm = arm
+        self.muscle = muscle
+        self.agent = agent
 
         # Create the main window
         self.root = tk.Tk()
@@ -232,6 +234,10 @@ class GUI:
     def run(self):
         # The main loop
         try:
+            alpha = 0.
+            omega = 0.
+            theta = 0.
+
             while self.running:
                 # Get events
 
@@ -242,7 +248,13 @@ class GUI:
                     self.delta_time = current_time - self.former_time
 
                 # Update thetas (physics)
-                input_signal = self.keyboard_flags
+                input_signal = None
+                if self.agent == None:
+                    input_signal = self.keyboard_flags
+                else:
+                    state = (alpha, omega, theta, self.delta_time)
+                    input_signal = self.agent.getAction(state)
+
                 tau = self.muscle.update(input_signal,
                                          self.arm.theta,
                                          self.delta_time)
