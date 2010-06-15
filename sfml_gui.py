@@ -8,13 +8,18 @@ import time
 import fig
 
 class GUI:
+    "SFML graphical user interface."
 
-    delta_time  = 0.01      # The state of the arm is updated at every tick_duration time (s)
+    # The state of the arm is updated at every tick_duration time (s)
+    delta_time  = 0.01
     former_time = 0.
+    init_time = 0.
     realtime = True
 
+    agent = None
     arm = None
     muscle = None
+
     window = None
     background_color = None
     foreground_color = None
@@ -24,9 +29,10 @@ class GUI:
     line2 = None
     LENGTH_SCALE = 300. # px/m (pixels per meter)
 
-    def __init__(self, muscle, arm, realtime):
-        self.muscle = muscle
+    def __init__(self, muscle, arm, agent=None, realtime=False):
         self.arm = arm
+        self.muscle = muscle
+        self.agent = agent
 
         # Create the main window
         self.window = sf.RenderWindow(sf.VideoMode(800, 600), 'pyArm (' + muscle.name + ' - ' + arm.name + ')')
@@ -52,6 +58,7 @@ class GUI:
         self.former_time = time.time()         # Former time (s)
 
         fig.subfig('dtime', 'Time', 'time (s)', 'delta time (s)')
+        fig.subfig('input signal', 'Signal', 'time (s)', 'signal')
 
     def __del__(self):
         fig.show()
@@ -80,6 +87,10 @@ class GUI:
     def run(self):
         window_input = self.window.GetInput()
 
+        alpha = 0.
+        omega = 0.
+        theta = 0.
+
         # The main loop
         running = True
 
@@ -90,7 +101,7 @@ class GUI:
                 if event.Type == sf.Event.Closed:
                     running = False
 
-            input = (window_input.IsKeyDown(sf.Key.Numpad1), window_input.IsKeyDown(sf.Key.Numpad2), window_input.IsKeyDown(sf.Key.Numpad3), window_input.IsKeyDown(sf.Key.Numpad4), window_input.IsKeyDown(sf.Key.Numpad5), window_input.IsKeyDown(sf.Key.Numpad6))
+            key_input = (window_input.IsKeyDown(sf.Key.Numpad1), window_input.IsKeyDown(sf.Key.Numpad2), window_input.IsKeyDown(sf.Key.Numpad3), window_input.IsKeyDown(sf.Key.Numpad4), window_input.IsKeyDown(sf.Key.Numpad5), window_input.IsKeyDown(sf.Key.Numpad6))
 
             # Compute delta time
             current_time = time.time()
@@ -100,8 +111,24 @@ class GUI:
 
             fig.append('dtime', self.delta_time)
 
+            elapsed_time = current_time - self.init_time
+
+            # Get input signals
+            input_signal = None
+            if self.agent == None:
+                input_signal = key_input
+            else:
+                input_signal = self.agent.get_action(alpha=alpha,
+                                                     omega=omega,
+                                                     theta=theta,
+                                                     time=elapsed_time)
+        
+            fig.append('input signal', input_signal)
+
             # Update thetas (physics)
-            tau = self.muscle.update(input, self.arm.theta, self.delta_time)
+            tau = self.muscle.update(input_signal,
+                                     self.arm.theta,
+                                     self.delta_time)
             alpha, omega, theta = self.arm.update(tau, self.delta_time)
 
             # Update clock

@@ -85,9 +85,9 @@ class ArmModel(AbstractArmModel):
         self.bound_joint_angles()
 
         # Init datas to plot (name, title, xlabel, ylabel)
-        fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'Angular acceleration (rad/s/s)')
-        fig.subfig('omega',  'Angular velocity',     'time (s)', 'Angular velocity (rad/s)')
-        fig.subfig('theta',  'Angle',                'time (s)', 'Angle (rad)')
+        fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'angular acceleration (rad/s/s)')
+        fig.subfig('omega',  'Angular velocity',     'time (s)', 'angular velocity (rad/s)')
+        fig.subfig('theta',  'Angle',                'time (s)', 'angle (rad)')
 
 
     def update(self, tau, dt):

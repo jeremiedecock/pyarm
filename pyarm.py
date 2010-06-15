@@ -10,7 +10,7 @@ import getopt
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-g GUI] [-r]
+    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r]
     
     A robotic arm model and simulator.
 
@@ -40,7 +40,7 @@ def main():
     # Parse options ###################
     muscle = 'fake'
     arm    = 'weiwei'
-    agent  = 'oscillator'
+    agent  = None
     gui    = 'sfml'
     realtime = False
 
@@ -73,7 +73,7 @@ def main():
 
     if muscle not in ('fake', 'kambara', 'mitrovic', 'weiwei') \
         or arm not in ('kambara', 'mitrovic', 'weiwei') \
-        or agent not in ('oscillator') \
+        or agent not in (None, 'oscillator') \
         or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
@@ -102,8 +102,10 @@ def main():
         usage()
         sys.exit(2)
 
-    if agent == 'oscillator':
-        from agent.oscillator import oscillator_agent as agent_mod
+    if agent == None:
+        agent_mod = None
+    elif agent == 'oscillator':
+        from agent import oscillator as agent_mod
     else:
         usage()
         sys.exit(2)
@@ -124,7 +126,12 @@ def main():
 
     arm_model = arm_mod.ArmModel()
     muscle_model = muscle_mod.MuscleModel(arm_model.theta)
-    gui = gui_mod.GUI(muscle_model, arm_model, agent=agent_mod, realtime=realtime)
+
+    agent = None
+    if agent_mod != None:
+        agent = agent_mod.Agent()
+
+    gui = gui_mod.GUI(muscle_model, arm_model, agent=agent, realtime=realtime)
     gui.run()
 
 

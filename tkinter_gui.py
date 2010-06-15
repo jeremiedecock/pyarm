@@ -12,8 +12,9 @@ class GUI:
     "Tkinter graphical user interface."
 
     # The state of the arm is updated at every tick_duration time (s)
-    delta_time  = 0.01 
+    delta_time = 0.01 
     former_time = 0.
+    init_time = 0.
     realtime = True
 
     running = True
@@ -86,6 +87,10 @@ class GUI:
 
         self.realtime = realtime
         self.former_time = time.time()         # Former time (s)
+        self.init_time = self.former_time      # Initial time (s)
+
+        fig.subfig('dtime',        'Time',   'time (s)', 'delta time (s)')
+        fig.subfig('input signal', 'Signal', 'time (s)', 'signal')
 
     def __del__(self):
         fig.show()
@@ -239,22 +244,29 @@ class GUI:
             theta = 0.
 
             while self.running:
-                # Get events
-
                 # Compute delta time
                 current_time = time.time()
 
                 if self.realtime:
                     self.delta_time = current_time - self.former_time
+            
+                fig.append('dtime', self.delta_time)
 
-                # Update thetas (physics)
+                elapsed_time = current_time - self.init_time
+
+                # Get input signals
                 input_signal = None
                 if self.agent == None:
                     input_signal = self.keyboard_flags
                 else:
-                    state = (alpha, omega, theta, self.delta_time)
-                    input_signal = self.agent.getAction(state)
+                    input_signal = self.agent.get_action(alpha=alpha,
+                                                         omega=omega,
+                                                         theta=theta,
+                                                         time=elapsed_time)
+            
+                fig.append('input signal', input_signal)
 
+                # Update thetas (physics)
                 tau = self.muscle.update(input_signal,
                                          self.arm.theta,
                                          self.delta_time)
