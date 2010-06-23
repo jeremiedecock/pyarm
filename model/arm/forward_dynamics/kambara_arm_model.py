@@ -3,6 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 from abstract_arm_model import AbstractArmModel
+from kinematics import euler as kinematics
 import math
 import numpy as np
 import fig
@@ -14,7 +15,7 @@ class ArmModel(AbstractArmModel):
 
     Hiroyuki Kambara
 
-    title={{Learning and generation of goal-directed arm reaching from scratch}},
+    title={Learning and generation of goal-directed arm reaching from scratch},
     author={Kambara, H. and Kim, K. and Shin, D. and Sato, M. and Koike, Y.},
     journal={Neural Networks},
     volume={22},
@@ -26,22 +27,10 @@ class ArmModel(AbstractArmModel):
 
     name = 'Kambara'
 
-    alpha = None              # Angular acceleration (rd/s²)
-    omega = None              # Angular velocity (rd/s)
-    theta = None              # Joint angle (rd)
-
-    #theta_bounds = [{'min':-1.75, 'max':0.52},  # Min and max joint angles (rd) (cf. H.Kambara)
-    ##               {'min':-0.35, 'max':1.92}]
-    #                {'min':0., 'max':1.92}]
     theta_bounds = [{'min': math.radians(-50), 'max': math.radians(180)}, 
                     {'min': math.radians(0),   'max': math.radians(160)}] 
 
-    theta_init = [0., 0.]                      # Orientation (rd)
-
-    # Bound values for assert
-    taumin,   taumax   = -200, 200             # Total torque (N.m)
-    alphamin, alphamax = -10E1, 10E1           # Angular acceleration (rd/s²)
-    omegamin, omegamax = -2. * math.pi, 2. * math.pi   # Angular velocity (rd/s) from [3] p.19
+    theta_init = [0., 0.]     # Orientation (rd)
 
     # Arm parameters ##########################################################
     
@@ -58,7 +47,8 @@ class ArmModel(AbstractArmModel):
     upperarm_cog = 0.18 
     forearm_cog = 0.21 
 
-    g  = 9.8                                   # Gravitational acceleration (m/s²)
+    # Gravitational acceleration (m/s²)
+    g  = 9.8
 
 
     def __init__(self):
@@ -69,9 +59,18 @@ class ArmModel(AbstractArmModel):
         self.bound_joint_angles()
 
         # Init datas to plot (name, title, xlabel, ylabel)
-        fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'Angular acceleration (rad/s/s)')
-        fig.subfig('omega',  'Angular velocity',     'time (s)', 'Angular velocity (rad/s)')
-        fig.subfig('theta',  'Angle',                'time (s)', 'Angle (rad)')
+        fig.subfig('alpha',
+                   'Angular acceleration',
+                   'time (s)',
+                   'Angular acceleration (rad/s/s)')
+        fig.subfig('omega',
+                   'Angular velocity',
+                   'time (s)',
+                   'Angular velocity (rad/s)')
+        fig.subfig('theta',
+                   'Angle',
+                   'time (s)',
+                   'Angle (rad)')
 
 
     def update(self, tau, dt):
@@ -84,17 +83,21 @@ class ArmModel(AbstractArmModel):
 
         self.alpha = np.dot(np.linalg.inv(M), tau - C - G)
         fig.append('alpha', self.alpha)
-        assert self.alpha.min() >= self.alphamin and self.alpha.max() <= self.alphamax, "Angular acceleration"
+        assert self.alpha.min() >= self.alphamin \
+               and self.alpha.max() <= self.alphamax, "Angular acceleration"
 
-        # Angular velocity (rad/s) ####
-        self.omega += self.alpha * dt
-        fig.append('omega', self.omega)
-        assert self.omega.min() >= self.omegamin and self.omega.max() <= self.omegamax, "Angular velocity"
-
-        # Joint angle (rad) ###########
-        self.theta += self.omega * dt
+        # Forward kinematics
+        self.alpha, self.omega, self.theta = kinematics.forward_kinematics(acceleration=self.alpha,
+                                                               velocity=self.omega,
+                                                               angle=self.theta,
+                                                               delta_time=dt)
         self.bound_joint_angles()
+
+        fig.append('omega', self.omega)
         fig.append('theta', self.theta)
+
+        assert self.omega.min() >= self.omegamin \
+               and self.omega.max() <= self.omegamax, "Angular velocity"
 
         return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()
 

@@ -3,6 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 from abstract_arm_model import AbstractArmModel
+from kinematics import euler as kinematics
 import math
 import numpy as np
 import fig
@@ -11,15 +12,6 @@ class ArmModel(AbstractArmModel):
     """Horizontally planar 2 DoF arm model."""
 
     name = 'Weiwei'
-
-    alpha = None              # Angular acceleration (rd/s²)
-    omega = None              # Angular velocity (rd/s)
-    theta = None              # Joint angle (rd)
-
-    # Bound values for assert
-    taumin,   taumax   = -200, 200             # Total torque (N.m)
-    alphamin, alphamax = -10E1, 10E1           # Angular acceleration (rd/s²)
-    omegamin, omegamax = -2. * math.pi, 2. * math.pi   # Angular velocity (rd/s) from [3] p.19
 
     # Arm parameters ##########################################################
 
@@ -34,7 +26,7 @@ class ArmModel(AbstractArmModel):
     # Distance from the forearm joint center to the forearm center of mass (m)
     forearm_cog = 0.16 
     
-    B     = np.array([[0.05, 0.025], [0.025, 0.05]]) # Joint friction matrix (???)
+    B = np.array([[0.05, 0.025], [0.025, 0.05]]) # Joint friction matrix (???)
 
 
     def __init__(self):
@@ -45,9 +37,18 @@ class ArmModel(AbstractArmModel):
         self.bound_joint_angles()
 
         # Init datas to plot (name, title, xlabel, ylabel)
-        fig.subfig('alpha',  'Angular acceleration', 'time (s)', 'Angular acceleration (rad/s/s)')
-        fig.subfig('omega',  'Angular velocity',     'time (s)', 'Angular velocity (rad/s)')
-        fig.subfig('theta',  'Angle',                'time (s)', 'Angle (rad)')
+        fig.subfig('alpha',
+                   'Angular acceleration',
+                   'time (s)',
+                   'Angular acceleration (rad/s/s)')
+        fig.subfig('omega',
+                   'Angular velocity',
+                   'time (s)',
+                   'Angular velocity (rad/s)')
+        fig.subfig('theta',
+                   'Angle',
+                   'time (s)',
+                   'Angle (rad)')
 
 
     def update(self, tau, dt):
@@ -59,17 +60,21 @@ class ArmModel(AbstractArmModel):
         self.alpha = np.dot(np.linalg.inv(M), tau - C - np.dot(self.B, self.omega))
 
         fig.append('alpha', self.alpha)
-        assert self.alpha.min() >= self.alphamin and self.alpha.max() <= self.alphamax, "Angular acceleration"
+        assert self.alpha.min() >= self.alphamin \
+           and self.alpha.max() <= self.alphamax, "Angular acceleration %s" % self.alpha.view()
 
-        # Angular velocity (rad/s) ####
-        self.omega += self.alpha * dt
-        fig.append('omega', self.omega)
-        assert self.omega.min() >= self.omegamin and self.omega.max() <= self.omegamax, "Angular velocity"
-
-        # Joint angle (rad) ###########
-        self.theta += self.omega * dt
+        # Forward kinematics
+        self.alpha, self.omega, self.theta = kinematics.forward_kinematics(acceleration=self.alpha,
+                                                               velocity=self.omega,
+                                                               angle=self.theta,
+                                                               delta_time=dt)
         self.bound_joint_angles()
+
+        fig.append('omega', self.omega)
         fig.append('theta', self.theta)
+
+        assert self.omega.min() >= self.omegamin \
+               and self.omega.max() <= self.omegamax, "Angular velocity %s" % self.omega.view()
 
         return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()
 

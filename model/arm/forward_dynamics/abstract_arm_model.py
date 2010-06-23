@@ -17,6 +17,7 @@ class AbstractArmModel:
 
     name = 'Abstract'
 
+    # The state of the arm
     alpha = None              # Angular acceleration (rd/s²)
     omega = None              # Angular velocity (rd/s)
     theta = None              # Joint angle (rd)
@@ -24,11 +25,20 @@ class AbstractArmModel:
     # Min and max joint angles (rd)
     theta_bounds = [{'min': math.radians(-30), 'max': math.radians(140)}, 
                     {'min': math.radians(0),   'max': math.radians(160)}] 
-    #theta_bounds = [{'min': math.radians(-90), 'max': math.radians(180)}, 
-    #                {'min': math.radians(0),   'max': math.radians(180)}] 
 
     # Initial joint angles : functional standard posture (rd) from [6] p.356-357
     theta_init = [math.radians(45), math.radians(70)]
+
+    # Bound values for assert #################################################
+
+    # Total torque (N.m)
+    taumin, taumax = -200, 200
+
+    # Angular acceleration (rd/s²)
+    alphamin, alphamax = -128. * math.pi, 128. * math.pi
+
+    # Angular velocity (rd/s) from [3] p.19
+    omegamin, omegamax = -8. * math.pi, 8. * math.pi
 
     # Arm parameters ##########################################################
 
