@@ -15,13 +15,13 @@ def usage():
     A robotic arm model and simulator.
 
     -m, --muscle
-        the muscle model to use (fake, kambara, mitrovic or li)
+        the muscle model to use (kambara, mitrovic, li or none)
 
     -a, --arm
         the arm model to use (kambara, mitrovic or li)
 
     -A, --agent
-        the agent to use (oscillator)
+        the agent to use (oscillator, random, none)
 
     -g, --gui
         the graphical user interface to use (tk, sfml, gtk, cairo, none)
@@ -38,7 +38,7 @@ def main():
     launch the simulator."""
 
     # Parse options ###################
-    muscle = 'fake'
+    muscle = None
     arm    = 'li'
     agent  = None
     gui    = 'sfml'
@@ -71,16 +71,16 @@ def main():
         else:
             assert False, "unhandled option"
 
-    if muscle not in ('fake', 'kambara', 'mitrovic', 'li') \
+    if muscle not in (None, 'kambara', 'mitrovic', 'li') \
         or arm not in ('kambara', 'mitrovic', 'li') \
-        or agent not in (None, 'oscillator') \
+        or agent not in (None, 'oscillator', 'random') \
         or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
 
     # Main ############################
 
-    if muscle == 'fake':
+    if muscle == None:
         from model.muscle.forward_dynamics import fake_muscle_model as muscle_mod
     elif muscle == 'kambara':
         from model.muscle.forward_dynamics import kambara_muscle_model as muscle_mod
@@ -106,6 +106,8 @@ def main():
         agent_mod = None
     elif agent == 'oscillator':
         from agent import oscillator as agent_mod
+    elif agent == 'random':
+        from agent import random as agent_mod
     else:
         usage()
         sys.exit(2)

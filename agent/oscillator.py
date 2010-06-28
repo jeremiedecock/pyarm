@@ -16,7 +16,7 @@ class Agent:
         #f2 = lambda : amp * math.sin(2.0 * math.pi * freq * time + phase) + off
 
         return (func(time, 0.1, 1., 0., 0.),
-                func(time, 0.5, 1., math.pi, 0.5),
+                func(time, 0.2, 1., math.pi, 0.5),
                 0.,
                 0.,
                 0.,
