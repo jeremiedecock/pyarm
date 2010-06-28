@@ -7,7 +7,11 @@ import fig
 
 class MuscleModel:
 
-    name = 'Weiwei'
+    name = 'Li'
+
+    legend = ('elbow flexor', 'elbow extensor',
+              'shoulder flexor', 'shoulder extensor',
+              'double-joints flexor', 'double-joints extensor')
 
     # Bound values for assert
     ml_min, ml_max = 0.01, 0.6        # Muscle length (m) (arbitraire)
@@ -22,9 +26,17 @@ class MuscleModel:
         moment_arm = self.moment_arm(theta)
         self.current_muscle_length = self.muscle_length(moment_arm, theta)
 
-        # Init datas to plot (title, xlabel, ylabel)
-        fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
-        fig.subfig('torque', 'Torque',        'time (s)', 'Torque (N.m)')
+        # Init datas to plot
+        fig.subfig('length',
+                   title='Muscle length',
+                   xlabel='time (s)',
+                   ylabel='muscle length (m)',
+                   legend=self.legend)
+        fig.subfig('torque',
+                   title='Torque',
+                   xlabel='time (s)',
+                   ylabel='Torque (N.m)',
+                   legend=('shoulder', 'elbow'))
 
     def update(self, input_signal, theta, delta_time):
 
@@ -75,6 +87,7 @@ class MuscleModel:
         # Torque array (2x1)
         torque = np.dot(moment_arm.T, muscle_tension)
 
+        fig.append('length', self.current_muscle_length)
         fig.append('torque', torque)
         assert torque.min() >= self.tau_min \
                and torque.max() <= self.tau_max, "Total torque"

@@ -9,6 +9,10 @@ class MuscleModel:
 
     name = 'Kambara'
 
+    legend = ('shoulder flexor', 'shoulder extensor',
+              'elbow flexor', 'elbow extensor',
+              'double-joints flexor', 'double-joints extensor')
+
     umin,     umax     = 0, 1
     lmin,     lmax     = 0, 0.5
     lrestmin, lrestmax = 0, 0.5
@@ -33,17 +37,25 @@ class MuscleModel:
     A  = np.array([[ 0.04 , -0.04 ,  0.   ,  0.   ,  0.028, -0.035],
                    [ 0.   ,  0.   ,  0.025, -0.025,  0.028, -0.035]]).T   # Moment arm (constant matrix) (m)
 
-    length = None        # Current muscle length (m)
-    v      = None        # Current muscle contraction velocity (muscle length derivative) (m/s)
+    length = None     # Current muscle length (m)
+    v      = None     # Current muscle contraction velocity (muscle length derivative) (m/s)
 
 
     def __init__(self, theta):
-        self.length = self.lm(theta)        # Current muscle length (m)
-        self.v      = np.zeros(6)          # Current muscle contraction velocity (muscle length derivative) (m/s)
+        self.length = self.lm(theta)  # Current muscle length (m)
+        self.v      = np.zeros(6)     # Current muscle contraction velocity (muscle length derivative) (m/s)
 
-        # Init datas to plot (title, xlabel, ylabel)
-        fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
-        fig.subfig('torque', 'Torque',        'time (s)', 'Torque (N.m)')
+        # Init datas to plot
+        fig.subfig('length',
+                   title='Muscle length',
+                   xlabel='time (s)',
+                   ylabel='muscle length (m)',
+                   legend=self.legend)
+        fig.subfig('torque',
+                   title='Torque',
+                   xlabel='time (s)',
+                   ylabel='Torque (N.m)',
+                   legend=('shoulder', 'elbow'))
 
 
     def update(self, input_signal, theta, dt):

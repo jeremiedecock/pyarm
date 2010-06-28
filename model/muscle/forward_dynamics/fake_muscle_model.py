@@ -12,7 +12,13 @@ class MuscleModel:
     tau_value = 1
 
     def __init__(self, theta):
-        fig.subfig('torque', 'Torque', 'tick number', 'Torque (N.m)', 'fill')
+        # Init datas to plot
+        fig.subfig('torque',
+                   title='Torque',
+                   xlabel='time (s)',
+                   ylabel='Torque (N.m)',
+                   type='fill',
+                   legend=('shoulder', 'elbow'))
 
     def update(self, input_signal, theta, dt):
         """Compute the muscle dynamics"""

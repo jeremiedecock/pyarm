@@ -48,6 +48,10 @@ class MuscleModel:
 
     name = 'Mitrovic'
 
+    legend = ('shoulder flexor', 'shoulder extensor',
+              'elbow flexor', 'elbow extensor',
+              'double-joints flexor', 'double-joints extensor')
+
     _l = None              # Current muscle length (m)
 
     _lm = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])   # Muscle length when the joint angle = 0 (m)
@@ -70,9 +74,17 @@ class MuscleModel:
     def __init__(self, theta):
         self._l = self.lm(theta)
 
-        # Init datas to plot (title, xlabel, ylabel)
-        fig.subfig('length', 'Muscle length', 'time (s)', 'muscle length (m)')
-        fig.subfig('torque', 'Torque',        'time (s)', 'Torque (N.m)')
+        # Init datas to plot
+        fig.subfig('length',
+                   title='Muscle length',
+                   xlabel='time (s)',
+                   ylabel='muscle length (m)',
+                   legend=self.legend)
+        fig.subfig('torque',
+                   title='Torque',
+                   xlabel='time (s)',
+                   ylabel='Torque (N.m)',
+                   legend=('shoulder', 'elbow'))
 
     def update(self, input_signal, theta, dt):
 

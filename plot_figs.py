@@ -13,9 +13,9 @@ def main():
     from model.arm.forward_dynamics import mitrovic_arm_model
     from model.arm.forward_dynamics import weiwei_arm_model
 
-    kambara_arm  = kambara_arm_model.ArmModel(True)
-    mitrovic_arm = mitrovic_arm_model.ArmModel(True)
-    weiwei_arm   = weiwei_arm_model.ArmModel(True)
+    kambara_arm  = kambara_arm_model.ArmModel()
+    mitrovic_arm = mitrovic_arm_model.ArmModel()
+    weiwei_arm   = weiwei_arm_model.ArmModel()
 
     kambara_muscle  = kambara_muscle_model.MuscleModel(kambara_arm.theta)
     mitrovic_muscle = mitrovic_muscle_model.MuscleModel(mitrovic_arm.theta)
@@ -44,67 +44,6 @@ def main():
     plot_c_forearm(mitrovic_arm)
 
 
-def plot_k(muscle):
-    
-    plt.clf()
-
-    # Build datas ###############
-    n = 50
-    u = np.linspace(0, 1, n)
-
-    k = np.zeros([len(u), 6])
-    for i in range(len(u)):
-        k[i] = muscle.K(np.ones(6) * u[i])
-
-    # Plot data #################
-    plt.xlabel('Control signal')
-    plt.ylabel('Elastic force')
-    plt.title(muscle.name)
-    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
-    plt.plot(u, k)
-
-    plt.savefig('muscle_' + muscle.name + '_k.png')
-
-def plot_v(muscle):
-    
-    plt.clf()
-
-    # Build datas ###############
-    n = 50
-    u = np.linspace(0, 1, n)
-
-    v = np.zeros([len(u), 6])
-    for i in range(len(u)):
-        v[i] = muscle.B(np.ones(6) * u[i])
-
-    # Plot data #################
-    plt.xlabel('Control signal')
-    plt.ylabel('Viscosity force')
-    plt.title(muscle.name)
-    plt.plot(u, v)
-
-    plt.savefig('muscle_' + muscle.name + '_v.png')
-
-def plot_lr(muscle):
-    
-    plt.clf()
-
-    # Build datas ###############
-    n = 50
-    u = np.linspace(0, 1, n)
-
-    lr = np.zeros([len(u), 6])
-    for i in range(len(u)):
-        lr[i] = muscle.lr(np.ones(6) * u[i])
-
-    # Plot data #################
-    plt.xlabel('Control signal')
-    plt.ylabel('Rest length')
-    plt.title(muscle.name)
-    plt.plot(u, lr)
-
-    plt.savefig('muscle_' + muscle.name + '_lr.png')
-
 def plot_lm(arm, muscle):
     
     plt.clf()
@@ -125,10 +64,73 @@ def plot_lm(arm, muscle):
     plt.xlabel('Angle')
     plt.ylabel('Muscle length')
     plt.title(muscle.name)
-    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
     plt.plot(q, lm)
+    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
 
     plt.savefig('muscle_' + muscle.name + '_lm.png')
+
+def plot_k(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    u = np.linspace(0, 1, n)
+
+    k = np.zeros([len(u), 6])
+    for i in range(len(u)):
+        k[i] = muscle.K(np.ones(6) * u[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Elastic force')
+    plt.title(muscle.name)
+    plt.plot(u, k)
+    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+
+    plt.savefig('muscle_' + muscle.name + '_k.png')
+
+def plot_v(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    u = np.linspace(0, 1, n)
+
+    v = np.zeros([len(u), 6])
+    for i in range(len(u)):
+        v[i] = muscle.B(np.ones(6) * u[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Viscosity force')
+    plt.title(muscle.name)
+    plt.plot(u, v)
+    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+
+    plt.savefig('muscle_' + muscle.name + '_v.png')
+
+def plot_lr(muscle):
+    
+    plt.clf()
+
+    # Build datas ###############
+    n = 50
+    u = np.linspace(0, 1, n)
+
+    lr = np.zeros([len(u), 6])
+    for i in range(len(u)):
+        lr[i] = muscle.lr(np.ones(6) * u[i])
+
+    # Plot data #################
+    plt.xlabel('Control signal')
+    plt.ylabel('Rest length')
+    plt.title(muscle.name)
+    plt.plot(u, lr)
+    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+
+    plt.savefig('muscle_' + muscle.name + '_lr.png')
 
 def plot_nf(muscle):
     
@@ -144,7 +146,6 @@ def plot_nf(muscle):
     plt.xlabel('Muscle length (m)')
     plt.ylabel('nf (?)')
     plt.title(muscle.name)
-    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
     plt.plot(lm, nf)
 
     plt.savefig('muscle_' + muscle.name + '_nf.png')
@@ -163,7 +164,6 @@ def plot_fp(muscle):
     plt.xlabel('Muscle length (m)')
     plt.ylabel('fe : Elastic force')
     plt.title(muscle.name)
-    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
     plt.plot(lm, fe)
 
     plt.savefig('muscle_' + muscle.name + '_fe.png')
@@ -182,7 +182,6 @@ def plot_fl(muscle):
     plt.xlabel('Muscle length (m)')
     plt.ylabel('fl : Force-length relationship')
     plt.title(muscle.name)
-    #plt.legend(("shoulder flexor", "shoulder extensor", "elbow flexor", "elbow extensor", "double-joint flexor", "double-joint extensor"))
     plt.plot(lm, fl)
 
     plt.savefig('muscle_' + muscle.name + '_fl.png')

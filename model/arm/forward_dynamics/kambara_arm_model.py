@@ -27,6 +27,8 @@ class ArmModel(AbstractArmModel):
 
     name = 'Kambara'
 
+    legend = ('shoulder', 'elbow')
+
     theta_bounds = [{'min': math.radians(-50), 'max': math.radians(180)}, 
                     {'min': math.radians(0),   'max': math.radians(160)}] 
 
@@ -58,19 +60,22 @@ class ArmModel(AbstractArmModel):
 
         self.bound_joint_angles()
 
-        # Init datas to plot (name, title, xlabel, ylabel)
+        # Init datas to plot
         fig.subfig('alpha',
-                   'Angular acceleration',
-                   'time (s)',
-                   'Angular acceleration (rad/s/s)')
+                   title='Angular acceleration',
+                   xlabel='time (s)',
+                   ylabel='Angular acceleration (rad/s/s)',
+                   legend=self.legend)
         fig.subfig('omega',
-                   'Angular velocity',
-                   'time (s)',
-                   'Angular velocity (rad/s)')
+                   title='Angular velocity',
+                   xlabel='time (s)',
+                   ylabel='Angular velocity (rad/s)',
+                   legend=self.legend)
         fig.subfig('theta',
-                   'Angle',
-                   'time (s)',
-                   'Angle (rad)')
+                   title='Angle',
+                   xlabel='time (s)',
+                   ylabel='Angle (rad)',
+                   legend=self.legend)
 
 
     def update(self, tau, dt):

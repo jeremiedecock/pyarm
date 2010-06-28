@@ -7,7 +7,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-#import numbers
 
 _subfigs  = {}
 _timeref  = time.time()
@@ -26,8 +25,6 @@ def append(name, y, x=None):
         #elif isinstance(x, np.ndarray):
         else:
             _subfigs[name]['xdata'].append(x.copy())
-        #else:
-        #    raise TypeError('x type is ' + str(type(x)) + ' (number or array expected)')
 
         #if isinstance(y, numbers.Number):
         if not hasattr(y, 'copy'):
@@ -35,15 +32,19 @@ def append(name, y, x=None):
         #elif isinstance(y, np.ndarray):
         else:
             _subfigs[name]['ydata'].append(y.copy())
-        #else:
-        #    raise TypeError('y type is ' + str(type(y)) + ' (number or array expected)')
 
     else:
-        warnings.warn('"' + str(name) + '" has not been declared with fig.subfig(). "' + str(name) + '" is not defined in _subfigs.')
+        warnings.warn('"' + str(name) +
+                      '" has not been declared with fig.subfig(). "'
+                      + str(name) + '" is not defined in _subfigs.')
 
-def subfig(name, title=None, xlabel='', ylabel='', type='plot', axis=None):
-    if title is None: title = str(name)
-    _subfigs[name] = {'title':title, 'xlabel':xlabel, 'ylabel':ylabel, 'type':type, 'axis':axis, 'xdata':[], 'ydata':[]}
+def subfig(name, title=None, xlabel='', ylabel='', type='plot', axis=None,
+           legend=None):
+    if title is None:
+        title = str(name)
+    _subfigs[name] = {'title':title, 'xlabel':xlabel, 'ylabel':ylabel,
+                      'type':type, 'axis':axis, 'legend':legend, 'xdata':[],
+                      'ydata':[]}
 
 def show(numcols=2):
     n = 0
@@ -75,7 +76,20 @@ def show(numcols=2):
             if len(_subfigs[fig]['axis']) >= 4:
                 plt.ylim(_subfigs[fig]['axis'][2], _subfigs[fig]['axis'][3])
 
+        # Set legend
+        if _subfigs[fig]['legend'] != None:
+            #plt.legend(_subfigs[fig]['legend'], 'upper center', shadow=True,
+            #           fancybox=True)
+            nc = 1
+            if 2 < len(_subfigs[fig]['legend']) <= 4:
+                nc = 2
+            elif 4 < len(_subfigs[fig]['legend']):
+                nc = 3
+            plt.legend(_subfigs[fig]['legend'], loc='best', prop={'size':'x-small'},
+                       ncol=nc)
+
     if n > 0:
-        if _save: plt.savefig(_filename, dpi=300)
+        if _save:
+            plt.savefig(_filename, dpi=300)
         plt.show()
 
