@@ -17,9 +17,9 @@ def main():
     mitrovic_arm = mitrovic_arm_model.ArmModel()
     weiwei_arm   = weiwei_arm_model.ArmModel()
 
-    kambara_muscle  = kambara_muscle_model.MuscleModel(kambara_arm.theta)
-    mitrovic_muscle = mitrovic_muscle_model.MuscleModel(mitrovic_arm.theta)
-    weiwei_muscle   = weiwei_muscle_model.MuscleModel(weiwei_arm.theta)
+    kambara_muscle  = kambara_muscle_model.MuscleModel(kambara_arm)
+    mitrovic_muscle = mitrovic_muscle_model.MuscleModel(mitrovic_arm)
+    weiwei_muscle   = weiwei_muscle_model.MuscleModel(weiwei_arm)
 
     # Plot
     plot_lm(kambara_arm, kambara_muscle)

@@ -41,9 +41,12 @@ class MuscleModel:
     v      = None     # Current muscle contraction velocity (muscle length derivative) (m/s)
 
 
-    def __init__(self, theta):
-        self.length = self.lm(theta)  # Current muscle length (m)
-        self.v      = np.zeros(6)     # Current muscle contraction velocity (muscle length derivative) (m/s)
+    def __init__(self, arm):
+        # Current muscle length (m)
+        self.length = self.lm(arm.theta)
+
+        # Current muscle contraction velocity (muscle length derivative) (m/s)
+        self.v = np.zeros(6)
 
         # Init datas to plot
         fig.subfig('length',
@@ -55,7 +58,7 @@ class MuscleModel:
                    title='Torque',
                    xlabel='time (s)',
                    ylabel='Torque (N.m)',
-                   legend=('shoulder', 'elbow'))
+                   legend=arm.legend)
 
 
     def update(self, input_signal, theta, dt):

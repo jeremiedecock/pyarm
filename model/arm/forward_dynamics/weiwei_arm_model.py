@@ -11,7 +11,7 @@ import fig
 class ArmModel(AbstractArmModel):
     """Horizontally planar 2 DoF arm model."""
 
-    name = 'Weiwei'
+    name = 'Li'
 
     legend = ('shoulder', 'elbow')
 

@@ -11,7 +11,7 @@ class MuscleModel:
 
     tau_value = 1
 
-    def __init__(self, theta):
+    def __init__(self, arm):
         # Init datas to plot
         fig.subfig('torque',
                    title='Torque',

@@ -71,8 +71,8 @@ class MuscleModel:
     A  = np.array([[ 0.04 ,  0.04 ,  0.   ,  0.   ,  0.028,  0.028],
                    [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T
 
-    def __init__(self, theta):
-        self._l = self.lm(theta)
+    def __init__(self, arm):
+        self._l = self.lm(arm.theta)
 
         # Init datas to plot
         fig.subfig('length',
@@ -84,7 +84,7 @@ class MuscleModel:
                    title='Torque',
                    xlabel='time (s)',
                    ylabel='Torque (N.m)',
-                   legend=('shoulder', 'elbow'))
+                   legend=arm.legend)
 
     def update(self, input_signal, theta, dt):
 

@@ -14,17 +14,18 @@ class MuscleModel:
               'double-joints flexor', 'double-joints extensor')
 
     # Bound values for assert
-    ml_min, ml_max = 0.01, 0.6        # Muscle length (m) (arbitraire)
-    mv_min, mv_max = 0., 1.           # Muscle velocity (m/s) (arbitraire)
+    ml_min, ml_max = 0.01, 0.6     # Muscle length (m) (arbitraire)
+    mv_min, mv_max = 0., 1.        # Muscle velocity (m/s) (arbitraire)
 
     tau_min, tau_max = -200, 200
 
-    muscle_length_0 = np.ones(6) * 0.4  # Muscle length when the joint angle = 0 (m) # TODO
+    # Muscle length when the joint angle = 0 (m) # TODO
+    muscle_length_0 = np.ones(6) * 0.4
     current_muscle_length = None
 
-    def __init__(self, theta):
-        moment_arm = self.moment_arm(theta)
-        self.current_muscle_length = self.muscle_length(moment_arm, theta)
+    def __init__(self, arm):
+        moment_arm = self.moment_arm(arm.theta)
+        self.current_muscle_length = self.muscle_length(moment_arm, arm.theta)
 
         # Init datas to plot
         fig.subfig('length',
@@ -36,7 +37,7 @@ class MuscleModel:
                    title='Torque',
                    xlabel='time (s)',
                    ylabel='Torque (N.m)',
-                   legend=('shoulder', 'elbow'))
+                   legend=arm.legend)
 
     def update(self, input_signal, theta, delta_time):
 

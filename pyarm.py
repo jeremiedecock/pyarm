@@ -15,10 +15,10 @@ def usage():
     A robotic arm model and simulator.
 
     -m, --muscle
-        the muscle model to use (fake, kambara, mitrovic or weiwei)
+        the muscle model to use (fake, kambara, mitrovic or li)
 
     -a, --arm
-        the arm model to use (kambara, mitrovic or weiwei)
+        the arm model to use (kambara, mitrovic or li)
 
     -A, --agent
         the agent to use (oscillator)
@@ -39,7 +39,7 @@ def main():
 
     # Parse options ###################
     muscle = 'fake'
-    arm    = 'weiwei'
+    arm    = 'li'
     agent  = None
     gui    = 'sfml'
     realtime = False
@@ -71,8 +71,8 @@ def main():
         else:
             assert False, "unhandled option"
 
-    if muscle not in ('fake', 'kambara', 'mitrovic', 'weiwei') \
-        or arm not in ('kambara', 'mitrovic', 'weiwei') \
+    if muscle not in ('fake', 'kambara', 'mitrovic', 'li') \
+        or arm not in ('kambara', 'mitrovic', 'li') \
         or agent not in (None, 'oscillator') \
         or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
@@ -86,7 +86,7 @@ def main():
         from model.muscle.forward_dynamics import kambara_muscle_model as muscle_mod
     elif muscle == 'mitrovic':
         from model.muscle.forward_dynamics import mitrovic_muscle_model as muscle_mod
-    elif muscle == 'weiwei':
+    elif muscle == 'li':
         from model.muscle.forward_dynamics import weiwei_muscle_model as muscle_mod
     else:
         usage()
@@ -96,7 +96,7 @@ def main():
         from model.arm.forward_dynamics import kambara_arm_model as arm_mod
     elif arm == 'mitrovic':
         from model.arm.forward_dynamics import mitrovic_arm_model as arm_mod
-    elif arm == 'weiwei':
+    elif arm == 'li':
         from model.arm.forward_dynamics import weiwei_arm_model as arm_mod
     else:
         usage()
@@ -125,7 +125,7 @@ def main():
         sys.exit(2)
 
     arm_model = arm_mod.ArmModel()
-    muscle_model = muscle_mod.MuscleModel(arm_model.theta)
+    muscle_model = muscle_mod.MuscleModel(arm_model)
 
     agent = None
     if agent_mod != None:
