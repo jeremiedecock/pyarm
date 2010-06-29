@@ -10,7 +10,7 @@ import getopt
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r]
+    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r] [-s]
     
     A robotic arm model and simulator.
 
@@ -28,6 +28,9 @@ def usage():
 
     -r, --realtime
         realtime simulation (framerate dependant)
+
+    -s, --screencast
+        make a screencast
     '''
 
 
@@ -43,11 +46,12 @@ def main():
     agent  = None
     gui    = 'sfml'
     realtime = False
+    screencast = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:rh',
-                     ["muscle=", "arm=", "agent=", "gui=", "realtime", "help"])
+                     'm:a:A:g:rsh',
+                     ["muscle=", "arm=", "agent=", "gui=", "realtime", "screencast", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
         print str(err) 
@@ -68,6 +72,8 @@ def main():
             gui = a
         elif o in ("-r", "--realtime"):
             realtime = True
+        elif o in ("-s", "--screencast"):
+            screencast = True
         else:
             assert False, "unhandled option"
 
@@ -133,7 +139,7 @@ def main():
     if agent_mod != None:
         agent = agent_mod.Agent()
 
-    gui = gui_mod.GUI(muscle_model, arm_model, agent=agent, realtime=realtime)
+    gui = gui_mod.GUI(muscle_model, arm_model, agent=agent, realtime=realtime, screencast=screencast)
     gui.run()
 
 

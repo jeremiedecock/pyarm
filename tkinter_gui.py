@@ -15,7 +15,9 @@ class GUI:
     delta_time = 0.01 
     former_time = 0.
     init_time = 0.
+
     realtime = True
+    screencast = None
 
     running = True
 
@@ -42,7 +44,7 @@ class GUI:
     draw_joints = True
     draw_muscles = True
 
-    def __init__(self, muscle, arm, agent=None, realtime=False):
+    def __init__(self, muscle, arm, agent=None, realtime=False, screencast=False):
         self.arm = arm
         self.muscle = muscle
         self.agent = agent
@@ -86,6 +88,8 @@ class GUI:
         quit_button.pack()
 
         self.realtime = realtime
+        self.screencast = screencast
+
         self.former_time = time.time()         # Former time (s)
         self.init_time = self.former_time      # Initial time (s)
 
@@ -239,11 +243,27 @@ class GUI:
     def run(self):
         # The main loop
         try:
-            alpha = 0.
-            omega = 0.
-            theta = 0.
+            iteration = 0
+
+            alpha = [0., 0.]
+            omega = [0., 0.]
+            theta = [0., 0.]
+            #tau = [0., 0.] ###
+
+            #import xcsfpython as xp ###
+            #xcsf = xp.XCSF(host='127.0.0.1', configFilePath='xcsf.ini') ###
+            #xcsf.initialize(6, 2) ###
 
             while self.running:
+                iteration += 1
+
+                #state = np.array([xcsf.norm(tau[0], self.arm.taumin, self.arm.taumax),
+                #                  xcsf.norm(tau[1], self.arm.taumin, self.arm.taumax),
+                #                  xcsf.norm(omega[0], self.arm.omegamin, self.arm.omegamax),
+                #                  xcsf.norm(omega[1], self.arm.omegamin, self.arm.omegamax),
+                #                  xcsf.norm(theta[0], self.arm.theta_bounds[0]['min'], self.arm.theta_bounds[0]['max']),
+                #                  xcsf.norm(theta[1], self.arm.theta_bounds[1]['min'], self.arm.theta_bounds[1]['max'])]) ###
+
                 # Compute delta time
                 current_time = time.time()
 
@@ -275,6 +295,8 @@ class GUI:
                 # Update clock
                 self.former_time = current_time
 
+                #xcsf.update(state, np.array(alpha)) ###
+
                 # Update the caneva
                 self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     acceleration = %1.2frd/s/s     torque = %03dN.m" % (theta[0], math.degrees(theta[0]), omega[0], alpha[0], tau[0]))
                 self.str_var2.set("Elbow : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     acceleration = %1.2frd/s/s     torque = %03dN.m" % (theta[1], math.degrees(theta[1]), omega[1], alpha[1], tau[1]))
@@ -282,6 +304,9 @@ class GUI:
 
                 self.root.update_idletasks() # redraw
                 self.root.update() # process events
+
+                if self.screencast:
+                    self.canvas.postscript(file='screencast_%05d.ps' % (iteration), colormode='color')
         except tk.TclError:
             pass # to avoid errors when the window is closed
 
