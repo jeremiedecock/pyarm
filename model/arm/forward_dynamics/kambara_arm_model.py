@@ -29,10 +29,14 @@ class ArmModel(AbstractArmModel):
 
     legend = ('shoulder', 'elbow')
 
-    theta_bounds = [{'min': math.radians(-50), 'max': math.radians(180)}, 
+    # Min and max joint angles (rd)
+    #theta_bounds = [{'min': math.radians(-50), 'max': math.radians(180)}, 
+    #                {'min': math.radians(0),   'max': math.radians(160)}] 
+    theta_bounds = [{'min': math.radians(-140), 'max': math.radians(90)}, 
                     {'min': math.radians(0),   'max': math.radians(160)}] 
 
-    theta_init = [0., 0.]     # Orientation (rd)
+    # Initial joint angles : functional standard posture (rd) from [6] p.356-357
+    theta_init = [0., 0.]
 
     # Arm parameters ##########################################################
     
@@ -115,8 +119,8 @@ class ArmModel(AbstractArmModel):
         G = np.zeros(2)
 
         G[0] = self.upperarm_mass * self.g * self.upperarm_cog * math.cos(theta[0])  \
-               + self.forearm_mass * self.g * (self.upperarm_length * math.cos(theta[0] \
-               + self.forearm_cog * math.cos(theta[0] + theta[1])))
+               + self.forearm_mass * self.g * (self.upperarm_length * math.cos(theta[0]) \
+               + self.forearm_cog * math.cos(theta[0] + theta[1]))
         G[1] = self.forearm_mass * self.g * self.forearm_cog * math.cos(theta[0] + theta[1])
 
         return G
