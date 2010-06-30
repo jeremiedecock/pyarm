@@ -6,6 +6,7 @@ from PySFML import sf
 import math
 import time
 import fig
+import warnings
 
 class GUI:
     "SFML graphical user interface."
@@ -14,7 +15,9 @@ class GUI:
     delta_time  = 0.01
     former_time = 0.
     init_time = 0.
+
     realtime = True
+    screencast = None
 
     agent = None
     arm = None
@@ -29,7 +32,8 @@ class GUI:
     line2 = None
     LENGTH_SCALE = 300. # px/m (pixels per meter)
 
-    def __init__(self, muscle, arm, agent=None, realtime=False):
+    def __init__(self, muscle, arm, agent=None, realtime=False,
+                 screencast=False):
         self.arm = arm
         self.muscle = muscle
         self.agent = agent
@@ -55,13 +59,15 @@ class GUI:
         self.centerLine(self.line2)
 
         self.realtime = realtime
+        self.screencast = screencast
+        
+        if screencast:
+            warnings.warn("screencast option is not yet implemented for SFML gui.")
+
         self.former_time = time.time()         # Former time (s)
 
         fig.subfig('dtime', 'Time', 'time (s)', 'delta time (s)')
         fig.subfig('input signal', 'Signal', 'time (s)', 'signal')
-
-    def __del__(self):
-        fig.show()
 
     def centerLine(self, line):
         screen_center = (self.window.GetWidth() / 2, self.window.GetHeight() / 2)

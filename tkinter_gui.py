@@ -7,6 +7,7 @@ import numpy as np
 import math
 import time
 import fig
+import os
 
 class GUI:
     "Tkinter graphical user interface."
@@ -44,7 +45,8 @@ class GUI:
     draw_joints = True
     draw_muscles = True
 
-    def __init__(self, muscle, arm, agent=None, realtime=False, screencast=False):
+    def __init__(self, muscle, arm, agent=None, realtime=False,
+                 screencast=False):
         self.arm = arm
         self.muscle = muscle
         self.agent = agent
@@ -84,7 +86,7 @@ class GUI:
         # Button
         quit_button = tk.Button(self.root,
                                 text="Quit",
-                                command=self.quit_callback)
+                                command=self.root.destroy)
         quit_button.pack()
 
         self.realtime = realtime
@@ -95,12 +97,6 @@ class GUI:
 
         fig.subfig('dtime',        'Time',   'time (s)', 'delta time (s)')
         fig.subfig('input signal', 'Signal', 'time (s)', 'signal')
-
-    def __del__(self):
-        fig.show()
-    
-    def quit_callback(self):
-        self.running = False
 
     def keypress_callback(self, event):
         if event.char == '1':
@@ -306,7 +302,8 @@ class GUI:
                 self.root.update() # process events
 
                 if self.screencast:
-                    self.canvas.postscript(file='screencast_%05d.ps' % (iteration), colormode='color')
+                    self.canvas.postscript(file='%s/%05d.ps' % ('screencast', iteration), colormode='color')
+                    os.system('gs -sDEVICE=jpeg -sOutputFile=%(path)s/%(iteration)05d.jpeg -dNOPAUSE -q -dBATCH %(path)s/%(iteration)05d.ps' % {'iteration': iteration, 'path': 'screencast'})
         except tk.TclError:
             pass # to avoid errors when the window is closed
 

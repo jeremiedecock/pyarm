@@ -4,7 +4,10 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import sys
+import os
+import shutil
 import getopt
+import fig
 
 
 def usage():
@@ -139,9 +142,22 @@ def main():
     if agent_mod != None:
         agent = agent_mod.Agent()
 
+    # Erase the screencast directory
+    if screencast:
+        shutil.rmtree("screencast", True)
+        os.mkdir("screencast")
+
+    # Launch the Gui mainloop
     gui = gui_mod.GUI(muscle_model, arm_model, agent=agent, realtime=realtime, screencast=screencast)
     gui.run()
 
+    # Quit...
+    if screencast:
+        print "Making screencast..."
+        #os.system("ffmpeg2theora -f image2 %(path)s/%%05d.png -o %(path)s/screencast.ogv" % {'path': 'screencast'})
+        os.system("ffmpeg2theora -f image2 %(path)s/%%05d.jpeg -o %(path)s/screencast.ogv" % {'path': 'screencast'})
+
+    fig.show()
 
 if __name__ == '__main__':
     main()

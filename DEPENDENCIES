@@ -1,0 +1,8 @@
+python2.5
+Numpy
+Matplotlib
+SFML (gui)
+Tkinter (gui)
+ffmpeg2theora (screencast)
+gs (screencast)
+PIL (screencast)
