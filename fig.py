@@ -49,6 +49,8 @@ def subfig(name, title=None, xlabel='', ylabel='', type='plot', axis=None,
 def show(numcols=2):
     n = 0
 
+    plt.subplots_adjust(hspace=0.4, wspace=0.4)
+
     for fig in _subfigs:
         n += 1
         numrows = math.ceil(len(_subfigs)/float(numcols))
@@ -87,6 +89,14 @@ def show(numcols=2):
                 nc = 3
             plt.legend(_subfigs[fig]['legend'], loc='best', prop={'size':'x-small'},
                        ncol=nc)
+
+        # Set axis fontsize (https://www.cfa.harvard.edu/~jbattat/computer/python/pylab/)
+        fontsize='x-small'
+        ax = plt.gca()
+        for tick in ax.xaxis.get_major_ticks():
+            tick.label1.set_fontsize(fontsize)
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label1.set_fontsize(fontsize)
 
     if n > 0:
         if _save:
