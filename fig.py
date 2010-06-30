@@ -55,9 +55,9 @@ def show(numcols=2):
         plt.subplot(numrows, numcols, n)
 
         # Set labels
-        plt.title(_subfigs[fig]['title'])
-        plt.xlabel(_subfigs[fig]['xlabel'])
-        plt.ylabel(_subfigs[fig]['ylabel'])
+        #plt.title(_subfigs[fig]['title'])
+        plt.xlabel(_subfigs[fig]['xlabel'], fontsize='small')
+        plt.ylabel(_subfigs[fig]['ylabel'], fontsize='small')
 
         # Fetch datas
         x = np.array(_subfigs[fig]['xdata'])
