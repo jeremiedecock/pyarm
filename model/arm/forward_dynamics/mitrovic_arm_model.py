@@ -3,7 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 from abstract_arm_model import AbstractArmModel
-from kinematics import euler as kinematics
+from model.kinematics import euler as kinematics
 import math
 import numpy as np
 import fig
