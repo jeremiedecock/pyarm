@@ -17,31 +17,6 @@ class ArmModel(KambaraArmModel):
 
     B = np.array([[0.2, 0.1], [0.2, 0.1]]) # Joint friction matrix (???)
 
-#    def __init__(self):
-#        self.alpha = np.zeros(2)               # Angular acceleration (rd/s²)
-#        self.omega = np.zeros(2)               # Angular velocity (rd/s)
-#        self.theta = np.array(self.theta_init) # Orientation (rd)
-#
-#        self.bound_joint_angles()
-#
-#        # Init datas to plot
-#        fig.subfig('alpha',
-#                   title='Angular acceleration',
-#                   xlabel='time (s)',
-#                   ylabel='Angular acceleration (rad/s/s)',
-#                   legend=self.legend)
-#        fig.subfig('omega',
-#                   title='Angular velocity',
-#                   xlabel='time (s)',
-#                   ylabel='Angular velocity (rad/s)',
-#                   legend=self.legend)
-#        fig.subfig('theta',
-#                   title='Angle',
-#                   xlabel='time (s)',
-#                   ylabel='Angle (rad)',
-#                   legend=self.legend)
-
-
     def update(self, tau, dt):
         "Compute the arm dynamics."
 

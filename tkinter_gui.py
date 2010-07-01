@@ -13,7 +13,8 @@ class GUI:
     "Tkinter graphical user interface."
 
     # The state of the arm is updated at every tick_duration time (s)
-    delta_time = 0.01 
+    delta_time = 0.005
+    #delta_time = 0.01 
     former_time = 0.
     init_time = 0.
 

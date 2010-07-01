@@ -11,7 +11,7 @@ import warnings
 _subfigs  = {}
 _timeref  = time.time()
 _filename = "fig.png"
-_save     = True
+_save     = False
 
 def append(name, y, x=None):
     if name in _subfigs:

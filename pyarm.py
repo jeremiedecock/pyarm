@@ -24,13 +24,13 @@ def usage():
         the arm model to use (kambara, mitrovic, li or sagittal)
 
     -A, --agent
-        the agent to use (oscillator, random, none)
+        the agent to use (oscillator, random, filereader, none)
 
     -g, --gui
         the graphical user interface to use (tk, sfml, gtk, cairo, none)
 
     -r, --realtime
-        realtime simulation (framerate dependant)
+        realtime simulation (framerate dependant simulation)
 
     -s, --screencast
         make a screencast
@@ -44,9 +44,9 @@ def main():
     launch the simulator."""
 
     # Parse options ###################
-    muscle = None
+    muscle = 'none'
     arm    = 'li'
-    agent  = None
+    agent  = 'none'
     gui    = 'sfml'
     realtime = False
     screencast = False
@@ -80,16 +80,16 @@ def main():
         else:
             assert False, "unhandled option"
 
-    if muscle not in (None, 'kambara', 'mitrovic', 'li') \
+    if muscle not in ('none', 'kambara', 'mitrovic', 'li') \
         or arm not in ('kambara', 'mitrovic', 'li', 'sagittal') \
-        or agent not in (None, 'oscillator', 'random') \
+        or agent not in ('none', 'oscillator', 'random', 'filereader') \
         or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
 
     # Main ############################
 
-    if muscle == None:
+    if muscle == 'none':
         from model.muscle.forward_dynamics import fake_muscle_model as muscle_mod
     elif muscle == 'kambara':
         from model.muscle.forward_dynamics import kambara_muscle_model as muscle_mod
@@ -113,12 +113,14 @@ def main():
         usage()
         sys.exit(2)
 
-    if agent == None:
+    if agent == 'none':
         agent_mod = None
     elif agent == 'oscillator':
         from agent import oscillator as agent_mod
     elif agent == 'random':
         from agent import random as agent_mod
+    elif agent == 'filereader':
+        from agent import filereader as agent_mod
     else:
         usage()
         sys.exit(2)
@@ -146,8 +148,8 @@ def main():
 
     # Erase the screencast directory
     if screencast:
-        shutil.rmtree("screencast", True)
-        os.mkdir("screencast")
+        shutil.rmtree('screencast', True)
+        os.mkdir('screencast')
 
     # Launch the Gui mainloop
     gui = gui_mod.GUI(muscle_model, arm_model, agent=agent, realtime=realtime, screencast=screencast)
