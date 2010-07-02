@@ -90,25 +90,25 @@ def main():
     # Main ############################
 
     if muscle == 'none':
-        from model.muscle.forward_dynamics import fake_muscle_model as muscle_mod
+        from model.muscle import fake_muscle_model as muscle_mod
     elif muscle == 'kambara':
-        from model.muscle.forward_dynamics import kambara_muscle_model as muscle_mod
+        from model.muscle import kambara_muscle_model as muscle_mod
     elif muscle == 'mitrovic':
-        from model.muscle.forward_dynamics import mitrovic_muscle_model as muscle_mod
+        from model.muscle import mitrovic_muscle_model as muscle_mod
     elif muscle == 'li':
-        from model.muscle.forward_dynamics import weiwei_muscle_model as muscle_mod
+        from model.muscle import weiwei_muscle_model as muscle_mod
     else:
         usage()
         sys.exit(2)
 
     if arm == 'kambara':
-        from model.arm.forward_dynamics import kambara_arm_model as arm_mod
+        from model.arm import kambara_arm_model as arm_mod
     elif arm == 'mitrovic':
-        from model.arm.forward_dynamics import mitrovic_arm_model as arm_mod
+        from model.arm import mitrovic_arm_model as arm_mod
     elif arm == 'li':
-        from model.arm.forward_dynamics import weiwei_arm_model as arm_mod
+        from model.arm import weiwei_arm_model as arm_mod
     elif arm == 'sagittal':
-        from model.arm.forward_dynamics import sagittal_arm_model as arm_mod
+        from model.arm import sagittal_arm_model as arm_mod
     else:
         usage()
         sys.exit(2)

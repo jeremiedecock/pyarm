@@ -5,13 +5,13 @@ import numpy as np
 def main():
 
     # Init
-    from model.muscle.forward_dynamics import kambara_muscle_model
-    from model.muscle.forward_dynamics import mitrovic_muscle_model
-    from model.muscle.forward_dynamics import weiwei_muscle_model
+    from model.muscle import kambara_muscle_model
+    from model.muscle import mitrovic_muscle_model
+    from model.muscle import weiwei_muscle_model
 
-    from model.arm.forward_dynamics import kambara_arm_model
-    from model.arm.forward_dynamics import mitrovic_arm_model
-    from model.arm.forward_dynamics import weiwei_arm_model
+    from model.arm import kambara_arm_model
+    from model.arm import mitrovic_arm_model
+    from model.arm import weiwei_arm_model
 
     kambara_arm  = kambara_arm_model.ArmModel()
     mitrovic_arm = mitrovic_arm_model.ArmModel()

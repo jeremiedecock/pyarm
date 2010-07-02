@@ -2,7 +2,7 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-import numpy as np
+import os
 
 class Agent:
 
@@ -10,9 +10,8 @@ class Agent:
     cpt = 0
 
     def __init__(self):
-        fd = file('inputs.dat', 'rU')
-        lines = fd.readlines()
-        for line in lines:
+        fd = file('data' + os.sep + 'inputs.dat', 'rU')
+        for line in fd.readlines():
             if not line.lstrip().startswith('#'):
                 self.inputs.append([float(num) for num in line.split()])
         fd.close()

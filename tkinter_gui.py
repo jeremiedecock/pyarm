@@ -313,6 +313,7 @@ class MathCanvas(tk.Canvas):
     "A canvas where the origin is placed at the bottom left corner."
 
     def draw_line(self, *args, **kw):
+        "TODO : doc..."
         points = np.array(args[0])
         points_array = points.reshape((2, points.shape[0] / 2))
         points_array[:,1] *= -1
@@ -323,6 +324,7 @@ class MathCanvas(tk.Canvas):
         return self.create_line(args, kw)
 
     def draw_arc(self, x_point, y_point, radius, **kw):
+        "TODO : doc..."
         radius = abs(radius)
         y_point *= -1
         y_point += self.winfo_height() # TODO
@@ -333,6 +335,7 @@ class MathCanvas(tk.Canvas):
         return self.create_arc(args, kw)
 
     def draw_circle(self, x_point, y_point, radius, **kw):
+        "TODO : doc..."
         radius = abs(radius)
         y_point *= -1
         y_point += self.winfo_height() # TODO
@@ -343,6 +346,7 @@ class MathCanvas(tk.Canvas):
         return self.create_oval(args, kw)
 
     def draw_text(self, x_point, y_point, **kw):
+        "TODO : doc..."
         y_point *= -1
         y_point += self.winfo_height() # TODO
         args = (x_point, y_point)
