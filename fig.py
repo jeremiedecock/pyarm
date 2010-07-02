@@ -38,13 +38,13 @@ def append(name, y, x=None):
                       '" has not been declared with fig.subfig(). "'
                       + str(name) + '" is not defined in _subfigs.')
 
-def subfig(name, title=None, xlabel='', ylabel='', type='plot', axis=None,
-           legend=None):
+def subfig(name, title=None, xlabel='', ylabel='', type='plot', xlim=None,
+           ylim=None, legend=None):
     if title is None:
         title = str(name)
     _subfigs[name] = {'title':title, 'xlabel':xlabel, 'ylabel':ylabel,
-                      'type':type, 'axis':axis, 'legend':legend, 'xdata':[],
-                      'ydata':[]}
+                      'type':type, 'xlim':xlim, 'ylim':ylim, 'legend':legend,
+                      'xdata':[], 'ydata':[]}
 
 def show(numcols=2):
     n = 0
@@ -72,16 +72,18 @@ def show(numcols=2):
             plt.plot(x, y)
 
         # Set axis limits
-        if isinstance(_subfigs[fig]['axis'], list):
-            if len(_subfigs[fig]['axis']) >= 2:
-                plt.xlim(_subfigs[fig]['axis'][0], _subfigs[fig]['axis'][1])
-            if len(_subfigs[fig]['axis']) >= 4:
-                plt.ylim(_subfigs[fig]['axis'][2], _subfigs[fig]['axis'][3])
+        try:
+            plt.xlim(_subfigs[fig]['xlim'])
+        except TypeError:
+            pass
+
+        try:
+            plt.ylim(_subfigs[fig]['ylim'])
+        except TypeError:
+            pass
 
         # Set legend
         if _subfigs[fig]['legend'] != None:
-            #plt.legend(_subfigs[fig]['legend'], 'upper center', shadow=True,
-            #           fancybox=True)
             nc = 1
             if 2 < len(_subfigs[fig]['legend']) <= 4:
                 nc = 2
@@ -91,7 +93,7 @@ def show(numcols=2):
                        ncol=nc)
 
         # Set axis fontsize (https://www.cfa.harvard.edu/~jbattat/computer/python/pylab/)
-        fontsize='x-small'
+        fontsize = 'x-small'
         ax = plt.gca()
         for tick in ax.xaxis.get_major_ticks():
             tick.label1.set_fontsize(fontsize)

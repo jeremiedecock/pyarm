@@ -39,7 +39,8 @@ class GUI:
         self.agent = agent
 
         # Create the main window
-        self.window = sf.RenderWindow(sf.VideoMode(800, 600), 'pyArm (' + muscle.name + ' - ' + arm.name + ')')
+        self.window = sf.RenderWindow(sf.VideoMode(800, 600),
+                                      'pyArm (' + muscle.name + ' - ' + arm.name + ')')
 
         self.background_color = sf.Color(255, 255, 255, 255)
         self.foreground_color = sf.Color(0, 0, 0, 255)
@@ -52,10 +53,16 @@ class GUI:
         self.text2.SetColor(self.foreground_color)
         self.text2.SetPosition(20, 40)
 
-        self.line1 = sf.Shape.Line(0, 0, 0, self.arm.upperarm_length * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line1 = sf.Shape.Line(0, 0, 0,
+                                   self.arm.upperarm_length * self.LENGTH_SCALE,
+                                   10, self.background_color, 2,
+                                   self.foreground_color)
         self.centerLine(self.line1)
 
-        self.line2 = sf.Shape.Line(0, 0, 0, self.arm.forearm_length * self.LENGTH_SCALE, 10, self.background_color, 2, self.foreground_color)
+        self.line2 = sf.Shape.Line(0, 0, 0,
+                                   self.arm.forearm_length * self.LENGTH_SCALE,
+                                   10, self.background_color, 2,
+                                   self.foreground_color)
         self.centerLine(self.line2)
 
         self.realtime = realtime
@@ -65,12 +72,21 @@ class GUI:
             warnings.warn("screencast option is not yet implemented for SFML gui.")
 
         self.former_time = time.time()         # Former time (s)
+        self.init_time = self.former_time      # Initial time (s)
 
-        fig.subfig('dtime', 'Time', 'time (s)', 'delta time (s)')
-        fig.subfig('input signal', 'Signal', 'time (s)', 'signal')
+        fig.subfig('dtime',
+                   title='Time',
+                   xlabel='time (s)',
+                   ylabel='delta time (s)')
+        fig.subfig('input signal',
+                   title='Signal',
+                   xlabel='time (s)',
+                   ylabel='signal',
+                   ylim=[-0.1, 1.1])
 
     def centerLine(self, line):
-        screen_center = (self.window.GetWidth() / 2, self.window.GetHeight() / 2)
+        screen_center = (self.window.GetWidth() / 2,
+                         self.window.GetHeight() / 2)
         line.SetPosition(*screen_center)
 
     def translateLine(self, line, line_ref):
@@ -107,7 +123,12 @@ class GUI:
                 if event.Type == sf.Event.Closed:
                     running = False
 
-            key_input = (window_input.IsKeyDown(sf.Key.Numpad1), window_input.IsKeyDown(sf.Key.Numpad2), window_input.IsKeyDown(sf.Key.Numpad3), window_input.IsKeyDown(sf.Key.Numpad4), window_input.IsKeyDown(sf.Key.Numpad5), window_input.IsKeyDown(sf.Key.Numpad6))
+            key_input = (window_input.IsKeyDown(sf.Key.Numpad1),
+                         window_input.IsKeyDown(sf.Key.Numpad2),
+                         window_input.IsKeyDown(sf.Key.Numpad3),
+                         window_input.IsKeyDown(sf.Key.Numpad4),
+                         window_input.IsKeyDown(sf.Key.Numpad5),
+                         window_input.IsKeyDown(sf.Key.Numpad6))
 
             # Compute delta time
             current_time = time.time()
@@ -122,7 +143,7 @@ class GUI:
             # Get input signals
             input_signal = None
             if self.agent == None:
-                input_signal = key_input
+                input_signal = [float(flag) for flag in key_input]
             else:
                 input_signal = self.agent.get_action(alpha=alpha,
                                                      omega=omega,

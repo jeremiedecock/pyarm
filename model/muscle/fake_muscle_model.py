@@ -9,7 +9,7 @@ class MuscleModel:
 
     name = 'Fake'
 
-    tau_value = 1
+    tau_value = 2.0
 
     def __init__(self, arm):
         # Init datas to plot

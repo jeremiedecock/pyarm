@@ -96,8 +96,15 @@ class GUI:
         self.former_time = time.time()         # Former time (s)
         self.init_time = self.former_time      # Initial time (s)
 
-        fig.subfig('dtime',        'Time',   'time (s)', 'delta time (s)')
-        fig.subfig('input signal', 'Signal', 'time (s)', 'signal')
+        fig.subfig('dtime',
+                   title='Time',
+                   xlabel='time (s)',
+                   ylabel='delta time (s)')
+        fig.subfig('input signal',
+                   title='Signal',
+                   xlabel='time (s)',
+                   ylabel='signal',
+                   ylim=[-0.1, 1.1])
 
     def keypress_callback(self, event):
         if event.char == '1':
@@ -274,7 +281,7 @@ class GUI:
                 # Get input signals
                 input_signal = None
                 if self.agent == None:
-                    input_signal = self.keyboard_flags
+                    input_signal = [float(flag) for flag in self.keyboard_flags]
                 else:
                     input_signal = self.agent.get_action(alpha=alpha,
                                                          omega=omega,
@@ -316,8 +323,8 @@ class MathCanvas(tk.Canvas):
         "TODO : doc..."
         points = np.array(args[0])
         points_array = points.reshape((2, points.shape[0] / 2))
-        points_array[:,1] *= -1
-        points_array[:,1] += self.winfo_height()      # TODO : self.canevas_height  self.winfo_height()   self.winfo_reqheight()
+        points_array[:, 1] *= -1
+        points_array[:, 1] += self.winfo_height()      # TODO : self.canevas_height  self.winfo_height()   self.winfo_reqheight()
         points = points_array.reshape(points_array.shape[0] \
                                       * points_array.shape[1])
         args = points.tolist()
