@@ -18,6 +18,7 @@ class MuscleModel:
     mv_min, mv_max = 0., 1.        # Muscle velocity (m/s) (arbitraire)
 
     tau_min, tau_max = -200, 200
+    umin,     umax     = 0, 1
 
     # Muscle length when the joint angle = 0 (m) # TODO
     muscle_length_0 = np.ones(6) * 0.4
@@ -43,7 +44,7 @@ class MuscleModel:
 
         # Fetch control signal (motor command) :
         # 6 elements vector (value taken in [0,1])
-        control_signal = np.array(input_signal)[0:6]
+        control_signal = self.u(input_signal)
 
         # Dynamics ##################################################
 
@@ -95,6 +96,18 @@ class MuscleModel:
 
         return torque
 
+
+    def u(self, input_signal):
+        """Compute control signal (motor command).
+
+        Take a list of float.
+        Return a 6 elements vector (array) with value taken in [0, 1]"""
+
+        u = np.array(input_signal[0:6])
+
+        assert u.min() >= self.umin and u.max() <= self.umax, 'Motor command'
+
+        return u
 
     def muscle_tension(self, ml, mv, ut):
         "Compute the tension of a muscle."

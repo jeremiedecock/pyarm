@@ -58,6 +58,8 @@ class MuscleModel:
 
     l0 = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237]) # Intrinsic rest length (for u = 0) (m)
 
+    umin,     umax     = 0, 1
+
     # Muscle parameters from [6] p.356-357
     b  = np.ones(6) * 108.1     # Viscosity coefficient             (N.s/m)
     k  = np.ones(6) * 1621.6    # Elasticity coefficient            (N/m)
@@ -90,7 +92,7 @@ class MuscleModel:
 
         # Fetch control signal (motor command)
         # 6 elements vector (value taken in [0,1])
-        u = np.array(input_signal)[0:6]
+        u = self.u(input_signal)
 
         fl = self._l                      # Former muscle length
         self._l = self.lm(theta)
@@ -108,6 +110,18 @@ class MuscleModel:
 
         return tau
 
+
+    def u(self, input_signal):
+        """Compute control signal (motor command).
+
+        Take a list of float.
+        Return a 6 elements vector (array) with value taken in [0, 1]"""
+
+        u = np.array(input_signal[0:6])
+
+        assert u.min() >= self.umin and u.max() <= self.umax, 'Motor command'
+
+        return u
 
     def lm(self, theta):
         "Compute muscle length (m)."

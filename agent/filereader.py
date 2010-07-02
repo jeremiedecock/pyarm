@@ -18,9 +18,11 @@ class Agent:
 
     def get_action(self, alpha=None, omega=None, theta=None, time=None):
         self.cpt += 1
+
         if self.cpt < len(self.inputs):
             signal = self.inputs[self.cpt]
         else:
             signal = [0., 0., 0., 0., 0., 0.]
-        return (signal)
+
+        return signal
 

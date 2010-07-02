@@ -118,7 +118,7 @@ def main():
     elif agent == 'oscillator':
         from agent import oscillator as agent_mod
     elif agent == 'random':
-        from agent import random as agent_mod
+        from agent import random_oscillator as agent_mod
     elif agent == 'filereader':
         from agent import filereader as agent_mod
     else:

@@ -91,10 +91,10 @@ class MuscleModel:
     def u(self, input_signal):
         """Compute control signal (motor command).
 
+        Take a list of float.
         Return a 6 elements vector (array) with value taken in [0, 1]"""
 
-        u = np.array(input_signal)
-        u = u[0:6]
+        u = np.array(input_signal[0:6])
 
         assert u.min() >= self.umin and u.max() <= self.umax, 'Motor command'
 

@@ -3,7 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import math
-import numpy as np
+import random
 
 class Agent:
 
@@ -23,28 +23,28 @@ class Agent:
     def get_action(self, alpha=None, omega=None, theta=None, time=None):
         
         if bernoulli(0.01):
-            self.amp_s = np.random.random()
+            self.amp_s = random.random()
 
         if bernoulli(0.01):
-            self.freq_s = np.random.random()
+            self.freq_s = random.random()
 
         #if bernoulli(0.01):
-        #    self.phase_s = np.random.random() 
+        #    self.phase_s = random.random() 
 
         if bernoulli(0.01):
-            self.off_s = np.random.random() * (1 - self.amp_s)
+            self.off_s = random.random() * (1 - self.amp_s)
         
         if bernoulli(0.01):
-            self.amp_e = np.random.random()
+            self.amp_e = random.random()
 
         if bernoulli(0.01):
-            self.freq_e = np.random.random()
+            self.freq_e = random.random()
 
         #if bernoulli(0.01):
-        #    self.phase_e = np.random.random()
+        #    self.phase_e = random.random()
 
         if bernoulli(0.01):
-            self.off_e = np.random.random() * (1 - self.amp_s)
+            self.off_e = random.random() * (1 - self.amp_s)
 
         return (func(time, self.amp_s, self.freq_s, self.phase_s, self.off_s),
                 func(time, self.amp_e, self.freq_e, self.phase_e, self.off_e),
@@ -71,7 +71,7 @@ def func(time, amp, freq, phase, off):
     return max(min(signal, 1), 0)
 
 def bernoulli(p):
-    if np.random.random() <= p:
+    if random.random() <= p:
         return_value = True
     else:
         return_value = False
