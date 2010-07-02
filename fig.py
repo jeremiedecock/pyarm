@@ -8,16 +8,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 
-_subfigs  = {}
-_timeref  = time.time()
-_filename = "fig.png"
-_save     = False
+_subfigs   = {}
+_timeref   = time.time()
+_filename  = "fig.png"
+_save      = False
+delta_time = 0.
 
 def append(name, y, x=None):
     if name in _subfigs:
 
         if x is None:
-            x = time.time() - _timeref
+            if delta_time > 0:
+                x = len(_subfigs[name]['xdata']) * delta_time
+            else:
+                # realtime simulation
+                x = time.time() - _timeref
 
         #if isinstance(x, numbers.Number):
         if not hasattr(x, 'copy'):
