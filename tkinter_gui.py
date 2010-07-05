@@ -288,12 +288,12 @@ class GUI:
                 torque = self.muscle.update(input_signal,
                                             self.arm.angles,
                                             self.delta_time)
-                self.arm.update(torque, self.delta_time)
+                acceleration = self.arm.update(torque, self.delta_time)
 
                 # Update clock
                 self.former_time = current_time
 
-                #xcsf.update(state, np.array(alpha)) ###
+                #xcsf.update(state, np.array(acceleration)) ###
 
                 # Update the caneva
                 self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[0], math.degrees(self.arm.angles[0]), self.arm.velocities[0], torque[0]))

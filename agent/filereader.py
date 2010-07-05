@@ -16,7 +16,7 @@ class Agent:
                 self.inputs.append([float(num) for num in line.split()])
         fd.close()
 
-    def get_action(self, alpha=None, omega=None, theta=None, time=None):
+    def get_action(self, velocities=None, angles=None, time=None):
         self.cpt += 1
 
         if self.cpt < len(self.inputs):

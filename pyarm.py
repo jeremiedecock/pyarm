@@ -24,7 +24,7 @@ def usage():
         the arm model to use (kambara, mitrovic, li or sagittal)
 
     -A, --agent
-        the agent to use (oscillator, random, filereader, none)
+        the agent to use (oscillator, random, filereader, sigmoid, heaviside, none)
 
     -g, --gui
         the graphical user interface to use (tk, sfml, gtk, cairo, none)
@@ -82,7 +82,7 @@ def main():
 
     if muscle not in ('none', 'kambara', 'mitrovic', 'li') \
         or arm not in ('kambara', 'mitrovic', 'li', 'sagittal') \
-        or agent not in ('none', 'oscillator', 'random', 'filereader') \
+        or agent not in ('none', 'oscillator', 'random', 'filereader', 'sigmoid', 'heaviside') \
         or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
@@ -121,6 +121,10 @@ def main():
         from agent import random_oscillator as agent_mod
     elif agent == 'filereader':
         from agent import filereader as agent_mod
+    elif agent == 'sigmoid':
+        from agent import sigmoid as agent_mod
+    elif agent == 'heaviside':
+        from agent import heaviside as agent_mod
     else:
         usage()
         sys.exit(2)

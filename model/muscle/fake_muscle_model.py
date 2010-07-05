@@ -9,7 +9,7 @@ class MuscleModel:
 
     name = 'Fake'
 
-    tau_value = 2.0
+    torque_value = 2.0
 
     def __init__(self, arm):
         # Init datas to plot
@@ -17,26 +17,19 @@ class MuscleModel:
                    title='Torque',
                    xlabel='time (s)',
                    ylabel='Torque (N.m)',
-                   type='fill',
+                   ylim=[-self.torque_value - 0.1 * self.torque_value,
+                          self.torque_value + 0.1 * self.torque_value],
                    legend=('shoulder', 'elbow'))
 
-    def update(self, input_signal, theta, dt):
+    def update(self, signal, angles, dt):
         """Compute the muscle dynamics"""
 
         # Control signal
-        tau = np.zeros(2)
+        torque = np.zeros(2)
 
-        i = np.array(input_signal)
-        if i[0]:
-            tau[0] = self.tau_value
-        elif i[1]:
-            tau[0] = -self.tau_value
+        torque[0] = (signal[0] - signal[1]) * self.torque_value
+        torque[1] = (signal[2] - signal[3]) * self.torque_value
 
-        if i[2]:
-            tau[1] = self.tau_value
-        elif i[3]:
-            tau[1] = -self.tau_value
+        fig.append('torque', torque)
 
-        fig.append('torque', tau)
-
-        return tau
+        return torque

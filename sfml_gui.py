@@ -141,7 +141,7 @@ class GUI:
             if self.agent == None:
                 input_signal = [float(flag) for flag in key_input]
             else:
-                input_signal = self.agent.get_action(velotities=self.arm.velocities,
+                input_signal = self.agent.get_action(velocities=self.arm.velocities,
                                                      angles=self.arm.angles,
                                                      time=elapsed_time)
         
@@ -151,7 +151,7 @@ class GUI:
             torque = self.muscle.update(input_signal,
                                         self.arm.angles,
                                         self.delta_time)
-            self.arm.update(torque, self.delta_time)
+            acceleration = self.arm.update(torque, self.delta_time)
 
             # Update clock
             self.former_time = current_time

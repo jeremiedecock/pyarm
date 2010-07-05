@@ -20,7 +20,7 @@ class Agent:
     def __init__(self):
         pass
 
-    def get_action(self, alpha=None, omega=None, theta=None, time=None):
+    def get_action(self, velocities=None, angles=None, time=None):
         
         if bernoulli(0.01):
             self.amp_s = random.random()

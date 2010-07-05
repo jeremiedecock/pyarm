@@ -71,10 +71,7 @@ def show(numcols=2):
         y = np.array(_subfigs[fig]['ydata'])
 
         # Plot
-        if _subfigs[fig]['type'] == 'fill':
-            plt.fill(x, y, alpha=0.2)
-        else:
-            plt.plot(x, y)
+        plt.plot(x, y)
 
         # Set axis limits
         try:
