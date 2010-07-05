@@ -4,7 +4,6 @@
 
 from abstract_arm_model import AbstractArmModel
 from model.kinematics import euler as kinematics
-import math
 import numpy as np
 import fig
 
@@ -12,8 +11,7 @@ class ArmModel(AbstractArmModel):
     """Horizontally planar 2 DoF arm model.
     
     References :
-
-    Djordje Mitrovic
+    [0] Djordje Mitrovic
     http://www.ipab.informatics.ed.ac.uk/slmc/SLMCpeople/Mitrovic_D.html
 
     [1] Djordje Mitrovic, Stefan Klanke, and Sethu Vijayakumar,
@@ -41,12 +39,21 @@ class ArmModel(AbstractArmModel):
 
     This model is based on [6] and [7]
 
-    [6] M. Katayama and M. Kawato (1993), "Virtual trajectory and stiffness
-    ellipse during multijoint arm movement predicted by neural inverse models".
-    Biological Cybernetics, 69:353-362.
+    [6] M. Katayama and M. Kawato.
+    "Virtual trajectory and stiffness ellipse during multijoint arm movement
+    predicted by neural inverse models".
+    Biological Cybernetics, 69(5):353-362, 1993.
 
     [7] Todorov & Li
     """
+
+    # STATE VARIABLES #########################################################
+
+    velocities = None         # Angular velocity (rd/s)
+    angles = None             # Joint angle (rd)
+    former_time = None        # Time (s)
+
+    # CONSTANTS ###############################################################
 
     name = 'Mitrovic'
 
@@ -60,63 +67,86 @@ class ArmModel(AbstractArmModel):
     forearm_mass = 1.44          # Forearm mass (kg)
 
     upperarm_length = 0.3        # Upperarm length (m)
-    forearm_length = 0.35        # Upperarm length (m)
+    forearm_length = 0.35        # Forearm length (m)
 
     # Distance from the forearm joint center to the forearm center of mass (m)
     forearm_cog = 0.21 
 
+    ###########################################################################
 
     def __init__(self):
-        self.alpha = np.zeros(2)               # Angular acceleration (rd/s²)
-        self.omega = np.zeros(2)               # Angular velocity (rd/s)
-        self.theta = np.array(self.theta_init) # Joint angle (rd)
+        self.velocities = np.zeros(2)
+        self.angles = np.array(self.initial_angles)
 
-        self.bound_joint_angles()
+        # TODO
+        null, self.velocities, self.angles = self.bound_joint_angles(np.zeros(2),
+                                                                    self.velocities,
+                                                                    self.angles)
 
         # Init datas to plot
-        fig.subfig('alpha',
+        fig.subfig('M',
+                   title='M',
+                   xlabel='time (s)',
+                   ylabel='M',
+                   legend=('M11', 'M12', 'M21', 'M22'))
+        fig.subfig('C',
+                   title='C',
+                   xlabel='time (s)',
+                   ylabel='C',
+                   legend=self.legend)
+        fig.subfig('angular_acceleration',
                    title='Angular acceleration',
                    xlabel='time (s)',
                    ylabel='Angular acceleration (rad/s/s)',
                    legend=self.legend)
-        fig.subfig('omega',
+        fig.subfig('angular_velocity',
                    title='Angular velocity',
                    xlabel='time (s)',
                    ylabel='Angular velocity (rad/s)',
                    legend=self.legend)
-        fig.subfig('theta',
+        fig.subfig('joint_angles',
                    title='Angle',
                    xlabel='time (s)',
                    ylabel='Angle (rad)',
                    legend=self.legend)
 
 
-    def update(self, tau, dt):
+    def update(self, torque, dt):
         "Compute the arm dynamics."
 
-        # Angular acceleration ########
-        M = self.M(self.theta)
-        C = self.C(self.theta, self.omega)
+        # Load state
+        angles = self.angles.copy()
+        velocities = self.velocities.copy()
 
-        # from [1] p.3, [3] p.4 and [6] p.354
-        self.alpha = np.dot(np.linalg.inv(M), tau - C) 
-
-        fig.append('alpha', self.alpha)
-        assert self.alpha.min() >= self.alphamin \
-           and self.alpha.max() <= self.alphamax, "Angular acceleration %f" % self.alpha
+        # Angular accelerations (rad/s²)
+        # From [1] p.3, [3] p.4 and [6] p.354
+        M = self.M(angles)
+        C = self.C(angles, velocities)
+        accelerations = np.dot(np.linalg.inv(M), torque - C)
+        self.assert_bounds('angular_acceleration', accelerations)
 
         # Forward kinematics
-        self.alpha, self.omega, self.theta = kinematics.forward_kinematics(acceleration=self.alpha,
-                                                               velocity=self.omega,
-                                                               angle=self.theta,
-                                                               delta_time=dt)
-        self.bound_joint_angles()
+        accelerations, velocities, angles = kinematics.forward_kinematics(acceleration=accelerations,
+                                                                  velocity=velocities,
+                                                                  angle=angles,
+                                                                  delta_time=dt)
+        self.assert_bounds('angular_velocity', velocities)
 
-        fig.append('omega', self.omega)
-        fig.append('theta', self.theta)
+        # Check collisions
+        accelerations, velocities, angles = self.bound_joint_angles(accelerations,
+                                                                    velocities,
+                                                                    angles)
 
-        assert self.omega.min() >= self.omegamin \
-               and self.omega.max() <= self.omegamax, "Angular velocity %f" % self.omega
+        # Plot values
+        fig.append('M', M.flatten())
+        fig.append('C', C)
+        fig.append('angular_acceleration', accelerations)
+        fig.append('angular_velocity', velocities)
+        fig.append('joint_angles', angles)
 
-        return self.alpha.tolist(), self.omega.tolist(), self.theta.tolist()
+        # Save state
+        self.angles = angles
+        self.velocities = velocities
+
+        return accelerations
 

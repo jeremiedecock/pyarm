@@ -4,53 +4,77 @@
 
 import math
 import numpy as np
+import warnings
 
 class AbstractArmModel:
     """Abstract forward dynamics arm model.
 
     References :
-
-    [1] M. Katayama and M. Kawato (1993), "Virtual trajectory and stiffness
-    ellipse during multijoint arm movement predicted by neural inverse models".
-    Biological Cybernetics, 69:353-362.
+    [1] M. Katayama and M. Kawato.
+    "Virtual trajectory and stiffness ellipse during multijoint arm movement
+    predicted by neural inverse models".
+    Biological Cybernetics, 69(5):353-362, 1993.
     """
+
+    # STATE VARIABLES #########################################################
+
+    velocities = None         # Angular velocity (rd/s)
+    angles = None             # Joint angle (rd)
+    former_time = None        # Time (s)
+
+    # CONSTANTS ###############################################################
 
     name = 'Abstract'
 
-    # The state of the arm
-    alpha = None              # Angular acceleration (rd/s²)
-    omega = None              # Angular velocity (rd/s)
-    theta = None              # Joint angle (rd)
+    # Bound values for assert ###################
+
+    bounds = {
+              # Angular acceleration (rd/s²)
+              'angular_acceleration': {'min': -128. * math.pi,
+                                       'max': 128. * math.pi},
+
+              # Angular velocity (rd/s) from [3] p.19
+              'angular_velocity': {'min': -8. * math.pi,
+                                   'max': 8. * math.pi},
+              
+              # Total torque (N.m)
+              'torque': {'min': -200, 'max': 200}
+             }
 
     # Min and max joint angles (rd)
-    theta_bounds = [{'min': math.radians(-30), 'max': math.radians(140)}, 
-                    {'min': math.radians(0),   'max': math.radians(160)}] 
+    angle_bounds = [
+                    # Shoulder
+                    {'min': math.radians(-30),
+                     'max': math.radians(140)}, 
 
-    # Initial joint angles : functional standard posture (rd) from [6] p.356-357
-    theta_init = [math.radians(45), math.radians(70)]
+                    # Elbow
+                    {'min': math.radians(0),
+                     'max': math.radians(160)}
+                   ] 
 
-    # Bound values for assert #################################################
+    # Initial joint angles
+    # Functional standard posture (rd) from [6] p.356-357
+    initial_angles = [math.radians(45), math.radians(70)]
 
-    # Total torque (N.m)
-    taumin, taumax = -200, 200
 
-    # Angular acceleration (rd/s²)
-    alphamin, alphamax = -128. * math.pi, 128. * math.pi
+    # Arm parameters ############################
 
-    # Angular velocity (rd/s) from [3] p.19
-    omegamin, omegamax = -8. * math.pi, 8. * math.pi
+    # Moment of inertia at shoulder join (kg·m²)
+    shoulder_inertia = None
 
-    # Arm parameters ##########################################################
+    # Moment of inertia at elbow join (kg·m²)
+    elbow_inertia = None
 
-    shoulder_inertia = None   # Moment of inertia at shoulder join (kg·m²)
-    elbow_inertia = None      # Moment of inertia at elbow join (kg·m²)
+    # Forearm mass (kg)
+    forearm_mass = None
 
-    forearm_mass = None       # Forearm mass (kg)
-
-    upperarm_length = None    # Upperarm length (m)
+    # Upperarm length (m)
+    upperarm_length = None
 
     # Distance from the forearm joint center to the forearm center of mass (m)
-    forearm_cog = None 
+    forearm_cog = None
+
+    ###########################################################################
 
     def __init__(self):
         raise NotImplementedError("Abstract class.")
@@ -98,15 +122,43 @@ class AbstractArmModel:
         return C
 
 
-    def bound_joint_angles(self):
+    def bound_joint_angles(self, accelerations, velocities, angles):
         "Limit joint angles to respect bound values."
         for i in range(2):
-            if self.theta[i] < self.theta_bounds[i]['min']:
-                self.alpha[i] = 0
-                self.omega[i] = 0
-                self.theta[i] = self.theta_bounds[i]['min']
-            elif self.theta[i] > self.theta_bounds[i]['max']:
-                self.alpha[i] = 0
-                self.omega[i] = 0
-                self.theta[i] = self.theta_bounds[i]['max']
+            if angles[i] < self.angle_bounds[i]['min']:
+                accelerations[i] = 0
+                velocities[i] = 0
+                angles[i] = self.angle_bounds[i]['min']
+            elif angles[i] > self.angle_bounds[i]['max']:
+                accelerations[i] = 0
+                velocities[i] = 0
+                angles[i] = self.angle_bounds[i]['max']
+
+        return accelerations, velocities, angles
+
+
+    def assert_bounds(self, name, value):
+        """Check if 'value' satisfy minimum and maximum value constraints
+        (bounds).
+
+        Arguments
+        - name  : the key to reach constraints in 'bounds' dictionary.
+        - value : the values to assert (a numpy array).
+        """
+
+        if name in self.bounds.keys():
+            assert value.min() >= self.bounds[name]['min'] \
+               and value.max() <= self.bounds[name]['max'], \
+               "%s is out of bounds values :\n" \
+               "- expected bounds : [%f, %f]\n" \
+               "- actual bounds   : [%f, %f]\n" \
+               "\n%s" \
+               % (name,
+                  self.bounds[name]['min'],
+                  self.bounds[name]['max'],
+                  value.min(),
+                  value.max(),
+                  value)
+        else:
+            warnings.warn("%s is not a valid key" % name)
 

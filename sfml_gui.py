@@ -98,20 +98,16 @@ class GUI:
 
     def updateShapes(self):
         # Line 1
-        self.line1.SetRotation(math.degrees(self.arm.theta[0]))
+        self.line1.SetRotation(math.degrees(self.arm.angles[0]))
 
         # Line 2
         self.centerLine(self.line2)
-        self.line2.SetRotation(math.degrees(self.arm.theta[0]))
-        self.line2.Rotate(math.degrees(self.arm.theta[1]))
+        self.line2.SetRotation(math.degrees(self.arm.angles[0]))
+        self.line2.Rotate(math.degrees(self.arm.angles[1]))
         self.translateLine(self.line2, self.line1)
 
     def run(self):
         window_input = self.window.GetInput()
-
-        alpha = 0.
-        omega = 0.
-        theta = 0.
 
         # The main loop
         running = True
@@ -145,26 +141,25 @@ class GUI:
             if self.agent == None:
                 input_signal = [float(flag) for flag in key_input]
             else:
-                input_signal = self.agent.get_action(alpha=alpha,
-                                                     omega=omega,
-                                                     theta=theta,
+                input_signal = self.agent.get_action(velotities=self.arm.velocities,
+                                                     angles=self.arm.angles,
                                                      time=elapsed_time)
         
             fig.append('input signal', input_signal)
 
-            # Update thetas (physics)
-            tau = self.muscle.update(input_signal,
-                                     self.arm.theta,
-                                     self.delta_time)
-            alpha, omega, theta = self.arm.update(tau, self.delta_time)
+            # Update angles (physics)
+            torque = self.muscle.update(input_signal,
+                                        self.arm.angles,
+                                        self.delta_time)
+            self.arm.update(torque, self.delta_time)
 
             # Update clock
             self.former_time = current_time
 
             # Update the window
             self.updateShapes()
-            self.text1.SetText("Theta 1 = %1.2frd (%03d°)   Omega 1 = %1.2frd/s   Alpha 1 = %1.2frd/s/s   Tau 1 = %03dN.m" % (theta[0], math.degrees(theta[0]), omega[0], alpha[0], tau[0]))
-            self.text2.SetText("Theta 2 = %1.2frd (%03d°)   Omega 2 = %1.2frd/s   Alpha 2 = %1.2frd/s/s   Tau 2 = %03dN.m" % (theta[1], math.degrees(theta[1]), omega[1], alpha[1], tau[1]))
+            self.text1.SetText("Shoulder : angle = %1.2frd (%03d°)   velocity = %1.2frd/s   torque = %03dN.m" % (self.arm.angles[0], math.degrees(self.arm.angles[0]), self.arm.velocities[0], torque[0]))
+            self.text2.SetText("Elbow    : angle = %1.2frd (%03d°)   velocity = %1.2frd/s   torque = %03dN.m" % (self.arm.angles[1], math.degrees(self.arm.angles[1]), self.arm.velocities[1], torque[1]))
 
             self.window.Clear(self.background_color)
 

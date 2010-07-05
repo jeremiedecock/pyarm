@@ -165,8 +165,8 @@ class GUI:
         # Draw angles bounds
         if self.draw_angles_bounds:
             # Shoulder
-            angle_start = math.degrees(self.initial_angle + self.arm.theta_bounds[0]['min'])
-            angle_extent = math.degrees(self.arm.theta_bounds[0]['max'] - self.arm.theta_bounds[0]['min'])
+            angle_start = math.degrees(self.initial_angle + self.arm.angle_bounds[0]['min'])
+            angle_extent = math.degrees(self.arm.angle_bounds[0]['max'] - self.arm.angle_bounds[0]['min'])
             self.canvas.draw_arc(shoulder_point[0].tolist(),
                                  shoulder_point[1].tolist(),
                                  25,
@@ -176,8 +176,8 @@ class GUI:
                                  fill="gray")
 
             # Elbow
-            angle_start = math.degrees(global_shoulder_angle + self.arm.theta_bounds[1]['min'])
-            angle_extent = math.degrees(self.arm.theta_bounds[1]['max'] - self.arm.theta_bounds[1]['min'])
+            angle_start = math.degrees(global_shoulder_angle + self.arm.angle_bounds[1]['min'])
+            angle_extent = math.degrees(self.arm.angle_bounds[1]['max'] - self.arm.angle_bounds[1]['min'])
             self.canvas.draw_arc(elbow_point[0].tolist(),
                                  elbow_point[1].tolist(),
                                  25,
@@ -249,11 +249,6 @@ class GUI:
         try:
             iteration = 0
 
-            alpha = [0., 0.]
-            omega = [0., 0.]
-            theta = [0., 0.]
-            #tau = [0., 0.] ###
-
             #import xcsfpython as xp ###
             #xcsf = xp.XCSF(host='127.0.0.1', configFilePath='xcsf.ini') ###
             #xcsf.initialize(6, 2) ###
@@ -261,12 +256,12 @@ class GUI:
             while self.running:
                 iteration += 1
 
-                #state = np.array([xcsf.norm(tau[0], self.arm.taumin, self.arm.taumax),
-                #                  xcsf.norm(tau[1], self.arm.taumin, self.arm.taumax),
-                #                  xcsf.norm(omega[0], self.arm.omegamin, self.arm.omegamax),
-                #                  xcsf.norm(omega[1], self.arm.omegamin, self.arm.omegamax),
-                #                  xcsf.norm(theta[0], self.arm.theta_bounds[0]['min'], self.arm.theta_bounds[0]['max']),
-                #                  xcsf.norm(theta[1], self.arm.theta_bounds[1]['min'], self.arm.theta_bounds[1]['max'])]) ###
+                #state = np.array([xcsf.norm(torque[0], self.arm.bounds['torque']['min'], self.arm.bounds['torque']['max']),
+                #                  xcsf.norm(torque[1], self.arm.bounds['torque']['min'], self.arm.bounds['torque']['max']),
+                #                  xcsf.norm(self.arm.velocities[0], self.arm.bounds['angular_velocity']['min'], self.arm.bounds['angular_velocity']['max']),
+                #                  xcsf.norm(self.arm.velocities[1], self.arm.bounds['angular_velocity']['min'], self.arm.bounds['angular_velocity']['max']),
+                #                  xcsf.norm(self.arm.angles[0], self.arm.angle_bounds[0]['min'], self.arm.angle_bounds[0]['max']),
+                #                  xcsf.norm(self.arm.angles[1], self.arm.angle_bounds[1]['min'], self.arm.angle_bounds[1]['max'])]) ###
 
                 # Compute delta time
                 current_time = time.time()
@@ -283,18 +278,17 @@ class GUI:
                 if self.agent == None:
                     input_signal = [float(flag) for flag in self.keyboard_flags]
                 else:
-                    input_signal = self.agent.get_action(alpha=alpha,
-                                                         omega=omega,
-                                                         theta=theta,
+                    input_signal = self.agent.get_action(velocities=self.arm.velocities,
+                                                         angles=self.arm.angles,
                                                          time=elapsed_time)
             
                 fig.append('input signal', input_signal)
 
-                # Update thetas (physics)
-                tau = self.muscle.update(input_signal,
-                                         self.arm.theta,
-                                         self.delta_time)
-                alpha, omega, theta = self.arm.update(tau, self.delta_time)
+                # Update angles (physics)
+                torque = self.muscle.update(input_signal,
+                                            self.arm.angles,
+                                            self.delta_time)
+                self.arm.update(torque, self.delta_time)
 
                 # Update clock
                 self.former_time = current_time
@@ -302,13 +296,14 @@ class GUI:
                 #xcsf.update(state, np.array(alpha)) ###
 
                 # Update the caneva
-                self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     acceleration = %1.2frd/s/s     torque = %03dN.m" % (theta[0], math.degrees(theta[0]), omega[0], alpha[0], tau[0]))
-                self.str_var2.set("Elbow : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     acceleration = %1.2frd/s/s     torque = %03dN.m" % (theta[1], math.degrees(theta[1]), omega[1], alpha[1], tau[1]))
-                self.draw_shapes(*theta)
+                self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[0], math.degrees(self.arm.angles[0]), self.arm.velocities[0], torque[0]))
+                self.str_var2.set("Elbow    : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[1], math.degrees(self.arm.angles[1]), self.arm.velocities[1], torque[1]))
+                self.draw_shapes(*self.arm.angles)
 
                 self.root.update_idletasks() # redraw
-                self.root.update() # process events
+                self.root.update()           # process events
 
+                # Screencast
                 if self.screencast:
                     self.canvas.postscript(file='%s/%05d.ps' % ('screencast', iteration), colormode='color')
                     os.system('gs -sDEVICE=jpeg -sOutputFile=%(path)s/%(iteration)05d.jpeg -dNOPAUSE -q -dBATCH %(path)s/%(iteration)05d.ps' % {'iteration': iteration, 'path': 'screencast'})
