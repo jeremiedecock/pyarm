@@ -2,6 +2,8 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
+from model.kinematics import euler as kinematics
+import fig
 import math
 import numpy as np
 import warnings
@@ -25,6 +27,8 @@ class AbstractArmModel:
     # CONSTANTS ###############################################################
 
     name = 'Abstract'
+
+    legend = ('shoulder', 'elbow')
 
     # Bound values for assert ###################
 
@@ -59,30 +63,119 @@ class AbstractArmModel:
 
     # Arm parameters ############################
 
-    # Moment of inertia at shoulder join (kg·m²)
-    shoulder_inertia = None
+    upperarm_mass = None         # Upperarm mass (kg)
+    forearm_mass = None          # Forearm mass (kg)
 
-    # Moment of inertia at elbow join (kg·m²)
-    elbow_inertia = None
+    upperarm_length = None       # Upperarm length (m)
+    forearm_length = None        # Forearm length (m)
 
-    # Forearm mass (kg)
-    forearm_mass = None
-
-    # Upperarm length (m)
-    upperarm_length = None
-
+    # Distance from the upperarm joint center to the upperarm center of mass (m)
+    upperarm_cog = None
     # Distance from the forearm joint center to the forearm center of mass (m)
     forearm_cog = None
+
+    shoulder_inertia = None      # Moment of inertia at shoulder join (kg·m²)
+    elbow_inertia = None         # Moment of inertia at elbow join (kg·m²)
+
+    g = None                     # Gravitational acceleration (m/s²)
+
+    friction_matrix = np.array([[0.05, 0.025], [0.025, 0.05]])
 
     ###########################################################################
 
     def __init__(self):
-        raise NotImplementedError("Abstract class.")
+        self.velocities = np.zeros(2)
+
+        angles = np.array(self.initial_angles)
+        self.angles = self.constraint_joint_angles(angles)
+
+        # Init datas to plot
+        fig.subfig('M',
+                   title='M',
+                   xlabel='time (s)',
+                   ylabel='M',
+                   legend=('M11', 'M12', 'M21', 'M22'))
+        fig.subfig('C',
+                   title='C',
+                   xlabel='time (s)',
+                   ylabel='C',
+                   legend=self.legend)
+        fig.subfig('B',
+                   title='B',
+                   xlabel='time (s)',
+                   ylabel='B',
+                   legend=self.legend)
+        fig.subfig('G',
+                   title='G',
+                   xlabel='time (s)',
+                   ylabel='G',
+                   legend=self.legend)
+        fig.subfig('Rn',
+                   title='Rn',
+                   xlabel='time (s)',
+                   ylabel='Rn',
+                   legend=self.legend)
+        fig.subfig('angular_acceleration',
+                   title='Angular acceleration',
+                   xlabel='time (s)',
+                   ylabel='Angular acceleration (rad/s/s)',
+                   legend=self.legend)
+        fig.subfig('angular_velocity',
+                   title='Angular velocity',
+                   xlabel='time (s)',
+                   ylabel='Angular velocity (rad/s)',
+                   legend=self.legend)
+        fig.subfig('joint_angles',
+                   title='Angle',
+                   xlabel='time (s)',
+                   ylabel='Angle (rad)',
+                   legend=self.legend)
 
 
     def update(self, torque, delta_time):
-        "Compute the arm forward dynamics."
-        raise NotImplementedError('Abstract class.')
+        "Compute the arm dynamics."
+
+        # Load state
+        angles = self.angles.copy()
+        velocities = self.velocities.copy()
+
+        # Angular acceleration (rad/s²)
+        # From [1] p.3, [3] p.4 and [6] p.354
+        M = self.M(angles)
+        C = self.C(angles, velocities)
+        B = self.B(velocities)
+        G = self.G(angles)
+        Rn = np.zeros(2)
+        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G - Rn)
+        self.assert_bounds('angular_acceleration', accelerations)
+
+        # Forward kinematics TODO
+        accelerations, velocities, angles = kinematics.forward_kinematics(acceleration=accelerations,
+                                                                  velocity=velocities,
+                                                                  angle=angles,
+                                                                  delta_time=delta_time)
+        self.assert_bounds('angular_velocity', velocities)
+
+        # Check collisions
+        #accelerations, velocities, angles = self.bound_joint_angles(accelerations,
+        #                                                            velocities,
+        #                                                            angles)
+
+        # Plot values
+        fig.append('M', M.flatten())
+        fig.append('C', C)
+        fig.append('B', B)
+        fig.append('G', G)
+        fig.append('Rn', Rn)
+        fig.append('angular_acceleration', accelerations)
+        fig.append('angular_velocity', velocities)
+        fig.append('joint_angles', angles)
+
+        # Save state
+        self.angles = angles
+        self.velocities = velocities
+
+        return accelerations
 
 
     def M(self, theta):
@@ -122,19 +215,51 @@ class AbstractArmModel:
         return C
 
 
-    def bound_joint_angles(self, accelerations, velocities, angles):
-        "Limit joint angles to respect bound values."
+    def B(self, omega):
+        "Compute joint friction matrix."
+        return np.dot(self.friction_matrix, omega)
+
+
+    def G(self, theta):
+        "Compute gravity force matrix."
+        if theta.shape != (2,):
+            raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
+
+        G = np.zeros(2)
+
+        G[0] = self.upperarm_mass * self.g * self.upperarm_cog * \
+               math.cos(theta[0]) \
+               + self.forearm_mass * self.g * \
+               (self.upperarm_length * math.cos(\
+               theta[0]) + self.forearm_cog * math.cos(theta[0] + theta[1]))
+        G[1] = self.forearm_mass * self.g * self.forearm_cog * math.cos(\
+               theta[0] + theta[1])
+
+        return G
+
+
+    def constraint_joint_angles(self, angles):
+        "Limit joint angles to respect constraint values."
         for i in range(2):
             if angles[i] < self.angle_bounds[i]['min']:
-                accelerations[i] = 0
-                velocities[i] = 0
                 angles[i] = self.angle_bounds[i]['min']
             elif angles[i] > self.angle_bounds[i]['max']:
-                accelerations[i] = 0
-                velocities[i] = 0
                 angles[i] = self.angle_bounds[i]['max']
 
-        return accelerations, velocities, angles
+        return angles
+
+
+    def assert_joint_angles(self, angles):
+        """Limit joint angles to respect constraint values.
+
+        Return True if angles values satisfy constraints, else return False."""
+        assert_constraints = True
+
+        for i in range(2):
+            if not self.angle_bounds[i]['min'] < angles[i] < self.angle_bounds[i]['max']:
+                assert_constraints = False
+ 
+        return assert_constraints
 
 
     def assert_bounds(self, name, value):

@@ -3,9 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 from abstract_arm_model import AbstractArmModel
-from model.kinematics import euler as kinematics
 import numpy as np
-import fig
 
 class ArmModel(AbstractArmModel):
     """Horizontally planar 2 DoF arm model.
@@ -47,19 +45,11 @@ class ArmModel(AbstractArmModel):
     [7] Todorov & Li
     """
 
-    # STATE VARIABLES #########################################################
-
-    velocities = None         # Angular velocity (rd/s)
-    angles = None             # Joint angle (rd)
-    former_time = None        # Time (s)
-
     # CONSTANTS ###############################################################
 
     name = 'Mitrovic'
 
-    legend = ('shoulder', 'elbow')
-
-    # Arm parameters from from [6] p.356 ######################################
+    # Arm parameters from [6] p.356 ###########################################
 
     shoulder_inertia = 4.77E-2   # Moment of inertia at shoulder join (kg·m²)
     elbow_inertia = 5.88E-2      # Moment of inertia at elbow join (kg·m²)
@@ -74,79 +64,11 @@ class ArmModel(AbstractArmModel):
 
     ###########################################################################
 
-    def __init__(self):
-        self.velocities = np.zeros(2)
-        self.angles = np.array(self.initial_angles)
+    def B(self, velocities):
+        "Compute joint friction matrix."
+        return np.zeros(2)
 
-        # TODO
-        null, self.velocities, self.angles = self.bound_joint_angles(np.zeros(2),
-                                                                    self.velocities,
-                                                                    self.angles)
-
-        # Init datas to plot
-        fig.subfig('M',
-                   title='M',
-                   xlabel='time (s)',
-                   ylabel='M',
-                   legend=('M11', 'M12', 'M21', 'M22'))
-        fig.subfig('C',
-                   title='C',
-                   xlabel='time (s)',
-                   ylabel='C',
-                   legend=self.legend)
-        fig.subfig('angular_acceleration',
-                   title='Angular acceleration',
-                   xlabel='time (s)',
-                   ylabel='Angular acceleration (rad/s/s)',
-                   legend=self.legend)
-        fig.subfig('angular_velocity',
-                   title='Angular velocity',
-                   xlabel='time (s)',
-                   ylabel='Angular velocity (rad/s)',
-                   legend=self.legend)
-        fig.subfig('joint_angles',
-                   title='Angle',
-                   xlabel='time (s)',
-                   ylabel='Angle (rad)',
-                   legend=self.legend)
-
-
-    def update(self, torque, dt):
-        "Compute the arm dynamics."
-
-        # Load state
-        angles = self.angles.copy()
-        velocities = self.velocities.copy()
-
-        # Angular accelerations (rad/s²)
-        # From [1] p.3, [3] p.4 and [6] p.354
-        M = self.M(angles)
-        C = self.C(angles, velocities)
-        accelerations = np.dot(np.linalg.inv(M), torque - C)
-        self.assert_bounds('angular_acceleration', accelerations)
-
-        # Forward kinematics
-        accelerations, velocities, angles = kinematics.forward_kinematics(acceleration=accelerations,
-                                                                  velocity=velocities,
-                                                                  angle=angles,
-                                                                  delta_time=dt)
-        self.assert_bounds('angular_velocity', velocities)
-
-        # Check collisions
-        accelerations, velocities, angles = self.bound_joint_angles(accelerations,
-                                                                    velocities,
-                                                                    angles)
-
-        # Plot values
-        fig.append('M', M.flatten())
-        fig.append('C', C)
-        fig.append('angular_acceleration', accelerations)
-        fig.append('angular_velocity', velocities)
-        fig.append('joint_angles', angles)
-
-        # Save state
-        self.angles = angles
-        self.velocities = velocities
-
-        return accelerations
+    def G(self, angles):
+        "Compute gravity force matrix."
+        return np.zeros(2)
 
