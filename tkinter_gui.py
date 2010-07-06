@@ -165,8 +165,8 @@ class GUI:
         # Draw angles bounds
         if self.draw_angles_bounds:
             # Shoulder
-            angle_start = math.degrees(self.initial_angle + self.arm.angle_bounds[0]['min'])
-            angle_extent = math.degrees(self.arm.angle_bounds[0]['max'] - self.arm.angle_bounds[0]['min'])
+            angle_start = math.degrees(self.initial_angle + self.arm.angle_constraints[0]['min'])
+            angle_extent = math.degrees(self.arm.angle_constraints[0]['max'] - self.arm.angle_constraints[0]['min'])
             self.canvas.draw_arc(shoulder_point[0].tolist(),
                                  shoulder_point[1].tolist(),
                                  25,
@@ -176,8 +176,8 @@ class GUI:
                                  fill="gray")
 
             # Elbow
-            angle_start = math.degrees(global_shoulder_angle + self.arm.angle_bounds[1]['min'])
-            angle_extent = math.degrees(self.arm.angle_bounds[1]['max'] - self.arm.angle_bounds[1]['min'])
+            angle_start = math.degrees(global_shoulder_angle + self.arm.angle_constraints[1]['min'])
+            angle_extent = math.degrees(self.arm.angle_constraints[1]['max'] - self.arm.angle_constraints[1]['min'])
             self.canvas.draw_arc(elbow_point[0].tolist(),
                                  elbow_point[1].tolist(),
                                  25,
@@ -260,8 +260,8 @@ class GUI:
                 #                  xcsf.norm(torque[1], self.arm.bounds['torque']['min'], self.arm.bounds['torque']['max']),
                 #                  xcsf.norm(self.arm.velocities[0], self.arm.bounds['angular_velocity']['min'], self.arm.bounds['angular_velocity']['max']),
                 #                  xcsf.norm(self.arm.velocities[1], self.arm.bounds['angular_velocity']['min'], self.arm.bounds['angular_velocity']['max']),
-                #                  xcsf.norm(self.arm.angles[0], self.arm.angle_bounds[0]['min'], self.arm.angle_bounds[0]['max']),
-                #                  xcsf.norm(self.arm.angles[1], self.arm.angle_bounds[1]['min'], self.arm.angle_bounds[1]['max'])]) ###
+                #                  xcsf.norm(self.arm.angles[0], self.arm.angle_constraints[0]['min'], self.arm.angle_constraints[0]['max']),
+                #                  xcsf.norm(self.arm.angles[1], self.arm.angle_constraints[1]['min'], self.arm.angle_constraints[1]['max'])]) ###
 
                 # Compute delta time
                 current_time = time.time()

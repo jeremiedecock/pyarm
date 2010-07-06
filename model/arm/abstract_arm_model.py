@@ -28,7 +28,7 @@ class AbstractArmModel:
 
     name = 'Abstract'
 
-    legend = ('shoulder', 'elbow')
+    joints = ('shoulder', 'elbow')
 
     # Bound values for assert ###################
 
@@ -46,7 +46,7 @@ class AbstractArmModel:
              }
 
     # Min and max joint angles (rd)
-    angle_bounds = [
+    angle_constraints = [
                     # Shoulder
                     {'min': math.radians(-30),
                      'max': math.radians(140)}, 
@@ -99,37 +99,42 @@ class AbstractArmModel:
                    title='C',
                    xlabel='time (s)',
                    ylabel='C',
-                   legend=self.legend)
+                   legend=self.joints)
         fig.subfig('B',
                    title='B',
                    xlabel='time (s)',
                    ylabel='B',
-                   legend=self.legend)
+                   legend=self.joints)
         fig.subfig('G',
                    title='G',
                    xlabel='time (s)',
                    ylabel='G',
-                   legend=self.legend)
+                   legend=self.joints)
         fig.subfig('Rn',
                    title='Rn',
                    xlabel='time (s)',
                    ylabel='Rn',
-                   legend=self.legend)
+                   legend=self.joints)
+        fig.subfig('tCBG',
+                   title='torque - (C + B + G)',
+                   xlabel='time (s)',
+                   ylabel='torque - (C + B + G)',
+                   legend=self.joints)
         fig.subfig('angular_acceleration',
                    title='Angular acceleration',
                    xlabel='time (s)',
                    ylabel='Angular acceleration (rad/s/s)',
-                   legend=self.legend)
+                   legend=self.joints)
         fig.subfig('angular_velocity',
                    title='Angular velocity',
                    xlabel='time (s)',
                    ylabel='Angular velocity (rad/s)',
-                   legend=self.legend)
+                   legend=self.joints)
         fig.subfig('joint_angles',
                    title='Angle',
                    xlabel='time (s)',
                    ylabel='Angle (rad)',
-                   legend=self.legend)
+                   legend=self.joints)
 
 
     def update(self, torque, delta_time):
@@ -145,21 +150,24 @@ class AbstractArmModel:
         C = self.C(angles, velocities)
         B = self.B(velocities)
         G = self.G(angles)
-        Rn = np.zeros(2)
-        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G - Rn)
+        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G)
+
+        velocities, angles = kinematics.forward_kinematics(accelerations,
+                                                           velocities,
+                                                           angles,
+                                                           delta_time)
+
+        Rn = np.array(self.assert_joint_angles(angles)) * (-torque + C + B + G)
+        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + Rn)  # TODO
+        
         self.assert_bounds('angular_acceleration', accelerations)
 
-        # Forward kinematics TODO
-        accelerations, velocities, angles = kinematics.forward_kinematics(acceleration=accelerations,
-                                                                  velocity=velocities,
-                                                                  angle=angles,
-                                                                  delta_time=delta_time)
+        # Forward kinematics
+        velocities, angles = kinematics.forward_kinematics(accelerations,
+                                                           velocities,
+                                                           angles,
+                                                           delta_time)
         self.assert_bounds('angular_velocity', velocities)
-
-        # Check collisions
-        #accelerations, velocities, angles = self.bound_joint_angles(accelerations,
-        #                                                            velocities,
-        #                                                            angles)
 
         # Plot values
         fig.append('M', M.flatten())
@@ -167,6 +175,7 @@ class AbstractArmModel:
         fig.append('B', B)
         fig.append('G', G)
         fig.append('Rn', Rn)
+        fig.append('tCBG', torque - C - B - G)
         fig.append('angular_acceleration', accelerations)
         fig.append('angular_velocity', velocities)
         fig.append('joint_angles', angles)
@@ -240,26 +249,19 @@ class AbstractArmModel:
 
     def constraint_joint_angles(self, angles):
         "Limit joint angles to respect constraint values."
-        for i in range(2):
-            if angles[i] < self.angle_bounds[i]['min']:
-                angles[i] = self.angle_bounds[i]['min']
-            elif angles[i] > self.angle_bounds[i]['max']:
-                angles[i] = self.angle_bounds[i]['max']
-
+        for i in range(len(self.joints)):
+            angles[i] = max(angles[i], self.angle_constraints[i]['min'])
+            angles[i] = min(angles[i], self.angle_constraints[i]['max'])
         return angles
 
 
     def assert_joint_angles(self, angles):
         """Limit joint angles to respect constraint values.
 
-        Return True if angles values satisfy constraints, else return False."""
-        assert_constraints = True
-
-        for i in range(2):
-            if not self.angle_bounds[i]['min'] < angles[i] < self.angle_bounds[i]['max']:
-                assert_constraints = False
- 
-        return assert_constraints
+        Return 0. if angles values satisfy constraints or 1. otherwise."""
+        const = self.angle_constraints
+        return [float(not (const[i]['min'] < angles[i] < const[i]['max']))\
+                for i in range(len(self.joints))]
 
 
     def assert_bounds(self, name, value):

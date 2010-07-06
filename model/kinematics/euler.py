@@ -7,10 +7,7 @@ import numpy as np
 
 name = 'Euler'
 
-def forward_kinematics(acceleration=None,
-                       velocity=None,
-                       angle=None,
-                       delta_time=None):
+def forward_kinematics(acceleration, velocity, angle, delta_time):
     "Compute the forward kinematics."
 
     # Angular velocity (rad/s)
@@ -19,4 +16,4 @@ def forward_kinematics(acceleration=None,
     # Joint angle (rad)
     angle = angle + velocity * delta_time
 
-    return acceleration, velocity, angle
+    return velocity, angle

@@ -22,7 +22,7 @@ class ArmModel(AbstractArmModel):
     # Bound values for assert ###################
 
     # Min and max joint angles (rd)
-    angle_bounds = [
+    angle_constraints = [
                     # Shoulder
                     {'min': math.radians(-140),
                      'max': math.radians(90)}, 
