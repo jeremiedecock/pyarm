@@ -7,13 +7,14 @@ import sys
 import os
 import shutil
 import getopt
+import time
 import fig
 
 
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r] [-s]
+    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r] [-s] [-l]
     
     A robotic arm model and simulator.
 
@@ -34,6 +35,9 @@ def usage():
 
     -s, --screencast
         make a screencast
+
+    -l, --log
+        save numeric values (accelerations, velocities, angles, ...) into a file
     '''
 
 
@@ -45,16 +49,18 @@ def main():
 
     # Parse options ###################
     muscle = 'none'
-    arm    = 'li'
-    agent  = 'none'
-    gui    = 'sfml'
+    arm = 'li'
+    agent = 'none'
+    gui = 'sfml'
     realtime = False
     screencast = False
+    log = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:rsh',
-                     ["muscle=", "arm=", "agent=", "gui=", "realtime", "screencast", "help"])
+                     'm:a:A:g:rslh',
+                     ["muscle=", "arm=", "agent=", "gui=", "realtime",
+                      "screencast", "log", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
         print str(err) 
@@ -77,6 +83,8 @@ def main():
             realtime = True
         elif o in ("-s", "--screencast"):
             screencast = True
+        elif o in ("-l", "--log"):
+            log = True
         else:
             assert False, "unhandled option"
 
@@ -165,6 +173,9 @@ def main():
         #os.system("ffmpeg2theora -f image2 %(path)s/%%05d.png -o %(path)s/screencast.ogv" % {'path': 'screencast'})
         os.system("ffmpeg2theora -f image2 %(path)s/%%05d.jpeg -o %(path)s/screencast.ogv" % {'path': 'screencast'})
 
+    if log:
+        print 'Saving log...'
+        fig.save_log()
     fig.show()
 
 if __name__ == '__main__':

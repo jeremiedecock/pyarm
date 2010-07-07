@@ -51,6 +51,13 @@ def subfig(name, title=None, xlabel='', ylabel='', type='plot', xlim=None,
                       'type':type, 'xlim':xlim, 'ylim':ylim, 'legend':legend,
                       'xdata':[], 'ydata':[]}
 
+def save_log():
+    prefix = time.strftime('%d%m%y_%H%M%S_')
+    for fig in _subfigs:
+        x = _subfigs[fig]['xdata']
+        y = _subfigs[fig]['ydata']
+        np.savetxt(prefix + str(fig) + '.log', np.c_[x, y])
+
 def show(numcols=2):
     n = 0
 
