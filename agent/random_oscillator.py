@@ -7,51 +7,22 @@ import random
 
 class Agent:
 
-    amp_s = 0.1
-    freq_s = 1.
-    phase_s = 0.
-    off_s = 0.
-
-    amp_e = 0.2
-    freq_e = 1.
-    phase_e = math.pi
-    off_e = 0.5
+    amp = [0.1 for i in range(6)]
+    freq = [1. for i in range(6)]
+    phase = [0. for i in range(6)]
+    off = [0. for i in range(6)]
 
     def __init__(self):
         pass
 
     def get_action(self, velocities=None, angles=None, time=None):
         
-        if bernoulli(0.01):
-            self.amp_s = random.random()
+        self.amp = map(update, self.amp)
+        self.freq = map(update, self.freq)
+        self.off = map(update, self.off)
 
-        if bernoulli(0.01):
-            self.freq_s = random.random()
-
-        #if bernoulli(0.01):
-        #    self.phase_s = random.random() 
-
-        if bernoulli(0.01):
-            self.off_s = random.random() * (1 - self.amp_s)
-        
-        if bernoulli(0.01):
-            self.amp_e = random.random()
-
-        if bernoulli(0.01):
-            self.freq_e = random.random()
-
-        #if bernoulli(0.01):
-        #    self.phase_e = random.random()
-
-        if bernoulli(0.01):
-            self.off_e = random.random() * (1 - self.amp_s)
-
-        return (func(time, self.amp_s, self.freq_s, self.phase_s, self.off_s),
-                func(time, self.amp_e, self.freq_e, self.phase_e, self.off_e),
-                0.,
-                0.,
-                0.,
-                0.)
+        return [func(time, self.amp[i], self.freq[i],
+                     self.phase[i], self.off[i]) for i in range(6)]
 
 def func(time, amp, freq, phase, off):
     """
@@ -70,10 +41,15 @@ def func(time, amp, freq, phase, off):
 
     return max(min(signal, 1), 0)
 
+def update(value):
+    if bernoulli(0.01):
+        return random.random()
+    else:
+        return value
+
 def bernoulli(p):
     if random.random() <= p:
-        return_value = True
+        return True
     else:
-        return_value = False
+        return False
 
-    return return_value

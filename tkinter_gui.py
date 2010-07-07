@@ -100,11 +100,6 @@ class GUI:
                    title='Time',
                    xlabel='time (s)',
                    ylabel='delta time (s)')
-        fig.subfig('input signal',
-                   title='Signal',
-                   xlabel='time (s)',
-                   ylabel='signal',
-                   ylim=[-0.1, 1.1])
 
     def keypress_callback(self, event):
         if event.char == '1':
@@ -282,8 +277,6 @@ class GUI:
                                                          angles=self.arm.angles,
                                                          time=elapsed_time)
             
-                fig.append('input signal', input_signal)
-
                 # Update angles (physics)
                 torque = self.muscle.update(input_signal,
                                             self.arm.angles,

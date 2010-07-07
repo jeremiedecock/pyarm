@@ -115,20 +115,25 @@ class AbstractArmModel:
                    xlabel='time (s)',
                    ylabel='Rn',
                    legend=self.joints)
+        fig.subfig('torque',
+                   title='Torque',
+                   xlabel='time (s)',
+                   ylabel='Torque (N.m)',
+                   legend=self.joints)
         fig.subfig('tCBG',
                    title='torque - (C + B + G)',
                    xlabel='time (s)',
-                   ylabel='torque - (C + B + G)',
+                   ylabel='Tau - (C + B + G)',
                    legend=self.joints)
         fig.subfig('angular_acceleration',
                    title='Angular acceleration',
                    xlabel='time (s)',
-                   ylabel='Angular acceleration (rad/s/s)',
+                   ylabel='Acceleration (rad/s/s)',
                    legend=self.joints)
         fig.subfig('angular_velocity',
                    title='Angular velocity',
                    xlabel='time (s)',
-                   ylabel='Angular velocity (rad/s)',
+                   ylabel='Velocity (rad/s)',
                    legend=self.joints)
         fig.subfig('joint_angles',
                    title='Angle',
@@ -181,6 +186,7 @@ class AbstractArmModel:
         fig.append('B', B)
         fig.append('G', G)
         fig.append('Rn', Rn)
+        fig.append('torque', torque)
         fig.append('tCBG', torque - C - B - G)
         fig.append('angular_acceleration', accelerations)
         fig.append('angular_velocity', velocities)

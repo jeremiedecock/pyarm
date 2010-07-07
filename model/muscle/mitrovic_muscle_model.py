@@ -46,116 +46,128 @@ class MuscleModel:
     [7] Todorov & Li
     """
 
+    # STATE VARIABLES #########################################################
+
+    # Muscles length (m)
+    muscle_length = None
+
+    # Muscles contraction velocities (muscle length derivative) (m/s)
+    muscle_velocity = None
+
+    # CONSTANTS ###############################################################
+
     name = 'Mitrovic'
 
-    legend = ('shoulder flexor', 'shoulder extensor',
-              'elbow flexor', 'elbow extensor',
-              'double-joints flexor', 'double-joints extensor')
+    muscles = ('shoulder flexor', 'shoulder extensor',
+               'elbow flexor', 'elbow extensor',
+               'double-joints flexor', 'double-joints extensor')
 
-    _l = None              # Current muscle length (m)
+    # Bound values for assert ###################
 
-    _lm = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])   # Muscle length when the joint angle = 0 (m)
+    umin, umax = 0, 1
 
-    l0 = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237]) # Intrinsic rest length (for u = 0) (m)
+    # Muscle parameters #########################
 
-    umin,     umax     = 0, 1
+    # Muscle length when the joint angle = 0 (m)
+    l0 = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])
+
+    # Intrinsic rest length (for u = 0) (m)
+    l0rest = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237])
 
     # Muscle parameters from [6] p.356-357
-    b  = np.ones(6) * 108.1     # Viscosity coefficient             (N.s/m)
-    k  = np.ones(6) * 1621.6    # Elasticity coefficient            (N/m)
-    b0 = np.ones(6) * 54.1      # Intrinsic viscosity   (for u = 0) (N.s/m)
-    k0 = np.ones(6) * 810.8     # Intrinsic elasticity  (for u = 0) (N/m)
+    b1 = np.ones(6) * 108.1     # Viscosity coefficient (N.s/m)
+    k1 = np.ones(6) * 1621.6    # Elasticity coefficient (N/m)
+    b0 = np.ones(6) * 54.1      # Intrinsic viscosity (for u = 0) (N.s/m)
+    k0 = np.ones(6) * 810.8     # Intrinsic elasticity (for u = 0) (N/m)
 
     # Constant from the muscle model (m) from [6] p.357
-    r  = np.array([-0.03491,  0.03491, -0.02182,  0.02182, -0.05498,  0.05498])
+    l1rest = np.array([-0.03491,  0.03491, -0.02182,
+                        0.02182, -0.05498,  0.05498])
 
     # Moment arm (constant matrix) (m) from [6] p.356
-    A  = np.array([[ 0.04 ,  0.04 ,  0.   ,  0.   ,  0.028,  0.028],
-                   [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T
+    A = np.array([[ 0.04 ,  0.04 ,  0.   ,  0.   ,  0.028,  0.028],
+                  [ 0.   ,  0.   ,  0.025,  0.025,  0.035,  0.035]]).T
+
+    ###########################################################################
 
     def __init__(self, arm):
-        self._l = self.lm(arm.theta)
+        self.muscle_length = self.lm(arm.angles)
 
         # Init datas to plot
-        fig.subfig('length',
+        fig.subfig('input signal',
+                   title='Signal',
+                   xlabel='time (s)',
+                   ylabel='signal',
+                   ylim=[-0.1, 1.1],
+                   legend=self.muscles)
+        fig.subfig('muscle length',
                    title='Muscle length',
                    xlabel='time (s)',
                    ylabel='muscle length (m)',
-                   legend=self.legend)
-        fig.subfig('torque',
-                   title='Torque',
-                   xlabel='time (s)',
-                   ylabel='Torque (N.m)',
-                   legend=arm.legend)
+                   legend=self.muscles)
 
-    def update(self, input_signal, theta, dt):
+    def update(self, input_signal, angles, delta_time):
 
-        # Fetch control signal (motor command)
-        # 6 elements vector (value taken in [0,1])
+        # Muscle inverse kinematics #################################
+
+        # Muscle length
+        former_length = self.muscle_length
+        muscle_length = self.lm(angles)
+        delta_length = muscle_length - former_length
+
+        # Muscle contraction velocity (muscle length derivative) (m/s)
+        muscle_velocity = delta_length / delta_time
+
+        # Dynamics ##################################################
+
         u = self.u(input_signal)
 
-        fl = self._l                      # Former muscle length
-        self._l = self.lm(theta)
-        v  = self.v(self._l, fl, dt)
+        tension = self.tension(self.K(u),
+                               self.B(u),
+                               self.rest_length(u),
+                               muscle_length,
+                               muscle_velocity)
 
-        K  = self.K(u)
-        B  = self.B(u)
-        lr = self.lr(u)
-        T  = self.T(K, B, lr, self._l, v)
+        torque = self.torque(tension)
 
-        tau = self.tau(T)
+        fig.append('input signal', input_signal)
+        fig.append('muscle length', muscle_length)
 
-        fig.append('length', self._l)
-        fig.append('torque', tau)
+        # Save state
+        self.muscle_length = muscle_length
 
-        return tau
+        return torque
 
 
-    def u(self, input_signal):
+    def u(self, signal):
         """Compute control signal (motor command).
 
         Take a list of float.
         Return a 6 elements vector (array) with value taken in [0, 1]"""
+        signal = [max(min(s, 1.), 0.) for s in signal]
+        return np.array(signal[0:6])
 
-        u = np.array(input_signal[0:6])
-
-        assert u.min() >= self.umin and u.max() <= self.umax, 'Motor command'
-
-        return u
-
-    def lm(self, theta):
+    def lm(self, angles):
         "Compute muscle length (m)."
-        l = self._lm - np.dot(self.A, theta)
-        return l
-
-    def v(self, l, fl, dt):
-        "Compute muscle contraction velocity (muscle length derivative) (m/s)."
-        dl = l - fl
-        v  = dl / dt
-        return v
+        return self.l0 - np.dot(self.A, angles)
 
     def K(self, u):
         "Compute muscle stiffness (N/m)."
-        K = self.k0 + self.k * u
-        return K
+        return self.k0 + self.k1 * u
 
     def B(self, u):
         "Compute muscle viscosity (N.s/m)."
-        B = self.b0 + self.b * u
-        return B
+        return self.b0 + self.b1 * u
 
-    def lr(self, u):
+    def rest_length(self, u):
         "Compute muscle rest length (m)."
-        lr = self.l0 + self.r * u
-        return lr
+        return self.l0rest + self.l1rest * u
 
-    def T(self, K, B, lr, l, v):
+    def tension(self, K, B, rest_length, muscle_length, muscle_velocity):
         "Compute muscle tension (cf. Kelvin-Voight model)."
-        T = K * (lr-l) - B * v
-        return T
+        return K * (rest_length - muscle_length) - B * muscle_velocity
 
-    def tau(self, T):
+    def torque(self, tension):
         "Compute total torque (N.m)."
-        tau = np.dot(-1 * self.A.T, T)
-        return tau
+        return np.dot(-1. * self.A.T, tension)
 

@@ -7,148 +7,138 @@ import fig
 
 class MuscleModel:
 
+    # STATE VARIABLES #########################################################
+
+    # Muscles length (m)
+    muscle_length = None
+
+    # CONSTANTS ###############################################################
+
     name = 'Kambara'
 
-    legend = ('shoulder flexor', 'shoulder extensor',
-              'elbow flexor', 'elbow extensor',
-              'double-joints flexor', 'double-joints extensor')
+    muscles = ('shoulder flexor', 'shoulder extensor',
+               'elbow flexor', 'elbow extensor',
+               'double-joints flexor', 'double-joints extensor')
+
+    # Bound values for assert ###################
 
     umin,     umax     = 0, 1
     lmin,     lmax     = 0, 0.5
     lrestmin, lrestmax = 0, 0.5
-    # 1 N is the force of Earth's gravity on an object with a mass of about 102 g (1⁄9.81 kg) (such as a small apple).
-    # On Earth's surface, a mass of 1 kg exerts a force of approximately 9.8 N [down] (or 1.0 kilogram-force; 1 kgf=9.80665 N by definition). The approximation of 1 kg corresponding to 10 N is sometimes used as a rule of thumb in everyday life and in engineering.
-    # The force of Earth's gravity on a human being with a mass of 70 kg is approximately 686 N.
     Tmin,     Tmax     = -200, 200
     taumin,   taumax   = -200, 200
 
-    # Muscles dynamics
-    k0 = np.array([1000., 1000., 600., 600., 300., 300.])      # Intrinsic elasticity  (for u = 0) (N/m)
-    k1 = np.array([3000., 2000., 1400., 1200., 600., 600.])    # Variation rate of elasticity      (N/m)
+    # Muscle parameters #########################
 
-    b0 = np.ones(6) * 50.                                      # Intrinsic viscosity   (for u = 0) (N.s/m)
-    b1 = np.ones(6) * 100.                                     # Variation rate of viscosity       (N.s/m)
+    # Intrinsic elasticity (for u = 0) (N/m)
+    k0 = np.array([1000., 1000., 600., 600., 300., 300.])
 
-    l0rest = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237]) # Intrinsic rest length (for u = 0) (m)TODO : ???
-    l1rest = np.ones(6) * 0.15                                  # Rest length (m) # TODO
-    ld     = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])   # ??? (m) # TODO
-    l0     = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])   # Intrinsic length (for u = 0) (m) # TODO
+    # Variation rate of elasticity (N/m)
+    k1 = np.array([3000., 2000., 1400., 1200., 600., 600.])
 
-    A  = np.array([[ 0.04 , -0.04 ,  0.   ,  0.   ,  0.028, -0.035],
-                   [ 0.   ,  0.   ,  0.025, -0.025,  0.028, -0.035]]).T   # Moment arm (constant matrix) (m)
+    # Intrinsic viscosity (for u = 0) (N.s/m)
+    b0 = np.ones(6) * 50.
 
-    length = None     # Current muscle length (m)
-    v      = None     # Current muscle contraction velocity (muscle length derivative) (m/s)
+    # Variation rate of viscosity (N.s/m)
+    b1 = np.ones(6) * 100.
 
+    # Intrinsic rest length (for u = 0) (m) TODO : ???
+    l0rest = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237])
+
+    # Rest length (m) # TODO
+    l1rest = np.ones(6) * 0.15
+
+    # ??? (m) # TODO
+    #ld = np.array([0.077, 0.128, 0.1, 0.04, 0.02, 0.019])
+
+    # Intrinsic length (for u = 0) (m) # TODO
+    l0 = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])
+
+    # Moment arm (constant matrix) (m)
+    A = np.array([[ 0.04 , -0.04 ,  0.   ,  0.   ,  0.028, -0.035],
+                  [ 0.   ,  0.   ,  0.025, -0.025,  0.028, -0.035]]).T
+
+    ###########################################################################
 
     def __init__(self, arm):
         # Current muscle length (m)
-        self.length = self.lm(arm.theta)
-
-        # Current muscle contraction velocity (muscle length derivative) (m/s)
-        self.v = np.zeros(6)
+        self.muscle_length = self.lm(arm.angles)
 
         # Init datas to plot
-        fig.subfig('length',
+        fig.subfig('input signal',
+                   title='Signal',
+                   xlabel='time (s)',
+                   ylabel='signal',
+                   ylim=[-0.1, 1.1],
+                   legend=self.muscles)
+        fig.subfig('muscle length',
                    title='Muscle length',
                    xlabel='time (s)',
                    ylabel='muscle length (m)',
-                   legend=self.legend)
-        fig.subfig('torque',
-                   title='Torque',
-                   xlabel='time (s)',
-                   ylabel='Torque (N.m)',
-                   legend=arm.legend)
+                   legend=self.muscles)
 
-
-    def update(self, input_signal, theta, dt):
+    def update(self, input_signal, angles, delta_time):
 
         # Muscle inverse kinematics #################################
 
         # Muscle length
-        former_length = self.length
-        self.length = self.lm(theta)
-        delta_length = self.length - former_length
+        former_length = self.muscle_length
+        muscle_length = self.lm(angles)
+        delta_length = muscle_length - former_length
 
-        fig.append('length', self.length)
-
-        # Muscle velocity
-        self.v  = delta_length / dt
+        # Muscle contraction velocity (muscle length derivative) (m/s)
+        muscle_velocity = delta_length / delta_time
 
         # Dynamics ##################################################
 
-        # tau : total torque (N.m)
-        T = self.T(self.u(input_signal), self.length, self.v)
-        tau = np.dot(self.A.T, T)
+        u = self.u(input_signal)
 
-        fig.append('torque', tau)
+        tension = self.tension(self.K(u),
+                               self.B(u),
+                               self.rest_length(u),
+                               muscle_length,
+                               muscle_velocity)
 
-        assert tau.min() >= self.taumin and tau.max() <= self.taumax, "Total torque"
+        torque = self.torque(tension)
 
-        return tau
+        fig.append('input signal', input_signal)
+        fig.append('muscle length', muscle_length)
+
+        # Save state
+        self.muscle_length = muscle_length
+
+        return torque
 
 
-    def u(self, input_signal):
+    def u(self, signal):
         """Compute control signal (motor command).
 
         Take a list of float.
         Return a 6 elements vector (array) with value taken in [0, 1]"""
+        signal = [max(min(s, 1.), 0.) for s in signal]
+        return np.array(signal[0:6])
 
-        u = np.array(input_signal[0:6])
-
-        assert u.min() >= self.umin and u.max() <= self.umax, 'Motor command'
-
-        return u
-
-    def lm(self, theta):
+    def lm(self, angles):
         """Muscle length (m)."""
-        if theta.shape != (2,): raise TypeError('Theta : shape is ' + str(theta.shape) + ' ((2,) expected)')
-
-        l = self.l0 - np.dot(self.A, theta) # TODO
-
-        assert l.min() >= self.lmin and l.max() <= self.lmax, 'Muscle length'
-
-        return l
+        return self.l0 - np.dot(self.A, angles) # TODO
         
     def K(self, u):
         """Muscle stiffness (N/m)."""
-        if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
-
-        K = self.k0 + self.k1 * u
-
-        return K
+        return self.k0 + self.k1 * u
 
     def B(self, u):
         """Muscle viscosity (N.s/m)."""
-        if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
+        return self.b0 + self.b1 * u
 
-        B = self.b0 + self.b1 * u
-
-        return B
-
-    def lr(self, u):
+    def rest_length(self, u):
         """Muscle rest length (m)."""
-        if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
+        return self.l0rest - self.l1rest * u
 
-        lrest = self.l0rest - self.l1rest * u
-
-        assert lrest.min() >= self.lrestmin and lrest.max() <= self.lrestmax, "Muscle rest length"
-
-        return lrest
-
-    def T(self, u, l, v):
+    def tension(self, K, B, rest_length, muscle_length, muscle_velocity):
         """Muscle tension (cf. Kelvin-Voight model)."""
-        if u.shape != (6,): raise TypeError('Motor command : shape is ' + str(u.shape) + ' ((6,) expected)')
-        if l.shape != (6,): raise TypeError('Muscle length l : shape is ' + str(l.shape) + ' ((6,) expected)')
-        if v.shape != (6,): raise TypeError('Muscle contraction velocity v : shape is ' + str(v.shape) + ' ((6,) expected)')
+        return K * (muscle_length - rest_length) + B * muscle_velocity
 
-        K = self.K(u)
-        B = self.B(u)
-        lr = self.lr(u)
-
-        T = K * (l-lr) + B * v
-
-        assert T.min() >= self.Tmin and T.max() <= self.Tmax, 'Muscle Tension'
-
-        return T
+    def torque(self, tension):
+        "Compute total torque (N.m)."
+        return np.dot(self.A.T, tension)
 
