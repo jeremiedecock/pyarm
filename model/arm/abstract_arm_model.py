@@ -157,9 +157,11 @@ class AbstractArmModel:
                                                            angles,
                                                            delta_time)
 
-        Rn = np.array(self.assert_joint_angles(angles)) * (-torque + C + B + G)
-        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + Rn)  # TODO
         
+        filter = [float(not flag) for flag in self.assert_joint_angles(angles)]
+        Rn = np.array(filter) * (-torque + C + B + G)  # TODO
+        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + Rn)  # TODO
+
         self.assert_bounds('angular_acceleration', accelerations)
 
         # Forward kinematics
@@ -168,6 +170,10 @@ class AbstractArmModel:
                                                            angles,
                                                            delta_time)
         self.assert_bounds('angular_velocity', velocities)
+
+        filter = [float(flag) for flag in self.assert_joint_angles(angles)]
+        velocities = np.array(filter) * velocities  # TODO
+        angles = self.constraint_joint_angles(angles)  # TODO # REMOVE IT #
 
         # Plot values
         fig.append('M', M.flatten())
@@ -258,9 +264,9 @@ class AbstractArmModel:
     def assert_joint_angles(self, angles):
         """Limit joint angles to respect constraint values.
 
-        Return 0. if angles values satisfy constraints or 1. otherwise."""
+        Return True if angles values satisfy constraints or False otherwise."""
         const = self.angle_constraints
-        return [float(not (const[i]['min'] < angles[i] < const[i]['max']))\
+        return [const[i]['min'] < angles[i] < const[i]['max'] \
                 for i in range(len(self.joints))]
 
 
