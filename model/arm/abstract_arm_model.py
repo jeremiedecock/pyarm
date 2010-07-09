@@ -149,22 +149,22 @@ class AbstractArmModel:
         angles = self.angles.copy()
         velocities = self.velocities.copy()
 
+        # Collision detection
+        collision_flags = self.collision_detection(angles.copy(),  # TODO
+                                                   velocities.copy(),  # TODO
+                                                   torque.copy(),  # TODO
+                                                   delta_time)
+
         # Angular acceleration (rad/s²)
         # From [1] p.3, [3] p.4 and [6] p.354
         M = self.M(angles)
         C = self.C(angles, velocities)
         B = self.B(velocities)
         G = self.G(angles)
-        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G)
 
-        velocities, angles = kinematics.forward_kinematics(accelerations,
-                                                           velocities,
-                                                           angles,
-                                                           delta_time)
-
-        
-        filter = [float(not flag) for flag in self.assert_joint_angles(angles)]
+        filter = [float(flag) for flag in collision_flags]
         Rn = np.array(filter) * (-torque + C + B + G)  # TODO
+
         accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + Rn)  # TODO
 
         self.assert_bounds('angular_acceleration', accelerations)
@@ -176,7 +176,7 @@ class AbstractArmModel:
                                                            delta_time)
         self.assert_bounds('angular_velocity', velocities)
 
-        filter = [float(flag) for flag in self.assert_joint_angles(angles)]
+        filter = [float(not flag) for flag in collision_flags]
         velocities = np.array(filter) * velocities  # TODO
         angles = self.constraint_joint_angles(angles)  # TODO # REMOVE IT #
 
@@ -230,8 +230,9 @@ class AbstractArmModel:
 
         f2 = self.forearm_mass * self.upperarm_length * self.forearm_cog
 
-        C = np.array([-omega[1] * (2. * omega[0] + omega[1]), omega[0]**2]) \
-            * f2 * math.sin(theta[1])
+        C = np.array([-omega[1] * (2. * omega[0] + omega[1]),
+                      omega[0]**2] \
+                    ) * f2 * math.sin(theta[1])
 
         return C
 
@@ -257,6 +258,30 @@ class AbstractArmModel:
                theta[0] + theta[1])
 
         return G
+
+
+    def collision_detection(self, angles, velocities, torque, delta_time):
+        """Compute angles in order to detect collisions.
+
+        Return True if angle value is out of range (collision) or False
+        otherwise."""
+        # Angular acceleration (rad/s²)
+        # From [1] p.3, [3] p.4 and [6] p.354
+        M = self.M(angles)
+        C = self.C(angles, velocities)
+        B = self.B(velocities)
+        G = self.G(angles)
+        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G)
+
+        # Forward kinematics
+        velocities, angles = kinematics.forward_kinematics(accelerations,
+                                                           velocities,
+                                                           angles,
+                                                           delta_time)
+
+        range_flags = self.assert_joint_angles(angles)
+
+        return [not flag for flag in range_flags]
 
 
     def constraint_joint_angles(self, angles):
