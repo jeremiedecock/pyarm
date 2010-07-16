@@ -51,7 +51,7 @@ def main():
     muscle = 'none'
     arm = 'li'
     agent = 'none'
-    gui = 'sfml'
+    gui = 'tk'
     realtime = False
     screencast = False
     log = False

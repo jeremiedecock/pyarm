@@ -51,9 +51,6 @@ class MuscleModel:
     # Muscles length (m)
     muscle_length = None
 
-    # Muscles contraction velocities (muscle length derivative) (m/s)
-    muscle_velocity = None
-
     # CONSTANTS ###############################################################
 
     name = 'Mitrovic'

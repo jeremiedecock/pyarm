@@ -102,6 +102,8 @@ class GUI:
                    ylabel='delta time (s)')
 
     def keypress_callback(self, event):
+        "Update keyboard flags."
+
         if event.char == '1':
             self.keyboard_flags[0] = 1
         elif event.char == '2':
@@ -116,6 +118,8 @@ class GUI:
             self.keyboard_flags[5] = 1
 
     def keyrelease_callback(self, event):
+        "Update keyboard flags."
+
         if event.char == '1':
             self.keyboard_flags[0] = 0
         elif event.char == '2':
@@ -129,20 +133,23 @@ class GUI:
         elif event.char == '6':
             self.keyboard_flags[5] = 0
 
-    def draw_shapes(self, shoulder_angle, elbow_angle):
+    def draw_shapes(self, input_signal):
     
         # Compute limb points and angles ########
+
+        shoulder_angle = self.arm.angles[0]
+        elbow_angle = self.arm.angles[1]
 
         global_shoulder_angle = self.initial_angle + shoulder_angle
         global_elbow_angle = global_shoulder_angle + elbow_angle
 
         shoulder_point = np.array([self.canevas_width, self.canevas_height]) / 2.
-        elbow_point = np.array([math.cos(global_shoulder_angle),  \
-                       math.sin(global_shoulder_angle)]) \
-             * self.arm.upperarm_length * self.scale + shoulder_point
-        wrist_point = np.array([math.cos(global_elbow_angle),  \
-                       math.sin(global_elbow_angle)]) \
-             * self.arm.upperarm_length * self.scale + elbow_point
+        elbow_point = np.array([math.cos(global_shoulder_angle),
+                                math.sin(global_shoulder_angle)]) \
+                      * self.arm.upperarm_length * self.scale + shoulder_point
+        wrist_point = np.array([math.cos(global_elbow_angle),
+                                math.sin(global_elbow_angle)]) \
+                      * self.arm.upperarm_length * self.scale + elbow_point
 
         # Draw parts ############################
 
@@ -211,36 +218,85 @@ class GUI:
                                math.sin(global_shoulder_angle)]) \
                      * 30 + elbow_point
             self.canvas.draw_line(point1.tolist() + point2.tolist(),
-                                    width=1)
+                                  width=1)
 
         # Draw limbs
         self.canvas.draw_line(shoulder_point.tolist() + elbow_point.tolist(),
-                                fill="black",
-                                width=5)
+                              fill="black",
+                              width=5)
         self.canvas.draw_line(elbow_point.tolist() + wrist_point.tolist(),
-                                fill="black",
-                                width=5)
+                              fill="black",
+                              width=5)
+
+        # Draw muscles
+        if self.draw_muscles and hasattr(self.muscle, 'A'):
+            colors = [int(max(min(signal, 1.), 0.) * 255) for signal in input_signal]
+
+            #l1 = self.arm.upperarm_length / 3. * self.scale # TODO
+            #angle_offset = math.pi / 2.
+            #point1 = np.array([math.cos(global_shoulder_angle), 
+            #                   math.sin(global_shoulder_angle)]) \
+            #         * l1 + shoulder_point
+            #point2 = np.array([math.cos(global_shoulder_angle + angle_offset), 
+            #                   math.sin(global_shoulder_angle + angle_offset)]) \
+            #         * self.muscle.A[0, 0] * self.scale + shoulder_point
+            #self.canvas.draw_line(point1.tolist() + point2.tolist(),
+            #                      fill='#%02X00%02X' % (colors[0], 255 - colors[0]) ,
+            #                      width=2)
+
+            L = self.arm.upperarm_length / 3. * self.scale # TODO
+            angle_offset = [math.pi / 2., -math.pi / 2., math.pi / 2.,
+                            -math.pi / 2., math.pi / 2., -math.pi / 2.] # TODO
+
+            for i in range(self.muscle.A.shape[0]):
+                point1, point2 = None, None
+
+                # Compute point 1 (shoulder side)
+                if self.muscle.A[i][0] == 0.:
+                    point1 = np.array([math.cos(global_shoulder_angle), 
+                                       math.sin(global_shoulder_angle)]) \
+                             * 2*L + shoulder_point # TODO
+                else:
+                    #point1 = np.array([math.cos(global_shoulder_angle + angle_offset[i]), 
+                    #                   math.sin(global_shoulder_angle + angle_offset[i])]) \
+                    #         * self.muscle.A[i][0] * self.scale + shoulder_point
+                    point1 = np.array([math.cos(self.initial_angle + self.arm.initial_angles[0] + angle_offset[i]), 
+                                       math.sin(self.initial_angle + self.arm.initial_angles[0] + angle_offset[i])]) \
+                             * self.muscle.A[i][0] * self.scale + shoulder_point
+
+                # Compute point 2 (elbow side)
+                if self.muscle.A[i][1] == 0.:
+                    point2 = np.array([math.cos(global_shoulder_angle), 
+                                       math.sin(global_shoulder_angle)]) \
+                             * L + shoulder_point # TODO
+                else:
+                    point2 = np.array([math.cos(global_elbow_angle + angle_offset[i]), 
+                                       math.sin(global_elbow_angle + angle_offset[i])]) \
+                             * self.muscle.A[i][1] * self.scale + elbow_point
+
+                # Draw muscle (color is proportional to input_signal)
+                self.canvas.draw_line(point1.tolist() + point2.tolist(),
+                                      fill='#%02X00%02X' % (colors[i], 255 - colors[i]) ,
+                                      width=2)
 
         # Draw joints
         if self.draw_joints and hasattr(self.muscle, 'A'):
-            # Shoulder
-            self.canvas.draw_circle(shoulder_point[0].tolist(),
-                                    shoulder_point[1].tolist(),
-                                    self.muscle.A[0, 0] * self.scale)
-            self.canvas.draw_circle(shoulder_point[0].tolist(),
-                                    shoulder_point[1].tolist(),
-                                    self.muscle.A[4, 0] * self.scale)
+            for i in range(self.muscle.A.shape[0]):
+                # Shoulder
+                if self.muscle.A[i][0] != 0.:
+                    self.canvas.draw_circle(shoulder_point[0].tolist(),
+                                            shoulder_point[1].tolist(),
+                                            abs(self.muscle.A[i][0]) * self.scale)
 
-            # Elbow
-            self.canvas.draw_circle(elbow_point[0].tolist(),
-                                    elbow_point[1].tolist(),
-                                    self.muscle.A[2, 1] * self.scale)
-            self.canvas.draw_circle(elbow_point[0].tolist(),
-                                    elbow_point[1].tolist(),
-                                    self.muscle.A[4, 1] * self.scale)
+                # Elbow
+                if self.muscle.A[i][1] != 0.:
+                    self.canvas.draw_circle(elbow_point[0].tolist(),
+                                            elbow_point[1].tolist(),
+                                            abs(self.muscle.A[i][1]) * self.scale)
 
     def run(self):
-        # The main loop
+        "The main loop."
+
         try:
             iteration = 0
 
@@ -291,7 +347,7 @@ class GUI:
                 # Update the caneva
                 self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[0], math.degrees(self.arm.angles[0]), self.arm.velocities[0], torque[0]))
                 self.str_var2.set("Elbow    : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[1], math.degrees(self.arm.angles[1]), self.arm.velocities[1], torque[1]))
-                self.draw_shapes(*self.arm.angles)
+                self.draw_shapes(input_signal)
 
                 self.root.update_idletasks() # redraw
                 self.root.update()           # process events
