@@ -142,7 +142,7 @@ def main():
         sys.exit(2)
 
     if gui == 'tk':
-        import tkinter_gui as gui_mod
+        from gui import tkinter_gui as gui_mod
     elif gui == 'gtk':
         raise NotImplementedError()
     elif gui == 'cairo':
