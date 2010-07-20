@@ -3,7 +3,13 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-from mpl_toolkits.mplot3d import axes3d
+plot3d = True
+try:
+    from mpl_toolkits.mplot3d import axes3d
+except ImportError:
+    # Matplotlib 0.98.1 (Debian Lenny)
+    plot3d = False
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -42,11 +48,13 @@ def main():
     plot_nf(weiwei_muscle)
     plot_fp(weiwei_muscle)
     plot_fl(weiwei_muscle)
-    plot_fv(weiwei_muscle)
-    plot_fa(weiwei_muscle)
 
-    plot_c_forearm(kambara_arm)
-    plot_c_forearm(mitrovic_arm)
+    if plot3d:
+        plot_fv(weiwei_muscle)
+        plot_fa(weiwei_muscle)
+
+        plot_c_forearm(kambara_arm)
+        plot_c_forearm(mitrovic_arm)
 
 
 def plot_lm(arm, muscle):
@@ -70,7 +78,11 @@ def plot_lm(arm, muscle):
     plt.ylabel('Muscle length')
     plt.title(muscle.name)
     plt.plot(q, lm)
-    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    try:
+        plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    except AttributeError:
+        # Matplotlib 0.98.1 (Debian Lenny)
+        plt.legend(muscle.muscles, loc='best')
 
     plt.savefig('muscle_' + muscle.name + '_lm.png')
 
@@ -91,7 +103,11 @@ def plot_k(muscle):
     plt.ylabel('Elastic force')
     plt.title(muscle.name)
     plt.plot(u, k)
-    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    try:
+        plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    except AttributeError:
+        # Matplotlib 0.98.1 (Debian Lenny)
+        plt.legend(muscle.muscles, loc='best')
 
     plt.savefig('muscle_' + muscle.name + '_k.png')
 
@@ -112,7 +128,11 @@ def plot_b(muscle):
     plt.ylabel('Viscosity force')
     plt.title(muscle.name)
     plt.plot(u, b)
-    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    try:
+        plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    except AttributeError:
+        # Matplotlib 0.98.1 (Debian Lenny)
+        plt.legend(muscle.muscles, loc='best')
 
     plt.savefig('muscle_' + muscle.name + '_v.png')
 
@@ -133,7 +153,11 @@ def plot_lr(muscle):
     plt.ylabel('Rest length')
     plt.title(muscle.name)
     plt.plot(u, rl)
-    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    try:
+        plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
+    except AttributeError:
+        # Matplotlib 0.98.1 (Debian Lenny)
+        plt.legend(muscle.muscles, loc='best')
 
     plt.savefig('muscle_' + muscle.name + '_lr.png')
 

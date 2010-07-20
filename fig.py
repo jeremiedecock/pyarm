@@ -98,8 +98,15 @@ def show(numcols=2):
                 nc = 2
             elif 4 < len(_subfigs[fig]['legend']):
                 nc = 3
-            plt.legend(_subfigs[fig]['legend'], loc='best', prop={'size':'x-small'},
-                       ncol=nc)
+            try:
+                plt.legend(_subfigs[fig]['legend'],
+                           loc='best',
+                           prop={'size':'x-small'},
+                           ncol=nc)
+            except TypeError:
+                # Matplotlib 0.98.1 (Debian Lenny)
+                plt.legend(_subfigs[fig]['legend'],
+                           loc='best')
 
         # Set axis fontsize (https://www.cfa.harvard.edu/~jbattat/computer/python/pylab/)
         fontsize = 'x-small'
