@@ -94,13 +94,13 @@ class MuscleModel:
         fig.subfig('input signal',
                    title='Signal',
                    xlabel='time (s)',
-                   ylabel='signal',
+                   ylabel='Signal',
                    ylim=[-0.1, 1.1],
                    legend=self.muscles)
         fig.subfig('muscle length',
                    title='Muscle length',
                    xlabel='time (s)',
-                   ylabel='muscle length (m)',
+                   ylabel='Muscle length (m)',
                    legend=self.muscles)
 
     def update(self, input_signal, angles, delta_time):

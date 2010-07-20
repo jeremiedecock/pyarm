@@ -168,7 +168,7 @@ def main():
         os.mkdir('screencast')
 
     # The mainloop ############################################################
-    fig.subfig('dtime', title='Time', xlabel='time (s)', ylabel='delta time (s)')
+    fig.subfig('dtime', title='Time', xlabel='time (s)', ylabel='Delta time (s)')
     former_time = INIT_TIME
 
     while gui.running:

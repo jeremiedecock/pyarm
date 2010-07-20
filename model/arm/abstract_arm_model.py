@@ -110,10 +110,10 @@ class AbstractArmModel:
                    xlabel='time (s)',
                    ylabel='G',
                    legend=self.joints)
-        fig.subfig('Rn',
-                   title='Rn',
+        fig.subfig('N',
+                   title='N',
                    xlabel='time (s)',
-                   ylabel='Rn',
+                   ylabel='Normal force',
                    legend=self.joints)
         fig.subfig('torque',
                    title='Torque',
@@ -163,9 +163,9 @@ class AbstractArmModel:
         G = self.G(angles)
 
         filter = [float(flag) for flag in collision_flags]
-        Rn = np.array(filter) * (-torque + C + B + G)  # TODO
+        normal_force = np.array(filter) * (-torque + C + B + G)  # TODO
 
-        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + Rn)  # TODO
+        accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + normal_force)  # TODO
 
         self.assert_bounds('angular_acceleration', accelerations)
 
@@ -185,7 +185,7 @@ class AbstractArmModel:
         fig.append('C', C)
         fig.append('B', B)
         fig.append('G', G)
-        fig.append('Rn', Rn)
+        fig.append('N', normal_force)
         fig.append('torque', torque)
         fig.append('tCBG', torque - C - B - G)
         fig.append('angular_acceleration', accelerations)

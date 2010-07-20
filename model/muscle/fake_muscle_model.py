@@ -22,7 +22,7 @@ class MuscleModel:
         fig.subfig('input signal',
                    title='Signal',
                    xlabel='time (s)',
-                   ylabel='signal',
+                   ylabel='Signal',
                    ylim=[-0.1, 1.1],
                    legend=('shoulder +', 'shoulder -',
                            'elbow +', 'elbow -'))
