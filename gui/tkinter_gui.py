@@ -227,8 +227,13 @@ class GUI:
             colors = [int(max(min(signal, 1.), 0.) * 255) for signal in input_signal]
 
             L = self.arm.upperarm_length / 3. * self.scale # TODO
-            angle_offset = [math.pi / 2., -math.pi / 2., math.pi / 2.,
-                            -math.pi / 2., math.pi / 2., -math.pi / 2.] # TODO
+            # TODO : remove the if statement above
+            if self.muscle.name == 'Kambara':
+                angle_offset = [0., 0., 0.,
+                                0., 0., 0.] # TODO
+            else:
+                angle_offset = [math.pi / 2., -math.pi / 2., math.pi / 2.,
+                                -math.pi / 2., math.pi / 2., -math.pi / 2.] # TODO
 
             for i in range(self.muscle.A.shape[0]):
                 point1, point2 = None, None
