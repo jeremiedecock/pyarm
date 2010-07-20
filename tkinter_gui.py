@@ -5,32 +5,19 @@
 import Tkinter as tk
 import numpy as np
 import math
-import time
-import fig
-import os
 
 class GUI:
     "Tkinter graphical user interface."
 
-    # The state of the arm is updated at every tick_duration time (s)
-    delta_time = 0.005
-    #delta_time = 0.01 
-    former_time = 0.
-    init_time = 0.
+    running = None
 
-    realtime = True
-    screencast = None
-
-    running = True
-
-    agent = None
     arm = None
     muscle = None
 
     root = None
     canvas = None
-    str_var1 = None
-    str_var2 = None
+    labels = {}
+    label_strings = {}
 
     initial_angle = 0
     #initial_angle = -math.pi / 2
@@ -46,11 +33,9 @@ class GUI:
     draw_joints = True
     draw_muscles = True
 
-    def __init__(self, muscle, arm, agent=None, realtime=False,
-                 screencast=False):
+    def __init__(self, muscle, arm):
         self.arm = arm
         self.muscle = muscle
-        self.agent = agent
 
         # Create the main window
         self.root = tk.Tk()
@@ -60,25 +45,38 @@ class GUI:
         self.root.bind("<KeyPress>", self.keypress_callback)
         self.root.bind("<KeyRelease>", self.keyrelease_callback)
 
-        # Label 1
-        self.str_var1 = tk.StringVar() 
-        label1 = tk.Label(self.root, textvariable=self.str_var1)
-        label1.pack()
+        # Add a callback on WM_DELETE_WINDOW event
+        self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
-        self.str_var1.set('-')
+        # Shoulder labels
+        self.labels['shoulder'] = tk.Label(self.root, text='Shoulder :')
+        self.labels['shoulder'].grid(row=0, column=0, sticky='E')
+        index = 1
+        for label in ['shoulder_angle', 'shoulder_velocity', 'shoulder_torque']:
+            self.label_strings[label] = tk.StringVar() 
+            self.label_strings[label].set('-')
+            self.labels[label] = tk.Label(self.root,
+                                          textvariable=self.label_strings[label])
+            self.labels[label].grid(row=0, column=index, sticky='W')
+            index += 1
 
-        # Label 2
-        self.str_var2 = tk.StringVar() 
-        label2 = tk.Label(self.root, textvariable=self.str_var2)
-        label2.pack()
-
-        self.str_var2.set('-')
+        # Elbow labels
+        self.labels['elbow'] = tk.Label(self.root, text='Elbow :')
+        self.labels['elbow'].grid(row=1, column=0, sticky='E')
+        index = 1
+        for label in ['elbow_angle', 'elbow_velocity', 'elbow_torque']:
+            self.label_strings[label] = tk.StringVar() 
+            self.label_strings[label].set('-')
+            self.labels[label] = tk.Label(self.root,
+                                          textvariable=self.label_strings[label])
+            self.labels[label].grid(row=1, column=index, sticky='W')
+            index += 1
 
         # Canvas
         self.canvas = MathCanvas(self.root,
                                  width=self.canevas_width,
                                  height=self.canevas_height)
-        self.canvas.pack()
+        self.canvas.grid(row=2, column=0, columnspan=4)
 
         self.canvas.create_rectangle((1, 1, 800, 600),
                                      fill="white",
@@ -87,19 +85,14 @@ class GUI:
         # Button
         quit_button = tk.Button(self.root,
                                 text="Quit",
-                                command=self.root.destroy)
-        quit_button.pack()
+                                command=self.quit)
+        quit_button.grid(row=3, column=0, columnspan=4)
+        
+        self.running = True
 
-        self.realtime = realtime
-        self.screencast = screencast
-
-        self.former_time = time.time()         # Former time (s)
-        self.init_time = self.former_time      # Initial time (s)
-
-        fig.subfig('dtime',
-                   title='Time',
-                   xlabel='time (s)',
-                   ylabel='delta time (s)')
+    def quit(self):
+        self.running = False
+        self.root.destroy()
 
     def keypress_callback(self, event):
         "Update keyboard flags."
@@ -134,6 +127,7 @@ class GUI:
             self.keyboard_flags[5] = 0
 
     def draw_shapes(self, input_signal):
+        "Draw shapes (arm, muscles, ...) in the canvas."
     
         # Compute limb points and angles ########
 
@@ -232,18 +226,6 @@ class GUI:
         if self.draw_muscles and hasattr(self.muscle, 'A'):
             colors = [int(max(min(signal, 1.), 0.) * 255) for signal in input_signal]
 
-            #l1 = self.arm.upperarm_length / 3. * self.scale # TODO
-            #angle_offset = math.pi / 2.
-            #point1 = np.array([math.cos(global_shoulder_angle), 
-            #                   math.sin(global_shoulder_angle)]) \
-            #         * l1 + shoulder_point
-            #point2 = np.array([math.cos(global_shoulder_angle + angle_offset), 
-            #                   math.sin(global_shoulder_angle + angle_offset)]) \
-            #         * self.muscle.A[0, 0] * self.scale + shoulder_point
-            #self.canvas.draw_line(point1.tolist() + point2.tolist(),
-            #                      fill='#%02X00%02X' % (colors[0], 255 - colors[0]) ,
-            #                      width=2)
-
             L = self.arm.upperarm_length / 3. * self.scale # TODO
             angle_offset = [math.pi / 2., -math.pi / 2., math.pi / 2.,
                             -math.pi / 2., math.pi / 2., -math.pi / 2.] # TODO
@@ -257,9 +239,6 @@ class GUI:
                                        math.sin(global_shoulder_angle)]) \
                              * 2*L + shoulder_point # TODO
                 else:
-                    #point1 = np.array([math.cos(global_shoulder_angle + angle_offset[i]), 
-                    #                   math.sin(global_shoulder_angle + angle_offset[i])]) \
-                    #         * self.muscle.A[i][0] * self.scale + shoulder_point
                     point1 = np.array([math.cos(self.initial_angle + self.arm.initial_angles[0] + angle_offset[i]), 
                                        math.sin(self.initial_angle + self.arm.initial_angles[0] + angle_offset[i])]) \
                              * self.muscle.A[i][0] * self.scale + shoulder_point
@@ -294,68 +273,28 @@ class GUI:
                                             elbow_point[1].tolist(),
                                             abs(self.muscle.A[i][1]) * self.scale)
 
-    def run(self):
-        "The main loop."
-
+    def update(self, input_signal, torque, acceleration):
+        "Redraw the screen."
         try:
-            iteration = 0
+            # Update labels
+            self.label_strings['shoulder_angle'].set("angle = %1.2frd (%03d°)" \
+                % (self.arm.angles[0], math.degrees(self.arm.angles[0])))
+            self.label_strings['shoulder_velocity'].set("velocity = %1.2frd/s" \
+                % self.arm.velocities[0])
+            self.label_strings['shoulder_torque'].set("torque = %03dN.m" \
+                % torque[0])
+            self.label_strings['elbow_angle'].set("angle = %1.2frd (%03d°)" \
+                % (self.arm.angles[1], math.degrees(self.arm.angles[1])))
+            self.label_strings['elbow_velocity'].set("velocity = %1.2frd/s" \
+                % self.arm.velocities[1])
+            self.label_strings['elbow_torque'].set("torque = %03dN.m" \
+                % torque[1])
 
-            #import xcsfpython as xp ###
-            #xcsf = xp.XCSF(host='127.0.0.1', configFilePath='xcsf.ini') ###
-            #xcsf.initialize(6, 2) ###
+            # Update the caneva
+            self.draw_shapes(input_signal)
 
-            while self.running:
-                iteration += 1
-
-                #state = np.array([xcsf.norm(torque[0], self.arm.bounds['torque']['min'], self.arm.bounds['torque']['max']),
-                #                  xcsf.norm(torque[1], self.arm.bounds['torque']['min'], self.arm.bounds['torque']['max']),
-                #                  xcsf.norm(self.arm.velocities[0], self.arm.bounds['angular_velocity']['min'], self.arm.bounds['angular_velocity']['max']),
-                #                  xcsf.norm(self.arm.velocities[1], self.arm.bounds['angular_velocity']['min'], self.arm.bounds['angular_velocity']['max']),
-                #                  xcsf.norm(self.arm.angles[0], self.arm.angle_constraints[0]['min'], self.arm.angle_constraints[0]['max']),
-                #                  xcsf.norm(self.arm.angles[1], self.arm.angle_constraints[1]['min'], self.arm.angle_constraints[1]['max'])]) ###
-
-                # Compute delta time
-                current_time = time.time()
-
-                if self.realtime:
-                    self.delta_time = current_time - self.former_time
-            
-                fig.append('dtime', self.delta_time)
-
-                elapsed_time = current_time - self.init_time
-
-                # Get input signals
-                input_signal = None
-                if self.agent == None:
-                    input_signal = [float(flag) for flag in self.keyboard_flags]
-                else:
-                    input_signal = self.agent.get_action(velocities=self.arm.velocities,
-                                                         angles=self.arm.angles,
-                                                         time=elapsed_time)
-            
-                # Update angles (physics)
-                torque = self.muscle.update(input_signal,
-                                            self.arm.angles,
-                                            self.delta_time)
-                acceleration = self.arm.update(torque, self.delta_time)
-
-                # Update clock
-                self.former_time = current_time
-
-                #xcsf.update(state, np.array(acceleration)) ###
-
-                # Update the caneva
-                self.str_var1.set("Shoulder : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[0], math.degrees(self.arm.angles[0]), self.arm.velocities[0], torque[0]))
-                self.str_var2.set("Elbow    : angle = %1.2frd (%03d°)     velocity = %1.2frd/s     torque = %03dN.m" % (self.arm.angles[1], math.degrees(self.arm.angles[1]), self.arm.velocities[1], torque[1]))
-                self.draw_shapes(input_signal)
-
-                self.root.update_idletasks() # redraw
-                self.root.update()           # process events
-
-                # Screencast
-                if self.screencast:
-                    self.canvas.postscript(file='%s/%05d.ps' % ('screencast', iteration), colormode='color')
-                    os.system('gs -sDEVICE=jpeg -sOutputFile=%(path)s/%(iteration)05d.jpeg -dNOPAUSE -q -dBATCH %(path)s/%(iteration)05d.ps' % {'iteration': iteration, 'path': 'screencast'})
+            self.root.update_idletasks() # redraw
+            self.root.update()           # process events
         except tk.TclError:
             pass # to avoid errors when the window is closed
 
@@ -368,7 +307,8 @@ class MathCanvas(tk.Canvas):
         points = np.array(args[0])
         points_array = points.reshape((2, points.shape[0] / 2))
         points_array[:, 1] *= -1
-        points_array[:, 1] += self.winfo_height()      # TODO : self.canevas_height  self.winfo_height()   self.winfo_reqheight()
+        # TODO : self.canevas_height  self.winfo_height() self.winfo_reqheight()
+        points_array[:, 1] += self.winfo_height()
         points = points_array.reshape(points_array.shape[0] \
                                       * points_array.shape[1])
         args = points.tolist()

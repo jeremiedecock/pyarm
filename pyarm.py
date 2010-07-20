@@ -10,6 +10,9 @@ import getopt
 import time
 import fig
 
+# The state of the arm is updated at every tick_duration time (s)
+DELTA_TIME = 0.005
+INIT_TIME = time.time()      # Initial time (s)
 
 def usage():
     """Print help message"""
@@ -28,7 +31,7 @@ def usage():
         the agent to use (oscillator, random, filereader, sigmoid, heaviside, none)
 
     -g, --gui
-        the graphical user interface to use (tk, sfml, gtk, cairo, none)
+        the graphical user interface to use (tk, none)
 
     -r, --realtime
         realtime simulation (framerate dependant simulation)
@@ -47,7 +50,7 @@ def main():
     The purpose of this function is to get the list of modules to load and
     launch the simulator."""
 
-    # Parse options ###################
+    # Parse options ###########################################################
     muscle = 'none'
     arm = 'li'
     agent = 'none'
@@ -90,12 +93,13 @@ def main():
 
     if muscle not in ('none', 'kambara', 'mitrovic', 'li') \
         or arm not in ('kambara', 'mitrovic', 'li', 'sagittal') \
-        or agent not in ('none', 'oscillator', 'random', 'filereader', 'sigmoid', 'heaviside') \
-        or gui not in ('sfml', 'tk', 'gtk', 'cairo', 'none'):
+        or agent not in ('none', 'oscillator', 'random', 'filereader',
+                         'sigmoid', 'heaviside') \
+        or gui not in ('tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
 
-    # Main ############################
+    # Init ####################################################################
 
     if muscle == 'none':
         from model.muscle import fake_muscle_model as muscle_mod
@@ -137,9 +141,7 @@ def main():
         usage()
         sys.exit(2)
 
-    if gui == 'sfml':
-        import sfml_gui as gui_mod
-    elif gui == 'tk':
+    if gui == 'tk':
         import tkinter_gui as gui_mod
     elif gui == 'gtk':
         raise NotImplementedError()
@@ -158,24 +160,60 @@ def main():
     if agent_mod != None:
         agent = agent_mod.Agent()
 
+    gui = gui_mod.GUI(muscle_model, arm_model)
+
     # Erase the screencast directory
     if screencast:
         shutil.rmtree('screencast', True)
         os.mkdir('screencast')
 
-    # Launch the Gui mainloop
-    gui = gui_mod.GUI(muscle_model, arm_model, agent=agent, realtime=realtime, screencast=screencast)
-    gui.run()
+    # The mainloop ############################################################
+    fig.subfig('dtime', title='Time', xlabel='time (s)', ylabel='delta time (s)')
+    former_time = INIT_TIME
 
-    # Quit...
+    while gui.running:
+
+        # Compute delta time
+        current_time = time.time()
+
+        delta_time = None
+        if realtime:
+            delta_time = current_time - former_time
+        else:
+            delta_time = DELTA_TIME
+    
+        fig.append('dtime', delta_time)
+
+        # Get input signals
+        input_signal = None
+        if agent == None:
+            input_signal = [float(flag) for flag in gui.keyboard_flags]
+        else:
+            elapsed_time = current_time - INIT_TIME
+            input_signal = agent.get_action(velocities=arm_model.velocities,
+                                                 angles=arm_model.angles,
+                                                 time=elapsed_time)
+    
+        # Update angles (physics)
+        torque = muscle_model.update(input_signal, arm_model.angles, delta_time)
+        acceleration = arm_model.update(torque, delta_time)
+
+        # Update clock
+        former_time = current_time
+
+        gui.update(input_signal, torque, acceleration)
+
+    # Quit ####################################################################
     if screencast:
         print "Making screencast..."
-        #os.system("ffmpeg2theora -f image2 %(path)s/%%05d.png -o %(path)s/screencast.ogv" % {'path': 'screencast'})
-        os.system("ffmpeg2theora -f image2 %(path)s/%%05d.jpeg -o %(path)s/screencast.ogv" % {'path': 'screencast'})
+        os.system("ffmpeg2theora -f image2 %(path)s/%%05d.jpeg" + \
+                  "-o %(path)s/screencast.ogv" % {'path': 'screencast'})
 
     if log:
         print 'Saving log...'
         fig.save_log()
+
+    # Display figures
     fig.show()
 
 if __name__ == '__main__':
