@@ -293,7 +293,7 @@ class AbstractArmModel:
 
 
     def assert_joint_angles(self, angles):
-        """Limit joint angles to respect constraint values.
+        """Check if joint angles to respect constraint values.
 
         Return True if angles values satisfy constraints or False otherwise."""
         const = self.angle_constraints

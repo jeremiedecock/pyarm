@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
+
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,8 +33,8 @@ def main():
     plot_k(kambara_muscle)
     plot_k(mitrovic_muscle)
 
-    plot_v(kambara_muscle)
-    plot_v(mitrovic_muscle)
+    plot_b(kambara_muscle)
+    plot_b(mitrovic_muscle)
 
     plot_lr(kambara_muscle)
     plot_lr(mitrovic_muscle)
@@ -50,22 +55,22 @@ def plot_lm(arm, muscle):
 
     # Build datas ###############
     n = 50
-    qmin = min(arm.theta_bounds[0]['min'], arm.theta_bounds[1]['min'])
-    qmax = max(arm.theta_bounds[0]['max'], arm.theta_bounds[1]['max'])
+    qmin = min(arm.angle_constraints[0]['min'], arm.angle_constraints[1]['min'])
+    qmax = max(arm.angle_constraints[0]['max'], arm.angle_constraints[1]['max'])
     q = np.linspace(qmin, qmax, n)
 
     lm = np.zeros([len(q), 6])
     for i in range(len(q)):
-        arm.theta = np.ones(2) * q[i]
-        arm.bound_joint_angles()
-        lm[i] = muscle.lm(arm.theta)
+        arm.angles = np.ones(2) * q[i]
+        arm.angles = arm.constraint_joint_angles(arm.angles)
+        lm[i] = muscle.lm(arm.angles)
 
     # Plot data #################
     plt.xlabel('Angle')
     plt.ylabel('Muscle length')
     plt.title(muscle.name)
     plt.plot(q, lm)
-    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
 
     plt.savefig('muscle_' + muscle.name + '_lm.png')
 
@@ -86,11 +91,11 @@ def plot_k(muscle):
     plt.ylabel('Elastic force')
     plt.title(muscle.name)
     plt.plot(u, k)
-    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
 
     plt.savefig('muscle_' + muscle.name + '_k.png')
 
-def plot_v(muscle):
+def plot_b(muscle):
     
     plt.clf()
 
@@ -98,16 +103,16 @@ def plot_v(muscle):
     n = 50
     u = np.linspace(0, 1, n)
 
-    v = np.zeros([len(u), 6])
+    b = np.zeros([len(u), 6])
     for i in range(len(u)):
-        v[i] = muscle.B(np.ones(6) * u[i])
+        b[i] = muscle.B(np.ones(6) * u[i])
 
     # Plot data #################
     plt.xlabel('Control signal')
     plt.ylabel('Viscosity force')
     plt.title(muscle.name)
-    plt.plot(u, v)
-    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+    plt.plot(u, b)
+    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
 
     plt.savefig('muscle_' + muscle.name + '_v.png')
 
@@ -119,16 +124,16 @@ def plot_lr(muscle):
     n = 50
     u = np.linspace(0, 1, n)
 
-    lr = np.zeros([len(u), 6])
+    rl = np.zeros([len(u), 6])
     for i in range(len(u)):
-        lr[i] = muscle.lr(np.ones(6) * u[i])
+        rl[i] = muscle.rest_length(np.ones(6) * u[i])
 
     # Plot data #################
     plt.xlabel('Control signal')
     plt.ylabel('Rest length')
     plt.title(muscle.name)
-    plt.plot(u, lr)
-    plt.legend(muscle.legend, loc='best', prop={'size':'x-small'})
+    plt.plot(u, rl)
+    plt.legend(muscle.muscles, loc='best', prop={'size':'x-small'})
 
     plt.savefig('muscle_' + muscle.name + '_lr.png')
 
@@ -245,8 +250,10 @@ def plot_c_forearm(arm):
 
     # Build datas ###############
     n = 50
-    x = np.linspace(arm.theta_bounds[1]['min'], arm.theta_bounds[1]['max'], n)
-    y = np.linspace(arm.omegamin, arm.omegamax, n)
+    x = np.linspace(arm.angle_constraints[1]['min'],
+                    arm.angle_constraints[1]['max'], n)
+    y = np.linspace(arm.bounds['angular_velocity']['min'],
+                    arm.bounds['angular_velocity']['max'], n)
 
     z = np.zeros([len(x), len(y)])
     for i in range(len(x)):
@@ -274,9 +281,12 @@ def plot_c_upperarm(arm):
     n  = 50
     nf = 10
 
-    o1 = np.linspace(arm.omegamin, arm.omegamax, n)
-    o2 = np.linspace(arm.omegamin, arm.omegamax, n)
-    t2 = np.linspace(arm.theta_bounds[1]['min'], arm.theta_bounds[1]['max'], nf)
+    o1 = np.linspace(arm.bounds['angular_velocity']['min'],
+                     arm.bounds['angular_velocity']['max'], n)
+    o2 = np.linspace(arm.bounds['angular_velocity']['min'],
+                     arm.bounds['angular_velocity']['max'], n)
+    t2 = np.linspace(arm.angle_constraints[1]['min'],
+                     arm.angle_constraints[1]['max'], nf)
 
     o1_, o2_ = np.meshgrid(o1, o2)
 
@@ -303,5 +313,4 @@ def plot_c_upperarm(arm):
 
 if __name__ == '__main__':
     main()
-
 

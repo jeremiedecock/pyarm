@@ -35,8 +35,8 @@ class MuscleModel:
     ###########################################################################
 
     def __init__(self, arm):
-        moment_arm = self.moment_arm(arm.theta)
-        self.current_muscle_length = self.muscle_length(moment_arm, arm.theta)
+        moment_arm = self.moment_arm(arm.angles)
+        self.current_muscle_length = self.muscle_length(moment_arm, arm.angles)
 
         # Init datas to plot
         fig.subfig('input signal',
@@ -51,7 +51,7 @@ class MuscleModel:
                    ylabel='Muscle length (m)',
                    legend=self.muscles)
 
-    def update(self, input_signal, theta, delta_time):
+    def update(self, input_signal, angles, delta_time):
 
         # Fetch control signal (motor command) :
         # 6 elements vector (value taken in [0,1])
@@ -69,13 +69,13 @@ class MuscleModel:
         former_muscle_length = self.current_muscle_length
 
         # Moment arm array (6x2)
-        moment_arm = self.moment_arm(theta)
+        moment_arm = self.moment_arm(angles)
         if moment_arm.shape != (6, 2):
             raise TypeError('Moment_arm : shape is ' \
                             + str(moment_arm.shape) + ' ((6,2) expected)')
 
         # Muscle length array (6x1)
-        self.current_muscle_length = self.muscle_length(moment_arm, theta)
+        self.current_muscle_length = self.muscle_length(moment_arm, angles)
         if self.current_muscle_length.shape != (6,):
             raise TypeError('Muscle_length : shape is ' \
                             + str(self.current_muscle_length.shape) \
@@ -167,7 +167,7 @@ class MuscleModel:
         return fe
 
 
-    def moment_arm(self, theta):     # TODO
+    def moment_arm(self, angles):     # TODO
         "Moment arm of a muscle (m)"
         moment_arm  = np.array([[0.04, -0.04, 0.   ,  0.   , 0.028, -0.035],
                                 [0.  ,  0.  , 0.025, -0.025, 0.028, -0.035]]).T
@@ -178,9 +178,9 @@ class MuscleModel:
         muscle_activation = control_signal
         return muscle_activation
 
-    def muscle_length(self, moment_arm, theta): # TODO
+    def muscle_length(self, moment_arm, angles): # TODO
         "Compute muscle length (m)."
-        muscle_length = self.muscle_length_0 - np.dot(moment_arm, theta)
+        muscle_length = self.muscle_length_0 - np.dot(moment_arm, angles)
         return muscle_length
 
     def muscle_velocity(self, length, former_length, delta_time): # TODO
