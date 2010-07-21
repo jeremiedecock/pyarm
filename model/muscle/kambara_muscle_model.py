@@ -76,21 +76,6 @@ class MuscleModel:
                    xlabel='time (s)',
                    ylabel='u',
                    legend=self.muscles)
-        fig.subfig('tension',
-                   title='Tension',
-                   xlabel='time (s)',
-                   ylabel='Tension (N)',
-                   legend=self.muscles)
-        fig.subfig('muscle length',
-                   title='Muscle length',
-                   xlabel='time (s)',
-                   ylabel='Muscle length (m)',
-                   legend=self.muscles)
-        fig.subfig('muscle velocity',
-                   title='Muscle velocity',
-                   xlabel='time (s)',
-                   ylabel='Muscle velocity (m/s)',
-                   legend=self.muscles)
         fig.subfig('stiffness',
                    title='Muscle stiffness',
                    xlabel='time (s)',
@@ -105,6 +90,36 @@ class MuscleModel:
                    title='Rest length',
                    xlabel='time (s)',
                    ylabel='Rest length (m)',
+                   legend=self.muscles)
+        fig.subfig('stretching',
+                   title='Stretching (|lr(u)-lm|)',
+                   xlabel='time (s)',
+                   ylabel='Stretching (m)',
+                   legend=self.muscles)
+        fig.subfig('elastic force',
+                   title='Elastic force',
+                   xlabel='time (s)',
+                   ylabel='Elastic force (N)',
+                   legend=self.muscles)
+        fig.subfig('viscosity force',
+                   title='Viscosity force',
+                   xlabel='time (s)',
+                   ylabel='Viscosity force (N)',
+                   legend=self.muscles)
+        fig.subfig('tension',
+                   title='Tension',
+                   xlabel='time (s)',
+                   ylabel='Tension (N)',
+                   legend=self.muscles)
+        fig.subfig('muscle length',
+                   title='Muscle length',
+                   xlabel='time (s)',
+                   ylabel='Muscle length (m)',
+                   legend=self.muscles)
+        fig.subfig('muscle velocity',
+                   title='Muscle velocity',
+                   xlabel='time (s)',
+                   ylabel='Muscle velocity (m/s)',
                    legend=self.muscles)
 
     def update(self, input_signal, angles, delta_time):
@@ -126,11 +141,11 @@ class MuscleModel:
         stiffness = self.K(u)
         viscosity = self.B(u)
         rest_length = self.rest_length(u)
-        tension = self.tension(stiffness,
-                               viscosity,
-                               rest_length,
-                               muscle_length,
-                               muscle_velocity)
+
+        stretching = self.stretching(rest_length, muscle_length)
+        elastic_force = self.elastic_force(stiffness, stretching)
+        viscosity_force = self.viscosity_force(viscosity, muscle_velocity)
+        tension = self.tension(elastic_force, viscosity_force)
 
         torque = self.torque(tension)
 
@@ -139,6 +154,9 @@ class MuscleModel:
         fig.append('stiffness', stiffness)
         fig.append('viscosity', viscosity)
         fig.append('rest length', rest_length)
+        fig.append('stretching', stretching)
+        fig.append('elastic force', elastic_force)
+        fig.append('viscosity force', viscosity_force)
         fig.append('tension', tension)
         fig.append('muscle length', muscle_length)
         fig.append('muscle velocity', muscle_velocity)
@@ -173,9 +191,21 @@ class MuscleModel:
         """Muscle rest length (m)."""
         return self.l0rest - self.l1rest * u
 
-    def tension(self, K, B, rest_length, muscle_length, muscle_velocity):
-        """Muscle tension (cf. Kelvin-Voight model)."""
-        return K * (muscle_length - rest_length) + B * muscle_velocity
+    def stretching(self, rest_length, muscle_length):
+        "Compute stretching (m)."
+        return muscle_length - rest_length
+
+    def elastic_force(self, stiffness, stretching):
+        "Compute elastic force (N)."
+        return stiffness * stretching
+
+    def viscosity_force(self, viscosity, muscle_velocity):
+        "Compute viscosity force (N)."
+        return viscosity * muscle_velocity
+
+    def tension(self, elastic_force, viscosity_force):
+        "Compute muscle tension (cf. Kelvin-Voight model)."
+        return elastic_force + viscosity_force # TODO
 
     def torque(self, tension):
         "Compute total torque (N.m)."
