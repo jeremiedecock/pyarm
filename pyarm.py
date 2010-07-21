@@ -39,6 +39,9 @@ def usage():
     -s, --screencast
         make a screencast
 
+    -f, --figures
+        save matplotlib figures
+
     -l, --log
         save numeric values (accelerations, velocities, angles, ...) into a file
     '''
@@ -57,13 +60,14 @@ def main():
     gui = 'tk'
     realtime = False
     screencast = False
+    save_figures = False
     log = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:rslh',
+                     'm:a:A:g:rsflh',
                      ["muscle=", "arm=", "agent=", "gui=", "realtime",
-                      "screencast", "log", "help"])
+                      "screencast", "figures", "log", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
         print str(err) 
@@ -86,6 +90,8 @@ def main():
             realtime = True
         elif o in ("-s", "--screencast"):
             screencast = True
+        elif o in ("-f", "--figures"):
+            save_figures = True
         elif o in ("-l", "--log"):
             log = True
         else:
@@ -214,6 +220,8 @@ def main():
         fig.save_log()
 
     # Display figures
+    if save_figures:
+        fig.save_all_figs()
     fig.show()
 
 if __name__ == '__main__':

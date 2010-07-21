@@ -58,6 +58,67 @@ def save_log():
         y = _subfigs[fig]['ydata']
         np.savetxt(prefix + str(fig) + '.log', np.c_[x, y])
 
+def save_fig(name):
+    # TODO : factoriser !
+
+    plt.clf()
+
+    # Set labels
+    plt.title(_subfigs[name]['title'])
+    plt.xlabel(_subfigs[name]['xlabel'], fontsize='small')
+    plt.ylabel(_subfigs[name]['ylabel'], fontsize='small')
+
+    # Fetch datas
+    x = np.array(_subfigs[name]['xdata'])
+    y = np.array(_subfigs[name]['ydata'])
+
+    # Plot
+    plt.plot(x, y)
+
+    # Set axis limits
+    try:
+        plt.xlim(_subfigs[name]['xlim'])
+    except TypeError:
+        pass
+
+    try:
+        plt.ylim(_subfigs[name]['ylim'])
+    except TypeError:
+        pass
+
+    # Set legend
+    if _subfigs[name]['legend'] != None:
+        nc = 1
+        if 2 < len(_subfigs[name]['legend']) <= 4:
+            nc = 2
+        elif 4 < len(_subfigs[name]['legend']):
+            nc = 3
+        try:
+            plt.legend(_subfigs[name]['legend'],
+                       loc='best',
+                       prop={'size':'x-small'},
+                       ncol=nc)
+        except TypeError:
+            # Matplotlib 0.98.1 (Debian Lenny)
+            plt.legend(_subfigs[name]['legend'],
+                       loc='best')
+
+    # Set axis fontsize (https://www.cfa.harvard.edu/~jbattat/computer/python/pylab/)
+    fontsize = 'x-small'
+    ax = plt.gca()
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label1.set_fontsize(fontsize)
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label1.set_fontsize(fontsize)
+
+    plt.savefig(name + '.png', dpi=300)
+
+    plt.clf()
+
+def save_all_figs():
+    for fig in _subfigs:
+        save_fig(fig)
+
 def show(numcols=2):
     n = 0
 
