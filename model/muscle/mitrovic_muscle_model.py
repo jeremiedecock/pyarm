@@ -66,16 +66,16 @@ class MuscleModel:
     # Muscle parameters #########################
 
     # Muscle length when the joint angle = 0 (m)
-    l0 = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])
+    lm0 = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])
 
     # Intrinsic rest length (for u = 0) (m)
     l0rest = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237])
 
     # Muscle parameters from [6] p.356-357
-    b1 = np.ones(6) * 108.1     # Viscosity coefficient (N.s/m)
+    k0 = np.ones(6) * 810.8     # Intrinsic elasticity (for u = 0) (N/m)
     k1 = np.ones(6) * 1621.6    # Elasticity coefficient (N/m)
     b0 = np.ones(6) * 54.1      # Intrinsic viscosity (for u = 0) (N.s/m)
-    k0 = np.ones(6) * 810.8     # Intrinsic elasticity (for u = 0) (N/m)
+    b1 = np.ones(6) * 108.1     # Viscosity coefficient (N.s/m)
 
     # Constant from the muscle model (m) from [6] p.357
     l1rest = np.array([-0.03491,  0.03491, -0.02182,
@@ -97,10 +97,40 @@ class MuscleModel:
                    ylabel='Signal',
                    ylim=[-0.1, 1.1],
                    legend=self.muscles)
+        fig.subfig('u',
+                   title='U',
+                   xlabel='time (s)',
+                   ylabel='u',
+                   legend=self.muscles)
+        fig.subfig('tension',
+                   title='Tension',
+                   xlabel='time (s)',
+                   ylabel='Tension (N)',
+                   legend=self.muscles)
         fig.subfig('muscle length',
                    title='Muscle length',
                    xlabel='time (s)',
                    ylabel='Muscle length (m)',
+                   legend=self.muscles)
+        fig.subfig('muscle velocity',
+                   title='Muscle velocity',
+                   xlabel='time (s)',
+                   ylabel='Muscle velocity (m/s)',
+                   legend=self.muscles)
+        fig.subfig('stiffness',
+                   title='Muscle stiffness',
+                   xlabel='time (s)',
+                   ylabel='Muscle stiffness (N/m)',
+                   legend=self.muscles)
+        fig.subfig('viscosity',
+                   title='Muscle viscosity',
+                   xlabel='time (s)',
+                   ylabel='Muscle viscosity (N.s/m)',
+                   legend=self.muscles)
+        fig.subfig('rest length',
+                   title='Rest length',
+                   xlabel='time (s)',
+                   ylabel='Rest length (m)',
                    legend=self.muscles)
 
     def update(self, input_signal, angles, delta_time):
@@ -119,16 +149,25 @@ class MuscleModel:
 
         u = self.u(input_signal)
 
-        tension = self.tension(self.K(u),
-                               self.B(u),
-                               self.rest_length(u),
+        stiffness = self.K(u)
+        viscosity = self.B(u)
+        rest_length = self.rest_length(u)
+        tension = self.tension(stiffness,
+                               viscosity,
+                               rest_length,
                                muscle_length,
                                muscle_velocity)
 
         torque = self.torque(tension)
 
         fig.append('input signal', input_signal)
+        fig.append('u', u)
+        fig.append('stiffness', stiffness)
+        fig.append('viscosity', viscosity)
+        fig.append('rest length', rest_length)
+        fig.append('tension', tension)
         fig.append('muscle length', muscle_length)
+        fig.append('muscle velocity', muscle_velocity)
 
         # Save state
         self.muscle_length = muscle_length
@@ -146,7 +185,7 @@ class MuscleModel:
 
     def lm(self, angles):
         "Compute muscle length (m)."
-        return self.l0 - np.dot(self.A, angles)
+        return self.lm0 - np.dot(self.A, angles)
 
     def K(self, u):
         "Compute muscle stiffness (N/m)."
