@@ -221,6 +221,7 @@ def main():
 
     # Display figures
     if save_figures:
+        print 'Saving figures...'
         fig.save_all_figs()
     fig.show()
 

@@ -86,6 +86,9 @@ def save_fig(name):
     except TypeError:
         pass
 
+    # Set grid
+    plt.grid(True)
+
     # Set legend
     if _subfigs[name]['legend'] != None:
         nc = 1
