@@ -1,0 +1,19 @@
+Pyarm
+
+Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
+
+INSTALL
+-------
+
+$ python setup.py install
+
+
+DEPENDENCIES
+------------
+
+python2.5
+Numpy
+Matplotlib
+Tkinter (gui)
+ffmpeg2theora (screencast) [optional]
+PIL (screencast) [optional]

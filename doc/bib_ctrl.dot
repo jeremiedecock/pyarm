@@ -1,0 +1,19 @@
+digraph bib {
+    rankstep = 0.75;
+    rankdir  = BT;
+
+    {
+        node [shape=plaintext];
+        2002 -> 2005 -> 2007 -> 2008 -> 2009 -> 2010;
+    }
+
+    //{ rank = same; 1989; "Zajac" [style=dotted,shape=box]; Wood1989a [label="Wood et al.",style=dotted,shape=box]; Wood1989b [label="Wood et al.",style=dotted,shape=box]; }
+    //{ rank = same; 1993; Katayama1993 [label="Katayama and Kawato",style=filled,shape=box]; "Flanagan et al."; }
+    { rank = same; 2002; "Butz and Wilson"; }
+    { rank = same; 2005; "Lanzi et al. (extending)"; "Lanzi et al. (generalization)"; "Lanzi et al. (xcs)"; }
+    { rank = same; 2008; }
+    { rank = same; 2009; }
+    { rank = same; 2010; }
+
+    "Shin et al." -> "Decock";
+}
