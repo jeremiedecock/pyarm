@@ -2,6 +2,8 @@ Pyarm
 
 Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
+http://code.google.com/p/pyarm/
+
 INSTALL
 -------
 
@@ -11,9 +13,9 @@ $ python setup.py install
 DEPENDENCIES
 ------------
 
-python2.5
+Python >=2.5
 Numpy
-Matplotlib
+Matplotlib >=0.98.1
 Tkinter (gui)
 ffmpeg2theora (screencast) [optional]
 PIL (screencast) [optional]
