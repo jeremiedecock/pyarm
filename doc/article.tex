@@ -234,15 +234,16 @@ Kambara~:
     $\ms{A} \in \mathbb{R}^{6 \times 2}$      & = & Matrice des bras de levier $(m)$ \\
     $\vs{T}(\vs{l_m}, \vs{\dot{l_m}}, \vs{\tilde{u}}) \in \mathbb{R}^6$  & = & Tension exercée par les muscles $(N)$ \\
     \\
-    $\vs{k}(\vs{\tilde{u}}) \cdot (\vs{l_r}(\vs{\tilde{u}}) - \vs{l_m})$ & = & Force élastique des muscles (raideur $\cdot$ étirement) \\
+    $\vs{k}(\vs{\tilde{u}}) \cdot (\vs{l_r}(\vs{\tilde{u}}) - \vs{l_m})$ & = & Force élastique des muscles (raideur $\cdot$ étirement) $(N)$ \\
+    $\vs{\nu}(\vs{\tilde{u}}) \cdot \vs{\dot{l_m}}$ & = & Force de viscosité des muscles $(N)$ \\
     \\
 
-    $\vs{k}(\vs{\tilde{u}}) \in \mathbb{R}^6$      & = & Raideur des muscles \\
+    $\vs{k}(\vs{\tilde{u}}) \in \mathbb{R}^6$      & = & Raideur des muscles $(N/m)$ \\
     $\vs{k_0} \in \mathbb{R}^6$               & = & Raideur intrinsèque des muscles $(N/m)$ \\
     $\vs{k_1} \in \mathbb{R}^6$               & = & Coefficient de variation de l'élasticité des muscles $(N/m)$ \\
     \\
 
-    $\vs{\nu}(\vs{\tilde{u}}) \in \mathbb{R}^6$    & = & Viscosité des muscles \\
+    $\vs{\nu}(\vs{\tilde{u}}) \in \mathbb{R}^6$    & = & Viscosité des muscles $(N \cdot s/m)$ \\
     $\vs{\nu_0} \in \mathbb{R}^6$             & = & Viscosité intrinsèque des muscles $(N \cdot s/m)$ \\
     $\vs{\nu_1} \in \mathbb{R}^6$             & = & Coefficient de variation de la viscosité des muscles $(N \cdot s/m)$ \\
     \\
@@ -276,17 +277,17 @@ Mitrovic \cite{katayama1993} (p.356-357)~:
     \hline
                             & $k_0$ & $k_1$  & $\nu_0$ & $\nu_1$ & $l_{r1}$               & $l_{m0} - l_{r0}$ \\
     \hline                                            
-    fléchisseur de l'épaule & 810.8 & 1621.6 & 54.1    & 108.1   & $-3.49 \cdot 10^{-2}$  & $  9.08 \cdot 10^{-2}$ \\
-    \hline
-    extenseur de l'épaule   & 810.8 & 1621.6 & 54.1    & 108.1   & $ 3.49 \cdot 10^{-2}$  & $ -2.79 \cdot 10^{-2}$ \\
-    \hline
-    fléchisseur du coude    & 810.8 & 1621.6 & 54.1    & 108.1   & $-2.18 \cdot 10^{-2}$  & $  5.67 \cdot 10^{-2}$ \\
-    \hline
-    extenseur du coude      & 810.8 & 1621.6 & 54.1    & 108.1   & $ 2.18 \cdot 10^{-2}$  & $  0.44 \cdot 10^{-2}$ \\
-    \hline
-    double fléchisseur      & 810.8 & 1621.6 & 54.1    & 108.1   & $-5.50 \cdot 10^{-2}$  & $ 14.29 \cdot 10^{-2}$ \\
-    \hline
-    double extenseur        & 810.8 & 1621.6 & 54.1    & 108.1   & $ 5.50 \cdot 10^{-2}$  & $ -1.34 \cdot 10^{-2}$ \\
+    fléchisseur de l'épaule & 8.108 & 16.216 & 54.1    & 1.081   & $-3.49 \cdot 10^{-2}$  & $  9.08 \cdot 10^{-2}$ \\
+    \hline                                                 
+    extenseur de l'épaule   & 8.108 & 16.216 & 54.1    & 1.081   & $ 3.49 \cdot 10^{-2}$  & $ -2.79 \cdot 10^{-2}$ \\
+    \hline                                                 
+    fléchisseur du coude    & 8.108 & 16.216 & 54.1    & 1.081   & $-2.18 \cdot 10^{-2}$  & $  5.67 \cdot 10^{-2}$ \\
+    \hline                                                 
+    extenseur du coude      & 8.108 & 16.216 & 54.1    & 1.081   & $ 2.18 \cdot 10^{-2}$  & $  0.44 \cdot 10^{-2}$ \\
+    \hline                                                 
+    double fléchisseur      & 8.108 & 16.216 & 54.1    & 1.081   & $-5.50 \cdot 10^{-2}$  & $ 14.29 \cdot 10^{-2}$ \\
+    \hline                                                 
+    double extenseur        & 8.108 & 16.216 & 54.1    & 1.081   & $ 5.50 \cdot 10^{-2}$  & $ -1.34 \cdot 10^{-2}$ \\
     \hline
 \end{tabular*}
 \end{footnotesize}
@@ -306,17 +307,17 @@ Kambara  \cite{kambara2009} (p.359-360)~:
     \hline
                             & $k_0$  & $k_1$  & $\nu_0$ & $\nu_1$ & $l_{r1}$ & $l_{m0} - l_{r0}$ \\
     \hline
-    fléchisseur de l'épaule & 1000   & 3000   & 50      & 100     & 0.15     & 0.077 \\
-    \hline
-    extenseur de l'épaule   & 1000   & 2000   & 50      & 100     & 0.15     & 0.128 \\
-    \hline
-    fléchisseur du coude    & 600    & 1400   & 50      & 100     & 0.15     & 0.100 \\
-    \hline
-    extenseur du coude      & 600    & 1200   & 50      & 100     & 0.15     & 0.040 \\
-    \hline
-    double fléchisseur      & 300    & 600    & 50      & 100     & 0.15     & 0.020 \\
-    \hline
-    double extenseur        & 300    & 600    & 50      & 100     & 0.15     & 0.019 \\
+    fléchisseur de l'épaule & 10   & 30   & 0.5      & 1     & 0.15     & 0.077 \\
+    \hline                                    
+    extenseur de l'épaule   & 10   & 20   & 0.5      & 1     & 0.15     & 0.128 \\
+    \hline                                    
+    fléchisseur du coude    & 6    & 14   & 0.5      & 1     & 0.15     & 0.100 \\
+    \hline                                    
+    extenseur du coude      & 6    & 12   & 0.5      & 1     & 0.15     & 0.040 \\
+    \hline                                    
+    double fléchisseur      & 3    & 6    & 0.5      & 1     & 0.15     & 0.020 \\
+    \hline                                    
+    double extenseur        & 3    & 6    & 0.5      & 1     & 0.15     & 0.019 \\
     \hline
 \end{tabular*}
 \end{small}
@@ -399,19 +400,19 @@ Kambara  \cite{kambara2009} (p.359-360)~:
 
 \begin{figure}[h]
     \centering
-    \subfigure[$f_a$ : activation-fréquence]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fa}}~~~
-    \subfigure[$n_f$]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_nf}}~~~
+    \subfigure[$f_a$ : activation-fréquence]{\includegraphics[width=.40\linewidth]{fig/muscle_Li_fa}}~~~
+    \subfigure[$n_f$]{\includegraphics[width=.40\linewidth]{fig/muscle_Li_nf}}~~~
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \subfigure[$f_l$ : force-longueur]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fl}}~~~
-    \subfigure[$f_v$ : force-vitesse]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fv}}~~~
+    \subfigure[$f_l$ : force-longueur]{\includegraphics[width=.40\linewidth]{fig/muscle_Li_fl}}~~~
+    \subfigure[$f_v$ : force-vitesse]{\includegraphics[width=.40\linewidth]{fig/muscle_Li_fv}}~~~
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \subfigure[$f_l$ : force élastique]{\includegraphics[width=.40\linewidth]{fig/muscle_Weiwei_fe}}
+    \subfigure[$f_l$ : force élastique]{\includegraphics[width=.40\linewidth]{fig/muscle_Li_fe}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
