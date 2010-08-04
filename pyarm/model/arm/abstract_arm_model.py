@@ -9,6 +9,7 @@ import numpy as np
 import warnings
 
 ASSERT = False
+COLLISION_DETECTION = False
 
 class AbstractArmModel:
     """Abstract forward dynamics arm model.
@@ -151,10 +152,11 @@ class AbstractArmModel:
         velocities = self.velocities.copy()
 
         # Collision detection
-        collision_flags = self.collision_detection(angles.copy(),  # TODO
-                                                   velocities.copy(),  # TODO
-                                                   torque.copy(),  # TODO
-                                                   delta_time)
+        if COLLISION_DETECTION:
+            collision_flags = self.collision_detection(angles.copy(),  # TODO
+                                                       velocities.copy(),  # TODO
+                                                       torque.copy(),  # TODO
+                                                       delta_time)
 
         # Angular acceleration (rad/s²)
         # From [1] p.3, [3] p.4 and [6] p.354
@@ -162,9 +164,11 @@ class AbstractArmModel:
         C = self.C(angles, velocities)
         B = self.B(velocities)
         G = self.G(angles)
+        normal_force = np.zeros(2)
 
-        filter = [float(flag) for flag in collision_flags]
-        normal_force = np.array(filter) * (-torque + C + B + G)  # TODO
+        if COLLISION_DETECTION:
+            filter = [float(flag) for flag in collision_flags]
+            normal_force = np.array(filter) * (-torque + C + B + G)  # TODO
 
         accelerations = np.dot(np.linalg.inv(M), torque - C - B - G + normal_force)  # TODO
 
@@ -177,9 +181,10 @@ class AbstractArmModel:
                                                            delta_time)
         self.assert_bounds('angular_velocity', velocities)
 
-        filter = [float(not flag) for flag in collision_flags]
-        velocities = np.array(filter) * velocities  # TODO
-        angles = self.constraint_joint_angles(angles)  # TODO # REMOVE IT #
+        if COLLISION_DETECTION:
+            filter = [float(not flag) for flag in collision_flags]
+            velocities = np.array(filter) * velocities  # TODO
+            angles = self.constraint_joint_angles(angles)  # TODO # REMOVE IT #
 
         # Plot values
         fig.append('M', M.flatten())
