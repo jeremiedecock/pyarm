@@ -9,7 +9,7 @@ import numpy as np
 import warnings
 
 ASSERT = False
-COLLISION_DETECTION = False
+COLLISION_DETECTION = True
 
 class AbstractArmModel:
     """Abstract forward dynamics arm model.
