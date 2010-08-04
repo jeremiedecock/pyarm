@@ -19,7 +19,7 @@ class ArmModel(AbstractArmModel):
 
     name = 'Kambara'
 
-    # Bound values for assert ###################
+    # Bound values ##############################
 
     # Min and max joint angles (rd)
     angle_constraints = [

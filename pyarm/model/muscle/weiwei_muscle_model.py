@@ -19,7 +19,7 @@ class MuscleModel:
                'shoulder flexor', 'shoulder extensor',
                'double-joints flexor', 'double-joints extensor')
 
-    # Bound values for assert ###################
+    # Bound values ##############################
 
     ml_min, ml_max = 0.01, 0.6     # Muscle length (m) (arbitraire)
     mv_min, mv_max = 0., 1.        # Muscle velocity (m/s) (arbitraire)

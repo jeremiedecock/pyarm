@@ -8,6 +8,8 @@ import math
 import numpy as np
 import warnings
 
+ASSERT = False
+
 class AbstractArmModel:
     """Abstract forward dynamics arm model.
 
@@ -22,7 +24,6 @@ class AbstractArmModel:
 
     velocities = None         # Angular velocity (rd/s)
     angles = None             # Joint angle (rd)
-    former_time = None        # Time (s)
 
     # CONSTANTS ###############################################################
 
@@ -30,7 +31,7 @@ class AbstractArmModel:
 
     joints = ('shoulder', 'elbow')
 
-    # Bound values for assert ###################
+    # Bound values ##############################
 
     bounds = {
               # Angular acceleration (rd/s²)
@@ -310,19 +311,20 @@ class AbstractArmModel:
         - value : the values to assert (a numpy array).
         """
 
-        if name in self.bounds.keys():
-            assert value.min() >= self.bounds[name]['min'] \
-               and value.max() <= self.bounds[name]['max'], \
-               "%s is out of bounds values :\n" \
-               "- expected bounds : [%f, %f]\n" \
-               "- actual bounds   : [%f, %f]\n" \
-               "\n%s" \
-               % (name,
-                  self.bounds[name]['min'],
-                  self.bounds[name]['max'],
-                  value.min(),
-                  value.max(),
-                  value)
-        else:
-            warnings.warn("%s is not a valid key" % name)
+        if ASSERT:
+            if name in self.bounds.keys():
+                assert value.min() >= self.bounds[name]['min'] \
+                   and value.max() <= self.bounds[name]['max'], \
+                   "%s is out of bounds values :\n" \
+                   "- expected bounds : [%f, %f]\n" \
+                   "- actual bounds   : [%f, %f]\n" \
+                   "\n%s" \
+                   % (name,
+                      self.bounds[name]['min'],
+                      self.bounds[name]['max'],
+                      value.min(),
+                      value.max(),
+                      value)
+            else:
+                warnings.warn("%s is not a valid key" % name)
 

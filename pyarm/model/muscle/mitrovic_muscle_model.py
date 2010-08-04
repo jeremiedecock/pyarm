@@ -59,7 +59,7 @@ class MuscleModel:
                'elbow flexor', 'elbow extensor',
                'double-joints flexor', 'double-joints extensor')
 
-    # Bound values for assert ###################
+    # Bound values ##############################
 
     umin, umax = 0, 1
 

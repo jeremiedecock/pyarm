@@ -197,8 +197,8 @@ def main():
         else:
             elapsed_time = current_time - INIT_TIME
             input_signal = agent.get_action(velocities=arm_model.velocities,
-                                                 angles=arm_model.angles,
-                                                 time=elapsed_time)
+                                            angles=arm_model.angles,
+                                            time=elapsed_time)
     
         # Update angles (physics)
         torque = muscle_model.update(input_signal, arm_model.angles, delta_time)
