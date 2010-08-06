@@ -4,7 +4,7 @@
 
 import numpy as np
 import math
-import fig
+from pyarm import fig
 
 class MuscleModel:
     """Muscle model.

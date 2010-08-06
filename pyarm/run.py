@@ -8,7 +8,7 @@ import os
 import shutil
 import getopt
 import time
-import fig
+from pyarm import fig
 
 # The state of the arm is updated at every tick_duration time (s)
 DELTA_TIME = 0.005
@@ -108,25 +108,25 @@ def main():
     # Init ####################################################################
 
     if muscle == 'none':
-        from model.muscle import fake_muscle_model as muscle_mod
+        from pyarm.model.muscle import fake_muscle_model as muscle_mod
     elif muscle == 'kambara':
-        from model.muscle import kambara_muscle_model as muscle_mod
+        from pyarm.model.muscle import kambara_muscle_model as muscle_mod
     elif muscle == 'mitrovic':
-        from model.muscle import mitrovic_muscle_model as muscle_mod
+        from pyarm.model.muscle import mitrovic_muscle_model as muscle_mod
     elif muscle == 'li':
-        from model.muscle import weiwei_muscle_model as muscle_mod
+        from pyarm.model.muscle import weiwei_muscle_model as muscle_mod
     else:
         usage()
         sys.exit(2)
 
     if arm == 'kambara':
-        from model.arm import kambara_arm_model as arm_mod
+        from pyarm.model.arm import kambara_arm_model as arm_mod
     elif arm == 'mitrovic':
-        from model.arm import mitrovic_arm_model as arm_mod
+        from pyarm.model.arm import mitrovic_arm_model as arm_mod
     elif arm == 'li':
-        from model.arm import weiwei_arm_model as arm_mod
+        from pyarm.model.arm import weiwei_arm_model as arm_mod
     elif arm == 'sagittal':
-        from model.arm import sagittal_arm_model as arm_mod
+        from pyarm.model.arm import sagittal_arm_model as arm_mod
     else:
         usage()
         sys.exit(2)
@@ -134,21 +134,21 @@ def main():
     if agent == 'none':
         agent_mod = None
     elif agent == 'oscillator':
-        from agent import oscillator as agent_mod
+        from pyarm.agent import oscillator as agent_mod
     elif agent == 'random':
-        from agent import random_oscillator as agent_mod
+        from pyarm.agent import random_oscillator as agent_mod
     elif agent == 'filereader':
-        from agent import filereader as agent_mod
+        from pyarm.agent import filereader as agent_mod
     elif agent == 'sigmoid':
-        from agent import sigmoid as agent_mod
+        from pyarm.agent import sigmoid as agent_mod
     elif agent == 'heaviside':
-        from agent import heaviside as agent_mod
+        from pyarm.agent import heaviside as agent_mod
     else:
         usage()
         sys.exit(2)
 
     if gui == 'tk':
-        from gui import tkinter_gui as gui_mod
+        from pyarm.gui import tkinter_gui as gui_mod
     elif gui == 'gtk':
         raise NotImplementedError()
     elif gui == 'cairo':

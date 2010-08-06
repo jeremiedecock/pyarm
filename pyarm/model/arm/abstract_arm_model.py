@@ -2,8 +2,8 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-from model.kinematics import euler as kinematics
-import fig
+from pyarm.model.kinematics import euler as kinematics
+from pyarm import fig
 import math
 import numpy as np
 import warnings

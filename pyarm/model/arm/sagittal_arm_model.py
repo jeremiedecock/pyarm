@@ -2,7 +2,7 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-from kambara_arm_model import ArmModel as KambaraArmModel
+from pyarm.model.arm.kambara_arm_model import ArmModel as KambaraArmModel
 import numpy as np
 
 class ArmModel(KambaraArmModel):

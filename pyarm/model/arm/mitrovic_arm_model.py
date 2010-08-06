@@ -2,7 +2,7 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-from abstract_arm_model import AbstractArmModel
+from pyarm.model.arm.abstract_arm_model import AbstractArmModel
 import numpy as np
 
 class ArmModel(AbstractArmModel):

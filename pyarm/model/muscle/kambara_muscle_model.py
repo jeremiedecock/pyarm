@@ -3,7 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import numpy as np
-import fig
+from pyarm import fig
 
 class MuscleModel:
 
