@@ -1,6 +1,6 @@
 Pyarm
 
-Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
+Copyright (c) 2010 Jeremie DECOCK (http://www.jdhp.org)
 
 http://code.google.com/p/pyarm/
 
@@ -20,4 +20,16 @@ INSTALL
 -------
 
 $ python setup.py install
+
+
+RUN PYARM
+---------
+
+$ pyarm
+
+
+HELP
+----
+
+$ pyarm --help
 

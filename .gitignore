@@ -1,9 +1,14 @@
+MANIFEST
+VERSION
+build/
+dist/
+scripts/
 screencast
 ip.py
 bib.png
 list.txt
 doc/*.html
-pyarm/*.png
+./*.png
 *.swp
 *.pyc
 *.pyo

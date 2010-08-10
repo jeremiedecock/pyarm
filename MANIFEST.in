@@ -1,2 +1,3 @@
-include README
-recursive-include pyarm *.py
+include VERSION
+include MANIFEST.in
+recursive-include pyarm/tests *.py
