@@ -9,6 +9,7 @@ bib.png
 list.txt
 doc/*.html
 ./*.png
+commands.dat
 *.swp
 *.pyc
 *.pyo

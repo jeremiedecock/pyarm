@@ -11,10 +11,6 @@ class MuscleModel:
 
     name = 'Fake'
 
-    # Muscle parameters #########################
-
-    torque_value = 2.0
-
     ###########################################################################
 
     def __init__(self, arm):
@@ -23,17 +19,20 @@ class MuscleModel:
                    title='Signal',
                    xlabel='time (s)',
                    ylabel='Signal',
-                   ylim=[-0.1, 1.1],
-                   legend=('shoulder +', 'shoulder -',
-                           'elbow +', 'elbow -'))
+                   ylim=[-0.1, 1.1])
+                   #legend=('shoulder +', 'shoulder -',
+                   #        'elbow +', 'elbow -'))
 
     def update(self, signal, angles, dt):
         """Compute the muscle dynamics"""
 
         torque = np.zeros(2)
-        torque[0] = (signal[0] - signal[1]) * self.torque_value
-        torque[1] = (signal[2] - signal[3]) * self.torque_value
-
-        fig.append('input signal', signal[0:4])
+        if len(signal) > 2:
+            torque[0] = (signal[0] - signal[1])
+            torque[1] = (signal[2] - signal[3])
+            fig.append('input signal', signal[0:4])
+        else:
+            torque = np.array(signal)
+            fig.append('input signal', signal[0:2])
 
         return torque
