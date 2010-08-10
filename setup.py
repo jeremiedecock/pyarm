@@ -89,15 +89,19 @@ def get_version():
 
 
 # Prepare scripts
+SCRIPT_DIR = 'scripts' # The place where we want to put distributed scripts.
+SCRIPTS = ['pyarm']    # The list of scripts we want to export in the distrib.
+
 try:
-    os.mkdir('scripts')
+    os.mkdir(SCRIPT_DIR)
 except OSError:
     pass
 
-try:
-    shutil.copyfile('pyarm.py', 'scripts/pyarm')
-except IOError:
-    pass
+for script in SCRIPTS:
+    try:
+        shutil.copyfile(script + '.py', os.path.join(SCRIPT_DIR, script))
+    except IOError:
+        pass
 
 
 # Don't use unicode strings in setup arguments or bdist_rpm will fail.
@@ -114,7 +118,7 @@ setup(author='Jeremie DECOCK',
       packages=PACKAGES,
       platforms=['Linux'],
       requires=['numpy', 'matplotlib'],
-      scripts=['scripts/pyarm'],
+      scripts=[os.path.join(SCRIPT_DIR, script) for script in SCRIPTS],
       url='http://code.google.com/p/pyarm/',
       version=get_version())
 
