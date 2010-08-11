@@ -55,6 +55,9 @@ def main():
 
         plot_c_forearm(kambara_arm)
         plot_c_forearm(mitrovic_arm)
+        
+        # Plot 4d
+        plot_c_upperarm(mitrovic_arm)
 
 
 def plot_lm(arm, muscle):
@@ -68,8 +71,8 @@ def plot_lm(arm, muscle):
     q = np.linspace(qmin, qmax, n)
 
     lm = np.zeros([len(q), 6])
-    for i in range(len(q)):
-        arm.angles = np.ones(2) * q[i]
+    for i, qi in enumerate(q):
+        arm.angles = np.ones(2) * qi
         arm.angles = arm.constraint_joint_angles(arm.angles)
         lm[i] = muscle.lm(arm.angles)
 
@@ -95,8 +98,8 @@ def plot_k(muscle):
     u = np.linspace(0, 1, n)
 
     k = np.zeros([len(u), 6])
-    for i in range(len(u)):
-        k[i] = muscle.K(np.ones(6) * u[i])
+    for i, ui in enumerate(u):
+        k[i] = muscle.K(np.ones(6) * ui)
 
     # Plot data #################
     plt.xlabel('Control signal')
@@ -120,8 +123,8 @@ def plot_b(muscle):
     u = np.linspace(0, 1, n)
 
     b = np.zeros([len(u), 6])
-    for i in range(len(u)):
-        b[i] = muscle.B(np.ones(6) * u[i])
+    for i, ui in enumerate(u):
+        b[i] = muscle.B(np.ones(6) * ui)
 
     # Plot data #################
     plt.xlabel('Control signal')
@@ -145,8 +148,8 @@ def plot_lr(muscle):
     u = np.linspace(0, 1, n)
 
     rl = np.zeros([len(u), 6])
-    for i in range(len(u)):
-        rl[i] = muscle.rest_length(np.ones(6) * u[i])
+    for i, ui in enumerate(u):
+        rl[i] = muscle.rest_length(np.ones(6) * ui)
 
     # Plot data #################
     plt.xlabel('Control signal')
@@ -224,10 +227,10 @@ def plot_fv(muscle):
     y = np.linspace(muscle.mv_min, muscle.mv_max, n)
 
     z = np.zeros([len(x), len(y)])
-    for i in range(len(x)):
-        for j in range(len(y)):
+    for i, xi in enumerate(x):
+        for j, yj in enumerate(y):
             # !!! c'est bien z[j, i] et non pas z[i, j] (sinon, c pas en phase ac le meshgrid) !!!
-            z[j, i] = muscle.fv(np.ones(6) * x[i], np.ones(6) * y[j])[0]
+            z[j, i] = muscle.fv(np.ones(6) * xi, np.ones(6) * yj)[0]
 
     x, y = np.meshgrid(x, y)
 
@@ -251,10 +254,10 @@ def plot_fa(muscle):
     y = np.linspace(0., 1., n)
 
     z = np.zeros([len(x), len(y)])
-    for i in range(len(x)):
-        for j in range(len(y)):
+    for i, xi in enumerate(x):
+        for j, yj in enumerate(y):
             # !!! c'est bien z[j, i] et non pas z[i, j] (sinon, c pas en phase ac le meshgrid) !!!
-            z[j, i] = muscle.fa(x[i], y[j])
+            z[j, i] = muscle.fa(xi, yj)
 
     x, y = np.meshgrid(x, y)
 
@@ -280,10 +283,10 @@ def plot_c_forearm(arm):
                     arm.bounds['angular_velocity']['max'], n)
 
     z = np.zeros([len(x), len(y)])
-    for i in range(len(x)):
-        for j in range(len(y)):
+    for i, xi in enumerate(x):
+        for j, yj in enumerate(y):
             # !!! c'est bien z[j, i] et non pas z[i, j] (sinon, c pas en phase ac le meshgrid) !!!
-            z[j, i] = arm.C(np.array([0, x[i]]), np.array([y[j], 0]))[1]
+            z[j, i] = arm.C(np.array([0, xi]), np.array([yj, 0]))[1]
 
     x, y = np.meshgrid(x, y)
 
@@ -305,35 +308,37 @@ def plot_c_upperarm(arm):
     n  = 50
     nf = 10
 
-    o1 = np.linspace(arm.bounds['angular_velocity']['min'],
-                     arm.bounds['angular_velocity']['max'], n)
-    o2 = np.linspace(arm.bounds['angular_velocity']['min'],
-                     arm.bounds['angular_velocity']['max'], n)
-    t2 = np.linspace(arm.angle_constraints[1]['min'],
+    qe = np.linspace(arm.angle_constraints[1]['min'] + 0.1, # Fails if = 0...
                      arm.angle_constraints[1]['max'], nf)
 
-    o1_, o2_ = np.meshgrid(o1, o2)
+    for t, qet in enumerate(qe):
 
-    for t in range(len(t2)):
-        z = np.zeros([len(o1), len(o2)])
-        for i in range(len(o1)):
-            for j in range(len(o2)):
-                z[j, i] = arm.C(np.array([0, t2[t]]), np.array([o1[i], o2[j]]))[0]
+        qps = np.linspace(-10., 10., n)
+        qpe = np.linspace(-10., 10., n)
+        #qps = np.linspace(arm.bounds['angular_velocity']['min'],
+        #                 arm.bounds['angular_velocity']['max'], n)
+        #qpe = np.linspace(arm.bounds['angular_velocity']['min'],
+        #                 arm.bounds['angular_velocity']['max'], n)
+
+        z = np.zeros([len(qps), len(qpe)])
+        for i, qpsi in enumerate(qps):
+            for j, qpej in enumerate(qpe):
+                z[j, i] = arm.C(np.array([0, qet]), np.array([qpsi, qpej]))[0]
+
+        qps, qpe = np.meshgrid(qps, qpe)
 
         # Plot data #################
         fig = plt.figure()
         ax = axes3d.Axes3D(fig)
         ax.cla()
 
-        ax.plot_wireframe(o1_, o2_, z)
+        ax.plot_wireframe(qps, qpe, z)
 
         ax.set_xlabel('Elbow joint angle (rad)')
         ax.set_ylabel('Shoulder velocity (rad/s)')
         ax.set_zlabel('Centrifugal, coriolis and friction forces applied on forearm')
 
-        #plt.savefig('c_upperarm_' + str(t) + '.png')
-        plt.clf()
-        fig.clf()
+        plt.savefig('c_upperarm_' + str(t) + '.png')
 
 if __name__ == '__main__':
     main()
