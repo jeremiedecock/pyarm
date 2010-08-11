@@ -46,7 +46,7 @@ def main():
     plot_lr(mitrovic_muscle)
 
     plot_nf(weiwei_muscle)
-    plot_fp(weiwei_muscle)
+    plot_fe(weiwei_muscle)
     plot_fl(weiwei_muscle)
 
     if plot3d:
@@ -74,8 +74,8 @@ def plot_lm(arm, muscle):
         lm[i] = muscle.lm(arm.angles)
 
     # Plot data #################
-    plt.xlabel('Angle')
-    plt.ylabel('Muscle length')
+    plt.xlabel('Angle (rad)')
+    plt.ylabel('Muscle length (m)')
     plt.title(muscle.name)
     plt.plot(q, lm)
     try:
@@ -100,7 +100,7 @@ def plot_k(muscle):
 
     # Plot data #################
     plt.xlabel('Control signal')
-    plt.ylabel('Elastic force')
+    plt.ylabel('Muscle stiffness (N/m)')
     plt.title(muscle.name)
     plt.plot(u, k)
     try:
@@ -125,7 +125,7 @@ def plot_b(muscle):
 
     # Plot data #################
     plt.xlabel('Control signal')
-    plt.ylabel('Viscosity force')
+    plt.ylabel('Muscle viscosity (N.s/m)')
     plt.title(muscle.name)
     plt.plot(u, b)
     try:
@@ -150,7 +150,7 @@ def plot_lr(muscle):
 
     # Plot data #################
     plt.xlabel('Control signal')
-    plt.ylabel('Rest length')
+    plt.ylabel('Muscle rest length (m)')
     plt.title(muscle.name)
     plt.plot(u, rl)
     try:
@@ -179,7 +179,7 @@ def plot_nf(muscle):
 
     plt.savefig('muscle_' + muscle.name + '_nf.png')
 
-def plot_fp(muscle):
+def plot_fe(muscle):
     
     plt.clf()
 
@@ -191,7 +191,7 @@ def plot_fp(muscle):
 
     # Plot data #################
     plt.xlabel('Muscle length (m)')
-    plt.ylabel('fe : Elastic force')
+    plt.ylabel('Elastic force')
     plt.title(muscle.name)
     plt.plot(lm, fe)
 
@@ -209,7 +209,7 @@ def plot_fl(muscle):
 
     # Plot data #################
     plt.xlabel('Muscle length (m)')
-    plt.ylabel('fl : Force-length relationship')
+    plt.ylabel('Force-length relationship')
     plt.title(muscle.name)
     plt.plot(lm, fl)
 
@@ -238,7 +238,7 @@ def plot_fv(muscle):
 
     ax.set_xlabel('Muscle length (m)')
     ax.set_ylabel('Muscle velocity (m/s)')
-    ax.set_zlabel('fv : Force-velocity relationship')
+    ax.set_zlabel('Force-velocity relationship')
 
     plt.savefig('muscle_' + muscle.name + '_fv.png')
 
@@ -265,7 +265,7 @@ def plot_fa(muscle):
 
     ax.set_xlabel('Muscle length (m)')
     ax.set_ylabel('Motor signal')
-    ax.set_zlabel('fa : Activation-frequency relationship')
+    ax.set_zlabel('Activation-frequency relationship')
 
     plt.savefig('muscle_' + muscle.name + '_fa.png')
 
