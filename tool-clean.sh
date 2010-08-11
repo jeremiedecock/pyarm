@@ -6,6 +6,7 @@ rm -rf screencast
 rm -rf scripts
 rm -rf build
 rm -rf dist
+rm -rf debian
 rm MANIFEST
 rm *.log
 rm *.png
