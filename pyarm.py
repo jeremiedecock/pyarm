@@ -10,14 +10,13 @@ import getopt
 import time
 from pyarm import fig
 
-# The state of the arm is updated at every tick_duration time (s)
-DELTA_TIME = 0.005
-INIT_TIME = time.time()      # Initial time (s)
+INIT_TIME = time.time()   # Initial time (s)
 
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r] [-s] [-l]
+    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r]
+               [-d] [-s] [-l]
     
     A robotic arm model and simulator.
 
@@ -28,13 +27,18 @@ def usage():
         the arm model to use (kambara, mitrovic, li or sagittal)
 
     -A, --agent
-        the agent to use (oscillator, random, filereader, sigmoid, heaviside, none)
+        the agent to use (oscillator, random, filereader, sigmoid, heaviside,
+        none)
 
     -g, --gui
         the graphical user interface to use (tk, none)
 
     -r, --realtime
-        realtime simulation (framerate dependant simulation)
+        realtime simulation (framerate dependant simulation) [default]
+
+    -d, --deltatime
+        timestep value in second (cancel -r option)
+        should be near to 0.005 seconds
 
     -s, --screencast
         make a screencast
@@ -43,7 +47,8 @@ def usage():
         save matplotlib figures
 
     -l, --log
-        save numeric values (accelerations, velocities, angles, ...) into a file
+        save numeric values (accelerations, velocities, angles, ...) into a
+        file
     '''
 
 
@@ -58,22 +63,23 @@ def main():
     arm = 'li'
     agent = 'none'
     gui = 'tk'
-    realtime = False
+    realtime = True
+    delta_time = None
     screencast = False
     save_figures = False
     log = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:rsflh',
+                     'm:a:A:g:rd:sflh',
                      ["muscle=", "arm=", "agent=", "gui=", "realtime",
-                      "screencast", "figures", "log", "help"])
+                      "deltatime=", "screencast", "figures", "log", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
         print str(err) 
         usage()
         sys.exit(1)
-
+ 
     for o, a in opts:
         if o in ("-h", "--help"):
             usage()
@@ -87,9 +93,15 @@ def main():
         elif o in ("-g", "--gui"):
             gui = a
         elif o in ("-r", "--realtime"):
-            realtime = True
+            #realtime = True
+            pass
+        elif o in ("-d", "--deltatime"):
+            delta_time = float(a)
+            fig.DELTA_TIME = float(a)
+            realtime = False
         elif o in ("-s", "--screencast"):
             screencast = True
+            raise NotImplementedError()
         elif o in ("-f", "--figures"):
             save_figures = True
         elif o in ("-l", "--log"):
@@ -133,6 +145,7 @@ def main():
 
     if agent == 'none':
         agent_mod = None
+        print 'Press NumKey 1 to 6 to move the arm'
     elif agent == 'oscillator':
         from pyarm.agent import oscillator as agent_mod
     elif agent == 'random':
@@ -182,11 +195,8 @@ def main():
         # Compute delta time
         current_time = time.time()
 
-        delta_time = None
         if realtime:
             delta_time = current_time - former_time
-        else:
-            delta_time = DELTA_TIME
     
         fig.append('dtime', delta_time)
 

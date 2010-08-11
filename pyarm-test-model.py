@@ -6,7 +6,7 @@
 import numpy as np
 from pyarm.model.kinematics import euler as kinematics
 
-delta_time = 0.01
+DELTA_TIME = 0.01
 
 def main():
 
@@ -25,13 +25,13 @@ def main():
                             arm.velocities = np.array([qps, qpe])
                             torque = np.array([us, ue])
 
-                            accelerations = arm.update(torque, delta_time)
+                            accelerations = arm.update(torque, DELTA_TIME)
 
                             # Forward kinematics
                             velocities, angles = kinematics.forward_kinematics(accelerations,
                                                                                arm.velocities,
                                                                                arm.angles,
-                                                                               delta_time)
+                                                                               DELTA_TIME)
 
                             print qs, "\t",
                             print qe, "\t",

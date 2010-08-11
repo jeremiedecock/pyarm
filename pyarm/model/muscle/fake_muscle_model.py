@@ -23,7 +23,7 @@ class MuscleModel:
                    #legend=('shoulder +', 'shoulder -',
                    #        'elbow +', 'elbow -'))
 
-    def update(self, signal, angles, dt):
+    def update(self, signal, angles, delta_time):
         """Compute the muscle dynamics"""
 
         torque = np.zeros(2)
