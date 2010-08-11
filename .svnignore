@@ -9,7 +9,8 @@ ip.py
 bib.png
 list.txt
 doc/*.html
-./*.png
+pyarm_logs/
+pyarm_figs/
 commands.dat
 *.swp
 *.pyc
