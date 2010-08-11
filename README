@@ -28,8 +28,15 @@ RUN PYARM
 $ pyarm
 
 
+USAGE EXAMPLE
+-------------
+
+pyarm -f -l -m mitrovic -d 0.005 -A sigmoid
+pyarm -a sagittal -m kambara -d 0.005 -A sigmoid
+
+
 HELP
 ----
 
-$ pyarm --help
+$ pyarm -h
 
