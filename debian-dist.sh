@@ -6,22 +6,23 @@ DIST_DIR=dist
 
 rm -rf debian
 
-mkdir -p      debian/usr/bin
-# TODO : Ajouter un test sur l'existance de $NAME.py
-#        Ne fonctionne pas quand ce script est appellé depuis
-#        une 'source-distribution'. Le script se trouve dans
-#        le répertoire script.
-cp $NAME.py   debian/usr/bin/$NAME
-chmod 755     debian/usr/bin/$NAME
+mkdir -p debian/usr/bin
+if [ -f "$NAME.py" ]
+then
+    cp "$NAME.py" "debian/usr/bin/$NAME"
+else
+    cp "scripts/$NAME" "debian/usr/bin/$NAME"
+fi
+chmod 755 "debian/usr/bin/$NAME"
 
 # TODO
 mkdir -p      debian/usr/local/lib/python2.6/dist-packages
 cp -r pyarm   debian/usr/local/lib/python2.6/dist-packages
 chmod 644     $(find debian/usr/local/lib -type f)
 
-mkdir -p      debian/usr/share/doc/$NAME/
-cp COPYING    debian/usr/share/doc/$NAME/copyright
-chmod 644     debian/usr/share/doc/$NAME/copyright
+mkdir -p      "debian/usr/share/doc/$NAME/"
+cp COPYING    "debian/usr/share/doc/$NAME/copyright"
+chmod 644     "debian/usr/share/doc/$NAME/copyright"
 
 mkdir -p debian/DEBIAN
 
@@ -39,5 +40,5 @@ EOF
 
 fakeroot dpkg-deb -b debian
 
-mkdir -p $DIST_DIR
-mv debian.deb $DIST_DIR/${NAME}_${VERSION}_all.deb
+mkdir -p "$DIST_DIR"
+mv debian.deb "$DIST_DIR/${NAME}_${VERSION}_all.deb"
