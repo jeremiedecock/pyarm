@@ -8,5 +8,5 @@ rm -rf build
 rm -rf dist
 rm -rf debian
 rm MANIFEST
-rm *.log
-rm *.png
+rm -rf pyarm_logs
+rm -rf pyarm_figs

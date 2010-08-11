@@ -4,13 +4,17 @@
 
 import math
 import time
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 
 SUBFIGS = {}
 TIMEREF = time.time()
-FILENAME = "fig.png"
+FILE_PREFIX = time.strftime('%d%m%y_%H%M%S_')
+FIG_FILENAME = "all_figs.png"
+FIG_DIRNAME = "pyarm_figs"
+LOG_DIRNAME = "pyarm_logs"
 SAVE = False
 DELTA_TIME = None
 
@@ -52,11 +56,16 @@ def subfig(name, title=None, xlabel='', ylabel='', type='plot', xlim=None,
                       'xdata':[], 'ydata':[]}
 
 def save_log():
-    prefix = time.strftime('%d%m%y_%H%M%S_')
+    try:
+        os.mkdir(LOG_DIRNAME)
+    except OSError:
+        pass
+
     for fig in SUBFIGS:
         x = SUBFIGS[fig]['xdata']
         y = SUBFIGS[fig]['ydata']
-        np.savetxt(prefix + str(fig) + '.log', np.c_[x, y])
+        np.savetxt(os.path.join(LOG_DIRNAME, FILE_PREFIX + str(fig) + '.log'),
+                   np.c_[x, y])
 
 def save_fig(name):
     # TODO : factoriser !
@@ -115,11 +124,16 @@ def save_fig(name):
     for tick in ax.yaxis.get_major_ticks():
         tick.label1.set_fontsize(fontsize)
 
-    plt.savefig(name + '.png', dpi=300)
+    plt.savefig(os.path.join(FIG_DIRNAME, FILE_PREFIX + name + '.png'), dpi=300)
 
     plt.clf()
 
 def save_all_figs():
+    try:
+        os.mkdir(FIG_DIRNAME)
+    except OSError:
+        pass
+
     for fig in SUBFIGS:
         save_fig(fig)
 
@@ -184,6 +198,12 @@ def show(numcols=2):
 
     if n > 0:
         if SAVE:
-            plt.savefig(FILENAME, dpi=300)
+            try:
+                os.mkdir(FIG_DIRNAME)
+            except OSError:
+                pass
+
+            plt.savefig(os.path.join(FIG_DIRNAME, FILE_PREFIX + FIG_FILENAME),
+                        dpi=300)
         plt.show()
 
