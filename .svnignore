@@ -3,12 +3,14 @@ VERSION
 build/
 dist/
 scripts/
+debian/
 screencast
 ip.py
 bib.png
 list.txt
 doc/*.html
 ./*.png
+commands.dat
 *.swp
 *.pyc
 *.pyo

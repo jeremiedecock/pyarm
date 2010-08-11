@@ -3,6 +3,7 @@ VERSION
 build/
 dist/
 scripts/
+debian/
 screencast
 ip.py
 bib.png

@@ -7,6 +7,10 @@ DIST_DIR=dist
 rm -rf debian
 
 mkdir -p      debian/usr/bin
+# TODO : Ajouter un test sur l'existance de $NAME.py
+#        Ne fonctionne pas quand ce script est appellé depuis
+#        une 'source-distribution'. Le script se trouve dans
+#        le répertoire script.
 cp $NAME.py   debian/usr/bin/$NAME
 chmod 755     debian/usr/bin/$NAME
 
