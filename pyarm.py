@@ -16,7 +16,7 @@ def usage():
     """Print help message"""
 
     print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r]
-               [-d] [-s] [-l]
+                [-d DELTA_TIME] [-s] [-l]
     
     A robotic arm model and simulator.
 
