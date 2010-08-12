@@ -2,7 +2,7 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
-from pyarm.model.kinematics import euler as kinematics
+from pyarm.model.kinematics import finite_difference_method as kinematics
 from pyarm import fig
 import math
 import numpy as np

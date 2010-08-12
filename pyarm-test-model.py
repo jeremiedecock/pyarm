@@ -4,7 +4,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import numpy as np
-from pyarm.model.kinematics import euler as kinematics
+from pyarm.model.kinematics import finite_difference_method as kinematics
 
 DELTA_TIME = 0.01
 

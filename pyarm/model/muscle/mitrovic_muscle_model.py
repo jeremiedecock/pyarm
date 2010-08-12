@@ -65,11 +65,8 @@ class MuscleModel:
 
     # Muscle parameters #########################
 
-    # Muscle length when the joint angle = 0 (m)
-    lm0 = np.array([0.337, 0.388, 0.375, 0.315, 0.257, 0.256])
-
-    # Intrinsic rest length (for u = 0) (m)
-    l0rest = np.array([0.26, 0.26, 0.275, 0.275, 0.237, 0.237])
+    # Muscle length when the joint angles = 0 (m) [arbitrary choosen]
+    lm0 = np.array([0.15, 0.15, 0.15, 0.15, 0.4, 0.4])
 
     # Muscle parameters from [6] p.356-357
     k0 = np.ones(6) * 810.8     # Intrinsic elasticity (for u = 0) (N/m)
@@ -77,9 +74,16 @@ class MuscleModel:
     b0 = np.ones(6) * 54.1      # Intrinsic viscosity (for u = 0) (N.s/m)
     b1 = np.ones(6) * 108.1     # Viscosity coefficient (N.s/m)
 
-    # Constant from the muscle model (m) from [6] p.357
-    l1rest = np.array([-0.03491,  0.03491, -0.02182,
-                        0.02182, -0.05498,  0.05498])
+    # lm0 - lr0 (m)
+    diff_lm0_lr0 = np.array([9.076e-2, -2.793e-2, 5.672e-2,
+                             0.436e-2, 14.294e-2, -1.343e-2])
+    
+    # Intrinsic rest length (for u = 0) (m)
+    lr0 = -diff_lm0_lr0 + lm0
+
+    # Variation rate of rest length (m)
+    lr1 = np.array([-0.03491,  0.03491, -0.02182,
+                     0.02182, -0.05498,  0.05498])
 
     # Moment arm (constant matrix) (m) from [6] p.356
     A = np.array([[ 0.04 ,  0.04 ,  0.   ,  0.   ,  0.028,  0.028],
@@ -215,7 +219,7 @@ class MuscleModel:
 
     def rest_length(self, u):
         "Compute muscle rest length (m)."
-        return self.l0rest + self.l1rest * u
+        return self.lr0 + self.lr1 * u
 
     def stretching(self, rest_length, muscle_length):
         "Compute stretching (m)."
