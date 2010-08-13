@@ -9,7 +9,6 @@ import numpy as np
 import warnings
 
 ASSERT = False
-COLLISION_DETECTION = True
 
 class AbstractArmModel:
     """Abstract forward dynamics arm model.
@@ -83,9 +82,13 @@ class AbstractArmModel:
 
     friction_matrix = np.array([[0.05, 0.025], [0.025, 0.05]])
 
+
+    unbounded = False
+
     ###########################################################################
 
-    def __init__(self):
+    def __init__(self, unbounded=False):
+        self.unbounded = unbounded
         self.velocities = np.zeros(2)
 
         angles = np.array(self.initial_angles)
@@ -152,7 +155,7 @@ class AbstractArmModel:
         velocities = self.velocities.copy()
 
         # Collision detection
-        if COLLISION_DETECTION:
+        if not self.unbounded:
             collision_flags = self.collision_detection(angles.copy(),  # TODO
                                                        velocities.copy(),  # TODO
                                                        torque.copy(),  # TODO
@@ -166,7 +169,7 @@ class AbstractArmModel:
         G = self.G(angles)
         normal_force = np.zeros(2)
 
-        if COLLISION_DETECTION:
+        if not self.unbounded:
             filter = [float(flag) for flag in collision_flags]
             normal_force = np.array(filter) * (-torque + C + B + G)  # TODO
 
@@ -181,7 +184,7 @@ class AbstractArmModel:
                                                            delta_time)
         self.assert_bounds('angular_velocity', velocities)
 
-        if COLLISION_DETECTION:
+        if not self.unbounded:
             filter = [float(not flag) for flag in collision_flags]
             velocities = np.array(filter) * velocities  # TODO
             angles = self.constraint_joint_angles(angles)  # TODO # REMOVE IT #

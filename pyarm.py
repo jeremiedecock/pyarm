@@ -28,7 +28,7 @@ def usage():
 
     -A, --agent
         the agent to use (oscillator, random, filereader, sigmoid, heaviside,
-        none)
+        ilqg, none)
 
     -g, --gui
         the graphical user interface to use (tk, none)
@@ -49,6 +49,15 @@ def usage():
     -l, --log
         save numeric values (accelerations, velocities, angles, ...) into a
         file
+
+    -u, --unbounded
+        set unbounded joint angles
+
+    -v, --version
+        output version information and exit
+
+    -h, --help
+        display this help and exit
     '''
 
 
@@ -68,12 +77,14 @@ def main():
     screencast = False
     save_figures = False
     log = False
+    unbounded = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:rd:sflh',
+                     'm:a:A:g:rd:sfluvh',
                      ["muscle=", "arm=", "agent=", "gui=", "realtime",
-                      "deltatime=", "screencast", "figures", "log", "help"])
+                      "deltatime=", "screencast", "figures", "log",
+                      "unbounded", "version", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
         print str(err) 
@@ -106,13 +117,18 @@ def main():
             save_figures = True
         elif o in ("-l", "--log"):
             log = True
+        elif o in ("-u", "--unbounded"):
+            unbounded = True
+        elif o in ("-v", "--version"):
+            # TODO
+            sys.exit(0)
         else:
             assert False, "unhandled option"
 
     if muscle not in ('none', 'kambara', 'mitrovic', 'li') \
         or arm not in ('kambara', 'mitrovic', 'li', 'sagittal') \
         or agent not in ('none', 'oscillator', 'random', 'filereader',
-                         'sigmoid', 'heaviside') \
+                         'sigmoid', 'heaviside', 'ilqg') \
         or gui not in ('tk', 'gtk', 'cairo', 'none'):
         usage()
         sys.exit(2)
@@ -156,6 +172,14 @@ def main():
         from pyarm.agent import sigmoid as agent_mod
     elif agent == 'heaviside':
         from pyarm.agent import heaviside as agent_mod
+    elif agent == 'ilqg':
+        from pyarm.agent import ilqg_agent as agent_mod
+        if delta_time is None:
+            print("ILQG agent can't be used in realtime mode. " + \
+                  "Use -d option to set a delta_time value.")
+            sys.exit(3)
+        else:
+            agent_mod.DELTA_TIME = delta_time
     else:
         usage()
         sys.exit(2)
@@ -172,7 +196,7 @@ def main():
         usage()
         sys.exit(2)
 
-    arm_model = arm_mod.ArmModel()
+    arm_model = arm_mod.ArmModel(unbounded)
     muscle_model = muscle_mod.MuscleModel(arm_model)
 
     agent = None
