@@ -173,13 +173,22 @@ def main():
     elif agent == 'heaviside':
         from pyarm.agent import heaviside as agent_mod
     elif agent == 'ilqg':
-        from pyarm.agent import ilqg_agent as agent_mod
-        if delta_time is None:
-            print("ILQG agent can't be used in realtime mode. " + \
-                  "Use -d option to set a delta_time value.")
-            sys.exit(3)
+        if muscle == 'none':
+            from pyarm.agent import ilqg_agent as agent_mod
+            if delta_time is None:
+                print("ILQG agent can't be used in realtime mode. " + \
+                      "Use -d option to set a delta_time value.")
+                sys.exit(3)
+            else:
+                agent_mod.DELTA_TIME = delta_time
         else:
-            agent_mod.DELTA_TIME = delta_time
+            from pyarm.agent import ilqg6_agent as agent_mod
+            if delta_time is None:
+                print("ILQG agent can't be used in realtime mode. " + \
+                      "Use -d option to set a delta_time value.")
+                sys.exit(3)
+            else:
+                agent_mod.DELTA_TIME = delta_time
     else:
         usage()
         sys.exit(2)
