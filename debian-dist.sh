@@ -34,7 +34,7 @@ Section: science
 Priority: optional
 Maintainer: Jérémie DECOCK <gremy@tuxfamily.org>
 Architecture: all
-Depends: python (>= 2.5), python-numpy, python-matplotlib
+Depends: python (>= 2.5), python-numpy, python-matplotlib (>=  0.98.1)
 Description: A robotic arm model and simulator
 EOF
 

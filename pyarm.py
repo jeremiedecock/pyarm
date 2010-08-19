@@ -136,59 +136,59 @@ def main():
     # Init ####################################################################
 
     if muscle == 'none':
-        from pyarm.model.muscle import fake_muscle_model as muscle_mod
+        from pyarm.model.muscle import fake_muscle_model as muscle_module
     elif muscle == 'kambara':
-        from pyarm.model.muscle import kambara_muscle_model as muscle_mod
+        from pyarm.model.muscle import kambara_muscle_model as muscle_module
     elif muscle == 'mitrovic':
-        from pyarm.model.muscle import mitrovic_muscle_model as muscle_mod
+        from pyarm.model.muscle import mitrovic_muscle_model as muscle_module
     elif muscle == 'li':
-        from pyarm.model.muscle import weiwei_muscle_model as muscle_mod
+        from pyarm.model.muscle import weiwei_muscle_model as muscle_module
     else:
         usage()
         sys.exit(2)
 
     if arm == 'kambara':
-        from pyarm.model.arm import kambara_arm_model as arm_mod
+        from pyarm.model.arm import kambara_arm_model as arm_module
     elif arm == 'mitrovic':
-        from pyarm.model.arm import mitrovic_arm_model as arm_mod
+        from pyarm.model.arm import mitrovic_arm_model as arm_module
     elif arm == 'li':
-        from pyarm.model.arm import weiwei_arm_model as arm_mod
+        from pyarm.model.arm import weiwei_arm_model as arm_module
     elif arm == 'sagittal':
-        from pyarm.model.arm import sagittal_arm_model as arm_mod
+        from pyarm.model.arm import sagittal_arm_model as arm_module
     else:
         usage()
         sys.exit(2)
 
     if agent == 'none':
-        agent_mod = None
+        agent_module = None
         print 'Press NumKey 1 to 6 to move the arm'
     elif agent == 'oscillator':
-        from pyarm.agent import oscillator as agent_mod
+        from pyarm.agent import oscillator as agent_module
     elif agent == 'random':
-        from pyarm.agent import random_oscillator as agent_mod
+        from pyarm.agent import random_oscillator as agent_module
     elif agent == 'filereader':
-        from pyarm.agent import filereader as agent_mod
+        from pyarm.agent import filereader as agent_module
     elif agent == 'sigmoid':
-        from pyarm.agent import sigmoid as agent_mod
+        from pyarm.agent import sigmoid as agent_module
     elif agent == 'heaviside':
-        from pyarm.agent import heaviside as agent_mod
+        from pyarm.agent import heaviside as agent_module
     elif agent == 'ilqg':
         if muscle == 'none':
-            from pyarm.agent import ilqg_agent as agent_mod
+            from pyarm.agent import ilqg_agent as agent_module
             if delta_time is None:
                 print("ILQG agent can't be used in realtime mode. " + \
                       "Use -d option to set a delta_time value.")
                 sys.exit(3)
             else:
-                agent_mod.DELTA_TIME = delta_time
+                agent_module.DELTA_TIME = delta_time
         else:
-            from pyarm.agent import ilqg6_agent as agent_mod
+            from pyarm.agent import ilqg6_agent as agent_module
             if delta_time is None:
                 print("ILQG agent can't be used in realtime mode. " + \
                       "Use -d option to set a delta_time value.")
                 sys.exit(3)
             else:
-                agent_mod.DELTA_TIME = delta_time
+                agent_module.DELTA_TIME = delta_time
     else:
         usage()
         sys.exit(2)
@@ -205,14 +205,14 @@ def main():
         usage()
         sys.exit(2)
 
-    arm_model = arm_mod.ArmModel(unbounded)
-    muscle_model = muscle_mod.MuscleModel(arm_model)
+    arm = arm_module.ArmModel(unbounded)
+    muscle = muscle_module.MuscleModel()
 
     agent = None
-    if agent_mod != None:
-        agent = agent_mod.Agent()
+    if agent_module != None:
+        agent = agent_module.Agent()
 
-    gui = gui_mod.GUI(muscle_model, arm_model)
+    gui = gui_mod.GUI(muscle, arm)
 
     # Erase the screencast directory
     if screencast:
@@ -234,23 +234,23 @@ def main():
         fig.append('dtime', delta_time)
 
         # Get input signals
-        input_signal = None
+        commands = None
         if agent == None:
-            input_signal = [float(flag) for flag in gui.keyboard_flags]
+            commands = [float(flag) for flag in gui.keyboard_flags]
         else:
             elapsed_time = current_time - INIT_TIME
-            input_signal = agent.get_action(velocities=arm_model.velocities,
-                                            angles=arm_model.angles,
+            commands = agent.get_action(velocities=arm.velocities,
+                                            angles=arm.angles,
                                             time=elapsed_time)
     
         # Update angles (physics)
-        torque = muscle_model.update(input_signal, arm_model.angles, delta_time)
-        acceleration = arm_model.update(torque, delta_time)
+        torque = muscle.compute_torque(arm.angles, arm.velocities, commands)
+        acceleration = arm.compute_acceleration(torque, delta_time)
 
         # Update clock
         former_time = current_time
 
-        gui.update(input_signal, torque, acceleration)
+        gui.update(commands, torque, acceleration)
 
     # Quit ####################################################################
     if screencast:

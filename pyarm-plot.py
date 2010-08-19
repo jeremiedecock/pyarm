@@ -28,19 +28,19 @@ def main():
     mitrovic_arm = mitrovic_arm_model.ArmModel()
     weiwei_arm   = weiwei_arm_model.ArmModel()
 
-    kambara_muscle  = kambara_muscle_model.MuscleModel(kambara_arm)
-    mitrovic_muscle = mitrovic_muscle_model.MuscleModel(mitrovic_arm)
-    weiwei_muscle   = weiwei_muscle_model.MuscleModel(weiwei_arm)
+    kambara_muscle  = kambara_muscle_model.MuscleModel()
+    mitrovic_muscle = mitrovic_muscle_model.MuscleModel()
+    weiwei_muscle   = weiwei_muscle_model.MuscleModel()
 
     # Plot
-    plot_lm(kambara_arm, kambara_muscle)
-    plot_lm(mitrovic_arm, mitrovic_muscle)
+    plot_muscle_length(kambara_arm, kambara_muscle)
+    plot_muscle_length(mitrovic_arm, mitrovic_muscle)
 
-    plot_k(kambara_muscle)
-    plot_k(mitrovic_muscle)
+    plot_stiffness(kambara_muscle)
+    plot_stiffness(mitrovic_muscle)
 
-    plot_b(kambara_muscle)
-    plot_b(mitrovic_muscle)
+    plot_viscosity(kambara_muscle)
+    plot_viscosity(mitrovic_muscle)
 
     plot_lr(kambara_muscle)
     plot_lr(mitrovic_muscle)
@@ -60,7 +60,7 @@ def main():
         plot_c_upperarm(mitrovic_arm)
 
 
-def plot_lm(arm, muscle):
+def plot_muscle_length(arm, muscle):
     
     plt.clf()
 
@@ -74,7 +74,7 @@ def plot_lm(arm, muscle):
     for i, qi in enumerate(q):
         arm.angles = np.ones(2) * qi
         arm.angles = arm.constraint_joint_angles(arm.angles)
-        lm[i] = muscle.lm(arm.angles)
+        lm[i] = muscle.muscle_length(arm.angles)
 
     # Plot data #################
     plt.xlabel('Angle (rad)')
@@ -89,7 +89,7 @@ def plot_lm(arm, muscle):
 
     plt.savefig('muscle_' + muscle.name + '_lm.png')
 
-def plot_k(muscle):
+def plot_stiffness(muscle):
     
     plt.clf()
 
@@ -99,7 +99,7 @@ def plot_k(muscle):
 
     k = np.zeros([len(u), 6])
     for i, ui in enumerate(u):
-        k[i] = muscle.K(np.ones(6) * ui)
+        k[i] = muscle.stiffness(np.ones(6) * ui)
 
     # Plot data #################
     plt.xlabel('Control signal')
@@ -114,7 +114,7 @@ def plot_k(muscle):
 
     plt.savefig('muscle_' + muscle.name + '_k.png')
 
-def plot_b(muscle):
+def plot_viscosity(muscle):
     
     plt.clf()
 
@@ -124,7 +124,7 @@ def plot_b(muscle):
 
     b = np.zeros([len(u), 6])
     for i, ui in enumerate(u):
-        b[i] = muscle.B(np.ones(6) * ui)
+        b[i] = muscle.viscosity(np.ones(6) * ui)
 
     # Plot data #################
     plt.xlabel('Control signal')
@@ -170,7 +170,7 @@ def plot_nf(muscle):
 
     # Build datas ###############
     n = 50
-    lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
+    lm = np.linspace(0.1, 0.7, n)
 
     nf = muscle.nf(lm)
 
@@ -188,7 +188,7 @@ def plot_fe(muscle):
 
     # Build datas ###############
     n = 50
-    lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
+    lm = np.linspace(0.1, 0.7, n)
 
     fe = muscle.fe(lm)
 
@@ -206,7 +206,7 @@ def plot_fl(muscle):
 
     # Build datas ###############
     n = 50
-    lm = np.linspace(muscle.ml_min, muscle.ml_max, n)
+    lm = np.linspace(0.1, 0.7, n)
 
     fl = muscle.fl(lm)
 
@@ -223,8 +223,8 @@ def plot_fv(muscle):
 
     # Build datas ###############
     n = 50
-    x = np.linspace(muscle.ml_min, muscle.ml_max, n)
-    y = np.linspace(muscle.mv_min, muscle.mv_max, n)
+    x = np.linspace(0.1, 0.7, n)
+    y = np.linspace(0., 1.5, n)
 
     z = np.zeros([len(x), len(y)])
     for i, xi in enumerate(x):
@@ -250,7 +250,7 @@ def plot_fa(muscle):
 
     # Build datas ###############
     n = 50
-    x = np.linspace(muscle.ml_min, muscle.ml_max, n)
+    x = np.linspace(0.1, 0.7, n)
     y = np.linspace(0., 1., n)
 
     z = np.zeros([len(x), len(y)])

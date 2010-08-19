@@ -147,7 +147,7 @@ class AbstractArmModel:
                    legend=self.joints)
 
 
-    def update(self, torque, delta_time):
+    def compute_acceleration(self, torque, delta_time):
         "Compute the arm dynamics."
 
         # Load state

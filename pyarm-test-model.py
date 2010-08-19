@@ -25,7 +25,7 @@ def main():
                             arm.velocities = np.array([qps, qpe])
                             torque = np.array([us, ue])
 
-                            accelerations = arm.update(torque, DELTA_TIME)
+                            accelerations = arm.compute_acceleration(torque, DELTA_TIME)
 
                             # Forward kinematics
                             velocities, angles = kinematics.forward_kinematics(accelerations,

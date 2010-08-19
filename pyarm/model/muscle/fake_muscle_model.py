@@ -6,6 +6,7 @@ import numpy as np
 from pyarm import fig
 
 class MuscleModel:
+    "Muscle model."
 
     # CONSTANTS ###############################################################
 
@@ -13,26 +14,26 @@ class MuscleModel:
 
     ###########################################################################
 
-    def __init__(self, arm):
+    def __init__(self):
         # Init datas to plot
-        fig.subfig('input signal',
-                   title='Signal',
+        fig.subfig('command',
+                   title='Command',
                    xlabel='time (s)',
-                   ylabel='Signal',
+                   ylabel='Command',
                    ylim=[-0.1, 1.1])
                    #legend=('shoulder +', 'shoulder -',
                    #        'elbow +', 'elbow -'))
 
-    def update(self, signal, angles, delta_time):
-        """Compute the muscle dynamics"""
+    def compute_torque(self, angles, velocities, command):
+        "Compute the torque"
 
         torque = np.zeros(2)
-        if len(signal) > 2:
-            torque[0] = (signal[0] - signal[1])
-            torque[1] = (signal[2] - signal[3])
-            fig.append('input signal', signal[0:4])
+        if len(command) > 2:
+            torque[0] = (command[0] - command[1])
+            torque[1] = (command[2] - command[3])
+            fig.append('command', command[0:4])
         else:
-            torque = np.array(signal)
-            fig.append('input signal', signal[0:2])
+            torque = np.array(command)
+            fig.append('command', command[0:2])
 
         return torque

@@ -3,7 +3,6 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import numpy as np
-import math
 from pyarm import fig
 
 class MuscleModel:
@@ -46,11 +45,6 @@ class MuscleModel:
     [7] Todorov & Li
     """
 
-    # STATE VARIABLES #########################################################
-
-    # Muscles length (m)
-    muscle_length = None
-
     # CONSTANTS ###############################################################
 
     name = 'Mitrovic'
@@ -65,7 +59,7 @@ class MuscleModel:
 
     # Muscle parameters #########################
 
-    # Muscle length when the joint angles = 0 (m) [arbitrary choosen]
+    # Muscle length when joint angles = 0 rad (m) [arbitrary choosen]
     lm0 = np.array([0.15, 0.15, 0.15, 0.15, 0.4, 0.4])
 
     # Muscle parameters from [6] p.356-357
@@ -91,20 +85,18 @@ class MuscleModel:
 
     ###########################################################################
 
-    def __init__(self, arm):
-        self.muscle_length = self.lm(arm.angles)
-
+    def __init__(self):
         # Init datas to plot
-        fig.subfig('input signal',
-                   title='Signal',
+        fig.subfig('command',
+                   title='Command',
                    xlabel='time (s)',
-                   ylabel='Signal',
+                   ylabel='Command',
                    ylim=[-0.1, 1.1],
                    legend=self.muscles)
-        fig.subfig('u',
-                   title='U',
+        fig.subfig('filtered command',
+                   title='Filtered command',
                    xlabel='time (s)',
-                   ylabel='u',
+                   ylabel='command',
                    legend=self.muscles)
         fig.subfig('stiffness',
                    title='Muscle stiffness',
@@ -122,7 +114,7 @@ class MuscleModel:
                    ylabel='Rest length (m)',
                    legend=self.muscles)
         fig.subfig('stretching',
-                   title='Stretching (|lr(u)-lm|)',
+                   title='Stretching',
                    xlabel='time (s)',
                    ylabel='Stretching (m)',
                    legend=self.muscles)
@@ -152,25 +144,21 @@ class MuscleModel:
                    ylabel='Muscle velocity (m/s)',
                    legend=self.muscles)
 
-    def update(self, input_signal, angles, delta_time):
+    def compute_torque(self, angles, velocities, command):
+        "Compute the torque"
 
-        # Muscle inverse kinematics #################################
+        filtered_command = self.filter_command(command)
 
-        # Muscle length
-        former_length = self.muscle_length
-        muscle_length = self.lm(angles)
-        delta_length = muscle_length - former_length
+        # Muscle length (m)
+        muscle_length = self.muscle_length(angles)
 
         # Muscle contraction velocity (muscle length derivative) (m/s)
-        muscle_velocity = delta_length / delta_time
+        muscle_velocity = self.muscle_velocity(velocities)
 
-        # Dynamics ##################################################
-
-        u = self.u(input_signal)
-
-        stiffness = self.K(u)
-        viscosity = self.B(u)
-        rest_length = self.rest_length(u)
+        # Torque (N.m)
+        stiffness = self.stiffness(filtered_command)
+        viscosity = self.viscosity(filtered_command)
+        rest_length = self.rest_length(filtered_command)
 
         stretching = self.stretching(rest_length, muscle_length)
         elastic_force = self.elastic_force(stiffness, stretching)
@@ -179,8 +167,8 @@ class MuscleModel:
 
         torque = self.torque(tension)
 
-        fig.append('input signal', input_signal)
-        fig.append('u', u)
+        fig.append('command', command)
+        fig.append('filtered command', filtered_command)
         fig.append('stiffness', stiffness)
         fig.append('viscosity', viscosity)
         fig.append('rest length', rest_length)
@@ -191,35 +179,35 @@ class MuscleModel:
         fig.append('muscle length', muscle_length)
         fig.append('muscle velocity', muscle_velocity)
 
-        # Save state
-        self.muscle_length = muscle_length
-
         return torque
 
 
-    def u(self, signal):
-        """Compute control signal (motor command).
+    def filter_command(self, command):
+        """Filter commands.
 
-        Take a list of float.
-        Return a 6 elements vector (array) with value taken in [0, 1]"""
-        signal = [max(min(s, 1.), 0.) for s in signal]
-        return np.array(signal[0:6])
+        Return a 6 elements array with value taken in [0, 1]"""
+        command = [max(min(float(s), 1.), 0.) for s in command]
+        return np.array(command[0:6])
 
-    def lm(self, angles):
+    def muscle_length(self, angles):
         "Compute muscle length (m)."
         return self.lm0 - np.dot(self.A, angles)
 
-    def K(self, u):
+    def muscle_velocity(self, velocities):
+        "Compute muscle contraction velocity (muscle length derivative) (m/s)."
+        return - np.dot(self.A, velocities)
+
+    def stiffness(self, filtered_command):
         "Compute muscle stiffness (N/m)."
-        return self.k0 + self.k1 * u
+        return self.k0 + self.k1 * filtered_command
 
-    def B(self, u):
+    def viscosity(self, filtered_command):
         "Compute muscle viscosity (N.s/m)."
-        return self.b0 + self.b1 * u
+        return self.b0 + self.b1 * filtered_command
 
-    def rest_length(self, u):
+    def rest_length(self, filtered_command):
         "Compute muscle rest length (m)."
-        return self.lr0 + self.lr1 * u
+        return self.lr0 + self.lr1 * filtered_command
 
     def stretching(self, rest_length, muscle_length):
         "Compute stretching (m)."
@@ -235,7 +223,7 @@ class MuscleModel:
 
     def tension(self, elastic_force, viscosity_force):
         "Compute muscle tension (cf. Kelvin-Voight model)."
-        return elastic_force - viscosity_force # TODO
+        return elastic_force - viscosity_force
 
     def torque(self, tension):
         "Compute total torque (N.m)."

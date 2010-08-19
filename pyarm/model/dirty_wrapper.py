@@ -10,14 +10,14 @@ from pyarm.model.arm import mitrovic_arm_model
 DELTA_TIME = 0.01
 arm = mitrovic_arm_model.ArmModel()
 
-def global_predict(qs, qe, qps, qpe, us, ue):
+def compute_next_state(qs, qe, qps, qpe, us, ue):
 
     # Set state
     arm.angles = np.array([float(qs), float(qe)])
     arm.velocities = np.array([float(qps), float(qpe)])
     torque = np.array([float(us), float(ue)])
 
-    accelerations = arm.update(torque, DELTA_TIME)
+    accelerations = arm.compute_acceleration(torque, DELTA_TIME)
 
     # Forward kinematics
     velocities, angles = kinematics.forward_kinematics(accelerations,
