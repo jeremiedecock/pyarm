@@ -239,9 +239,9 @@ def main():
             commands = [float(flag) for flag in gui.keyboard_flags]
         else:
             elapsed_time = current_time - INIT_TIME
-            commands = agent.get_action(velocities=arm.velocities,
-                                            angles=arm.angles,
-                                            time=elapsed_time)
+            commands = agent.get_commands(arm.angles,
+                                          arm.velocities,
+                                          elapsed_time)
     
         # Update angles (physics)
         torque = muscle.compute_torque(arm.angles, arm.velocities, commands)
@@ -270,4 +270,8 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+    #parse_arguments()
+    #init()
+    #run()
+    #finalize()
+

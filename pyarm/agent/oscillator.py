@@ -9,7 +9,7 @@ class Agent:
     def __init__(self):
         pass
 
-    def get_action(self, velocities=None, angles=None, time=None):
+    def get_commands(self, angles, velocities, time):
 
         #f1 = lambda amp, freq, phase, off : amp * math.sin(2.0 * math.pi * freq * time + phase) + off
         #f2 = lambda : amp * math.sin(2.0 * math.pi * freq * time + phase) + off
@@ -34,7 +34,7 @@ def func(time, amp, freq, phase, off):
     phase = float(phase)
     off = float(off)
 
-    signal = amp * math.sin(2.0 * math.pi * freq * time + phase) + off
+    commands = amp * math.sin(2.0 * math.pi * freq * time + phase) + off
 
-    return max(min(signal, 1.), 0.)
+    return max(min(commands, 1.), 0.)
 

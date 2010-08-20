@@ -16,7 +16,7 @@ class Agent:
     def __init__(self):
         pass
 
-    def init(self, velocities, angles):
+    def init(self, angles, velocities):
         #qs_target = 1.1
         #qe_target = 1.2
         qs_target = 1.1
@@ -34,18 +34,18 @@ class Agent:
         if return_value != 0:
             warnings.warn("ILQG : no convergence.")
 
-    def get_action(self, velocities=None, angles=None, time=None):
+    def get_commands(self, angles, velocities, time):
         if self.cpt == 0:
-            self.init(velocities, angles)
+            self.init(angles, velocities)
 
         if self.cpt < MAXSTEP:
-            signal = ilqg.getcmd(velocities[0], velocities[1],
-                                 angles[0], angles[1])
+            commands = ilqg.getcmd(velocities[0], velocities[1],
+                                   angles[0], angles[1])
         else:
-            signal = [0., 0.]
+            commands = [0., 0.]
 
         self.cpt += 1
 
-        return signal
+        return commands
 
 

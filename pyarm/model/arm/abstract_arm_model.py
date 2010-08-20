@@ -145,6 +145,13 @@ class AbstractArmModel:
                    xlabel='time (s)',
                    ylabel='Angle (rad)',
                    legend=self.joints)
+        fig.subfig('position',
+                   title='Position',
+                   xlabel='time (s)',
+                   ylabel='Position (m)',
+                   legend=('shoulder x', 'shoulder y',
+                           'elbow x', 'elbow y',
+                           'wrist x', 'wrist y'))
 
 
     def compute_acceleration(self, torque, delta_time):
@@ -200,6 +207,7 @@ class AbstractArmModel:
         fig.append('angular_acceleration', accelerations)
         fig.append('angular_velocity', velocities)
         fig.append('joint_angles', angles)
+        fig.append('position', np.concatenate((self.joints_position())))
 
         # Save state
         self.angles = angles
@@ -336,3 +344,24 @@ class AbstractArmModel:
             else:
                 warnings.warn("%s is not a valid key" % name)
 
+
+    def joints_position(self):
+        "Compute absolute position of elbow and wrist in operational space"
+        initial_angle = 0
+        shoulder_point = np.zeros(2)
+
+        shoulder_angle = self.angles[0]
+        elbow_angle = self.angles[1]
+
+        global_shoulder_angle = initial_angle + shoulder_angle
+        global_elbow_angle = global_shoulder_angle + elbow_angle
+
+        elbow_point = np.array([math.cos(global_shoulder_angle),
+                                math.sin(global_shoulder_angle)]) \
+                      * self.upperarm_length + shoulder_point
+
+        wrist_point = np.array([math.cos(global_elbow_angle),
+                                math.sin(global_elbow_angle)]) \
+                      * self.upperarm_length + elbow_point
+
+        return shoulder_point, elbow_point, wrist_point

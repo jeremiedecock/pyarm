@@ -7,7 +7,7 @@ class Agent:
     def __init__(self):
         pass
 
-    def get_action(self, velocities=None, angles=None, time=None):
+    def get_commands(self, angles, velocities, time):
         return (0.,
                 0.,
                 heaviside(time, 3.),

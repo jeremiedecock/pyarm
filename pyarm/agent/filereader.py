@@ -23,13 +23,13 @@ class Agent:
             print
             raise
 
-    def get_action(self, velocities=None, angles=None, time=None):
+    def get_commands(self, angles, velocities, time):
         self.cpt += 1
 
         if self.cpt < len(self.inputs):
-            signal = self.inputs[self.cpt]
+            command = self.inputs[self.cpt]
         else:
-            signal = [0. for n in self.inputs[0]]
+            command = [0. for n in self.inputs[0]]
 
-        return signal
+        return command
 

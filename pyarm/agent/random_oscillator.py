@@ -15,8 +15,7 @@ class Agent:
     def __init__(self):
         pass
 
-    def get_action(self, velocities=None, angles=None, time=None):
-        
+    def get_commands(self, angles, velocities, time):
         self.amp = map(update, self.amp)
         self.freq = map(update, self.freq)
         self.off = map(update, self.off)
@@ -37,9 +36,9 @@ def func(time, amp, freq, phase, off):
     phase = float(phase)
     off = float(off)
 
-    signal = amp * math.sin(2.0 * math.pi * freq * time + phase) + off
+    commands = amp * math.sin(2.0 * math.pi * freq * time + phase) + off
 
-    return max(min(signal, 1), 0)
+    return max(min(commands, 1), 0)
 
 def update(value):
     if bernoulli(0.01):
