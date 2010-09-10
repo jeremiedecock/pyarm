@@ -362,6 +362,6 @@ class AbstractArmModel:
 
         wrist_point = np.array([math.cos(global_elbow_angle),
                                 math.sin(global_elbow_angle)]) \
-                      * self.upperarm_length + elbow_point
+                      * self.forearm_length + elbow_point
 
         return shoulder_point, elbow_point, wrist_point
