@@ -4,6 +4,10 @@
 
 import numpy as np
 import math
+import time
+import gc
+import gtk.gdk
+import os
 
 class AbstractGUI:
 
@@ -167,6 +171,47 @@ class AbstractGUI:
                     self.draw_circle(elbow_point[0].tolist(),
                                             elbow_point[1].tolist(),
                                             abs(self.muscle.A[i][1]) * self.scale)
+
+
+    def take_a_screenshot(self):
+        "Take a screenshot and save it into a file."
+        pass
+        #try:
+        #os.system("import -window root temp_" + str(time.time()) + ".png")
+
+        #w = gtk.gdk.get_default_root_window()
+        #sz = w.get_size()
+        #print "The size of the window is %d x %d" % sz
+        #pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,sz[0],sz[1])
+        #pb = pb.get_from_drawable(w,w.get_colormap(),0,0,0,0,sz[0],sz[1])
+        #if (pb != None):
+        #    pb.save("screenshot.png","png")
+        #    print "Screenshot saved to screenshot.png."
+        #else:
+        #    print "Unable to get the screenshot."
+
+
+
+        # Either "png" or "jpeg"
+        #format = "png"
+
+        #width = gtk.gdk.screen_width()
+        #height = gtk.gdk.screen_height()
+        #screenshot = gtk.gdk.Pixbuf.get_from_drawable(
+        #             gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, width, height),
+        #             gtk.gdk.get_default_root_window(),
+        #             gtk.gdk.colormap_get_system(),
+        #             0, 0, 0, 0, width, height)
+
+        ## Pixbuf's have a save method 
+        ## Note that png doesnt support the quality argument. 
+        #screenshot.save("screenshot_" + str(time.time()) + "." + format, format)
+
+        ## To avoid a big memory leak
+        #del screenshot
+        #gc.collect()
+
+        #except:
 
     def update(self, input_signal, torque, acceleration):
         "Redraw the screen."

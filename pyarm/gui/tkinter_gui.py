@@ -154,6 +154,8 @@ class GUI(AbstractGUI):
 
             self.root.update_idletasks() # redraw
             self.root.update()           # process events
+            
+            self.take_a_screenshot()
         except tk.TclError:
             pass # to avoid errors when the window is closed
 
