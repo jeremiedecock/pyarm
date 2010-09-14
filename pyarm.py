@@ -225,32 +225,35 @@ def main():
 
     while gui.running:
 
-        # Compute delta time
-        current_time = time.time()
+        try:
+            # Compute delta time
+            current_time = time.time()
 
-        if realtime:
-            delta_time = current_time - former_time
-    
-        fig.append('dtime', delta_time)
+            if realtime:
+                delta_time = current_time - former_time
+        
+            fig.append('dtime', delta_time)
 
-        # Get input signals
-        commands = None
-        if agent == None:
-            commands = [float(flag) for flag in gui.keyboard_flags]
-        else:
-            elapsed_time = current_time - INIT_TIME
-            commands = agent.get_commands(arm.angles,
-                                          arm.velocities,
-                                          elapsed_time)
-    
-        # Update angles (physics)
-        torque = muscle.compute_torque(arm.angles, arm.velocities, commands)
-        acceleration = arm.compute_acceleration(torque, delta_time)
+            # Get input signals
+            commands = None
+            if agent == None:
+                commands = [float(flag) for flag in gui.keyboard_flags]
+            else:
+                elapsed_time = current_time - INIT_TIME
+                commands = agent.get_commands(arm.angles,
+                                              arm.velocities,
+                                              elapsed_time)
+        
+            # Update angles (physics)
+            torque = muscle.compute_torque(arm.angles, arm.velocities, commands)
+            acceleration = arm.compute_acceleration(torque, delta_time)
 
-        # Update clock
-        former_time = current_time
+            # Update clock
+            former_time = current_time
 
-        gui.update(commands, torque, acceleration)
+            gui.update(commands, torque, acceleration)
+        except KeyboardInterrupt:
+            gui.running = False
 
     # Quit ####################################################################
     if screencast:

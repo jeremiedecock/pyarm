@@ -6,8 +6,7 @@ from pyarm.gui.abstract_gui import AbstractGUI
 import sys
 
 # TODO :
-# - capture [Ctrl-C] to avoid dirty exit (and set running variable to False)
-# - set take_a_screenshot with cairo
+# - enable take_a_screenshot with cairo
 
 class GUI(AbstractGUI):
     "Text user interface."
