@@ -200,7 +200,7 @@ def main():
     elif gui == 'cairo':
         raise NotImplementedError()
     elif gui == 'none':
-        raise NotImplementedError()
+        from pyarm.gui import none_gui as gui_mod
     else:
         usage()
         sys.exit(2)
