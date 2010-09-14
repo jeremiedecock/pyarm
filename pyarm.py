@@ -31,7 +31,7 @@ def usage():
         ilqg, none)
 
     -g, --gui
-        the graphical user interface to use (tk, none)
+        the graphical user interface to use (tk, gtk, none)
 
     -r, --realtime
         realtime simulation (framerate dependant simulation) [default]
@@ -196,7 +196,7 @@ def main():
     if gui == 'tk':
         from pyarm.gui import tkinter_gui as gui_mod
     elif gui == 'gtk':
-        raise NotImplementedError()
+        from pyarm.gui import gtk_gui as gui_mod
     elif gui == 'cairo':
         raise NotImplementedError()
     elif gui == 'none':
