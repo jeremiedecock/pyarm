@@ -151,7 +151,7 @@ class GUI(AbstractGUI):
         while gtk.events_pending():
             gtk.main_iteration(False)
             
-        self.take_a_screenshot()
+        #self.take_a_screenshot()
         #except tk.TclError:
         #    pass # to avoid errors when the window is closed
 
@@ -207,14 +207,15 @@ class GUI(AbstractGUI):
 
     def draw_arc(self, x_point, y_point, radius, **kw):
         "TODO : doc..."
-        #radius = abs(radius)
-        #y_point *= -1
-        #y_point += self.canvas.winfo_height() # TODO
-        #args = (x_point + radius,
-        #        y_point + radius,
-        #        x_point - radius,
-        #        y_point - radius)
-        #return self.canvas.create_arc(args, kw)
+        radius = abs(radius)
+        y_point = -y_point + self.canevas_height
+
+        self.gtk_gc.set_rgb_fg_color(gtk.gdk.color_parse("black"))
+        self.drawable.draw_arc(self.gtk_gc,
+                               False,
+                               x_point - radius, y_point - radius,
+                               2 * radius, 2 * radius,
+                               kw['start']*64, kw['extent']*64)
 
     def draw_circle(self, x_point, y_point, radius, **kw):
         "TODO : doc..."
