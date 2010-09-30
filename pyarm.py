@@ -7,15 +7,14 @@ import sys
 import os
 import shutil
 import getopt
-import time
-from pyarm import fig
 
-INIT_TIME = time.time()   # Initial time (s)
+from pyarm import fig
+from pyarm import clock as clock_mod
 
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-r]
+    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI]
                 [-d DELTA_TIME] [-s] [-l]
     
     A robotic arm model and simulator.
@@ -33,12 +32,10 @@ def usage():
     -g, --gui
         the graphical user interface to use (tk, gtk, none)
 
-    -r, --realtime
-        realtime simulation (framerate dependant simulation) [default]
-
     -d, --deltatime
-        timestep value in second (cancel -r option)
-        should be near to 0.005 seconds
+        timestep value in second (should be near to 0.005 seconds)
+        realtime simulation (eg. framerate dependant simulation) is set if this
+        option is omitted
 
     -s, --screencast
         make a screencast
@@ -72,7 +69,6 @@ def main():
     arm = 'li'
     agent = 'none'
     gui = 'tk'
-    realtime = True
     delta_time = None
     screencast = False
     save_figures = False
@@ -81,8 +77,8 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:rd:sfluvh',
-                     ["muscle=", "arm=", "agent=", "gui=", "realtime",
+                     'm:a:A:g:d:sfluvh',
+                     ["muscle=", "arm=", "agent=", "gui=",
                       "deltatime=", "screencast", "figures", "log",
                       "unbounded", "version", "help"])
     except getopt.GetoptError, err:
@@ -103,13 +99,8 @@ def main():
             agent = a
         elif o in ("-g", "--gui"):
             gui = a
-        elif o in ("-r", "--realtime"):
-            #realtime = True
-            pass
         elif o in ("-d", "--deltatime"):
             delta_time = float(a)
-            fig.DELTA_TIME = float(a)
-            realtime = False
         elif o in ("-s", "--screencast"):
             screencast = True
             raise NotImplementedError()
@@ -135,6 +126,12 @@ def main():
 
     # Init ####################################################################
 
+    # Erase the screencast directory
+    if screencast:
+        shutil.rmtree('screencast', True)
+        os.mkdir('screencast')
+
+    # Muscle module
     if muscle == 'none':
         from pyarm.model.muscle import fake_muscle_model as muscle_module
     elif muscle == 'kambara':
@@ -147,6 +144,7 @@ def main():
         usage()
         sys.exit(2)
 
+    # Arm module
     if arm == 'kambara':
         from pyarm.model.arm import kambara_arm_model as arm_module
     elif arm == 'mitrovic':
@@ -159,6 +157,7 @@ def main():
         usage()
         sys.exit(2)
 
+    # Agent module
     if agent == 'none':
         agent_module = None
         print 'Press NumKey 1 to 6 to move the arm'
@@ -175,24 +174,20 @@ def main():
     elif agent == 'ilqg':
         if muscle == 'none':
             from pyarm.agent import ilqg_agent as agent_module
-            if delta_time is None:
-                print("ILQG agent can't be used in realtime mode. " + \
-                      "Use -d option to set a delta_time value.")
-                sys.exit(3)
-            else:
-                agent_module.DELTA_TIME = delta_time
         else:
             from pyarm.agent import ilqg6_agent as agent_module
-            if delta_time is None:
-                print("ILQG agent can't be used in realtime mode. " + \
-                      "Use -d option to set a delta_time value.")
-                sys.exit(3)
-            else:
-                agent_module.DELTA_TIME = delta_time
+
+        if delta_time is None:
+            print("ILQG agent can't be used in realtime mode. " + \
+                  "Use -d option to set a delta_time value.")
+            sys.exit(3)
+        else:
+            agent_module.DELTA_TIME = delta_time  ###### TODO !
     else:
         usage()
         sys.exit(2)
 
+    # GUI module
     if gui == 'tk':
         from pyarm.gui import tkinter_gui as gui_mod
     elif gui == 'gtk':
@@ -205,6 +200,7 @@ def main():
         usage()
         sys.exit(2)
 
+    # Init instances
     arm = arm_module.ArmModel(unbounded)
     muscle = muscle_module.MuscleModel()
 
@@ -214,45 +210,40 @@ def main():
 
     gui = gui_mod.GUI(muscle, arm)
 
-    # Erase the screencast directory
-    if screencast:
-        shutil.rmtree('screencast', True)
-        os.mkdir('screencast')
+    clock = None
+    if delta_time is None:
+        clock = clock_mod.RealtimeClock()
+    else:
+        clock = clock_mod.SimulationtimeClock(delta_time)
+    fig.CLOCK = clock
+
+    fig.subfig('dtime', title='Time', xlabel='time (s)', ylabel='Delta time (s)')
 
     # The mainloop ############################################################
-    fig.subfig('dtime', title='Time', xlabel='time (s)', ylabel='Delta time (s)')
-    former_time = INIT_TIME
-
     while gui.running:
 
         try:
-            # Compute delta time
-            current_time = time.time()
-
-            if realtime:
-                delta_time = current_time - former_time
-        
-            fig.append('dtime', delta_time)
+            # Update clock
+            clock.update()
+            fig.append('dtime', clock.delta_time)
 
             # Get input signals
             commands = None
             if agent == None:
                 commands = [float(flag) for flag in gui.keyboard_flags]
             else:
-                elapsed_time = current_time - INIT_TIME
                 commands = agent.get_commands(arm.angles,
                                               arm.velocities,
-                                              elapsed_time)
+                                              clock.time)
         
             # Update angles (physics)
             torque = muscle.compute_torque(arm.angles, arm.velocities, commands)
-            acceleration = arm.compute_acceleration(torque, delta_time)
+            acceleration = arm.compute_acceleration(torque, clock.delta_time)
 
-            # Update clock
-            former_time = current_time
-
+            # Update GUI
             gui.update(commands, torque, acceleration)
         except KeyboardInterrupt:
+            # Stop the simulation when Ctrl-c is typed
             gui.running = False
 
     # Quit ####################################################################

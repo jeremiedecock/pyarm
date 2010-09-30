@@ -3,30 +3,25 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 import math
-import time
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 
 SUBFIGS = {}
-TIMEREF = time.time()
 FILE_PREFIX = time.strftime('%d%m%y_%H%M%S_')
 FIG_FILENAME = "all_figs.png"
 FIG_DIRNAME = "pyarm_figs"
 LOG_DIRNAME = "pyarm_logs"
+CLOCK = None
 SAVE = False
-DELTA_TIME = None
 
 def append(name, y, x=None):
     if name in SUBFIGS:
 
         if x is None:
-            if DELTA_TIME is None:
-                # realtime simulation
-                x = time.time() - TIMEREF
-            else:
-                x = len(SUBFIGS[name]['xdata']) * DELTA_TIME
+            x = CLOCK.time
 
         #if isinstance(x, numbers.Number):
         if not hasattr(x, 'copy'):
