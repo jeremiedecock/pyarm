@@ -15,7 +15,7 @@ def usage():
     """Print help message"""
 
     print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI]
-                [-d DELTA_TIME] [-s] [-l]
+                [-d DELTA_TIME] [-D GUI_DELTA_TIME] [-s] [-l]
     
     A robotic arm model and simulator.
 
@@ -36,6 +36,9 @@ def usage():
         timestep value in second (should be near to 0.005 seconds)
         realtime simulation (eg. framerate dependant simulation) is set if this
         option is omitted
+
+    -D, --guideltatime
+        set the interval between two display in milliseconds (default = 0.04)
 
     -s, --screencast
         make a screencast
@@ -70,6 +73,7 @@ def main():
     agent = 'none'
     gui = 'tk'
     delta_time = None
+    gui_delta_time = 0.04
     screencast = False
     save_figures = False
     log = False
@@ -77,9 +81,9 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     'm:a:A:g:d:sfluvh',
-                     ["muscle=", "arm=", "agent=", "gui=",
-                      "deltatime=", "screencast", "figures", "log",
+                     'm:a:A:g:d:D:sfluvh',
+                     ["muscle=", "arm=", "agent=", "gui=", "deltatime=",
+                      "guideltatime=", "screencast", "figures", "log",
                       "unbounded", "version", "help"])
     except getopt.GetoptError, err:
         # will print something like "option -x not recognized"
@@ -101,6 +105,8 @@ def main():
             gui = a
         elif o in ("-d", "--deltatime"):
             delta_time = float(a)
+        elif o in ("-D", "--guideltatime"):
+            gui_delta_time = float(a)
         elif o in ("-s", "--screencast"):
             screencast = True
             raise NotImplementedError()
@@ -208,14 +214,18 @@ def main():
     if agent_module != None:
         agent = agent_module.Agent()
 
-    gui = gui_mod.GUI(muscle, arm)
-
     clock = None
     if delta_time is None:
         clock = clock_mod.RealtimeClock()
     else:
         clock = clock_mod.SimulationtimeClock(delta_time)
+
+    gui = gui_mod.GUI(muscle, arm)
+
+    # Miscellaneous initialization
     fig.CLOCK = clock
+
+    former_gui_time = 0
 
     fig.subfig('dtime', title='Time', xlabel='time (s)', ylabel='Delta time (s)')
 
@@ -241,7 +251,10 @@ def main():
             acceleration = arm.compute_acceleration(torque, clock.delta_time)
 
             # Update GUI
-            gui.update(commands, torque, acceleration)
+            current_time = clock.time
+            if current_time - former_gui_time >= gui_delta_time:
+                gui.update(commands, torque, acceleration)
+                former_gui_time = current_time
         except KeyboardInterrupt:
             # Stop the simulation when Ctrl-c is typed
             gui.running = False

@@ -151,7 +151,7 @@ class GUI(AbstractGUI):
         while gtk.events_pending():
             gtk.main_iteration(False)
             
-        #self.take_a_screenshot()
+        self.take_a_screenshot()
         #except tk.TclError:
         #    pass # to avoid errors when the window is closed
 
@@ -180,7 +180,7 @@ class GUI(AbstractGUI):
 
         # Pixbuf's have a save method 
         # Note that png doesnt support the quality argument. 
-        screenshot.save("screenshot_" + str(time.time()) + "." + format, format)
+        screenshot.save("screenshot_%3.03f.%s" % (time.time(), format), format)
 
         ### To avoid a big memory leak
         ##del screenshot
