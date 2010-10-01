@@ -22,6 +22,8 @@ class AbstractGUI:
     draw_muscles = False
     draw_joints = False
 
+    screencast_path = 'screencast'
+
     def __init__(self):
         raise NotImplementedError()
 

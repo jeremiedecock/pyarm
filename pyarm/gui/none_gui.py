@@ -13,19 +13,25 @@ class GUI(AbstractGUI):
 
     arm = None
     muscle = None
+    clock = None
+    screencast = None
 
     running = True                                  # TODO
     keyboard_flags = [0., 0., 0., 0., 0., 0.]       # TODO
 
-    def __init__(self, muscle, arm):
+    def __init__(self, muscle, arm, clock, screencast):
         self.arm = arm
         self.muscle = muscle
-        print "s. angle   e. angle   s. velocity   e. velocity   commands (x6)"
+        self.clock = clock
+        self.screencast = screencast
+
+        print "time      s. angle   e. angle   s. velocity   e. velocity   commands (x6)"
 
     def update(self, command, torque, acceleration):
         "Redraw the screen."
 
         print "\r",
+        print "% 6.2fs  " % self.clock.time,
         print "%+1.2frd    %+1.2frd   " % (self.arm.angles[0],
                                            self.arm.angles[1]),
         print "%+1.2frd/s     %+1.2frd/s    " % (self.arm.velocities[0],
@@ -38,7 +44,6 @@ class GUI(AbstractGUI):
                                                             command[5]),
         sys.stdout.flush()
 
-        ## Update the caneva
-        #self.draw_shapes(input_signal)
-        #self.take_a_screenshot()
+        if self.screencast:
+            self.take_a_screenshot()
 

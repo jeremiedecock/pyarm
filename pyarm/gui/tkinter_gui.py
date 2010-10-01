@@ -6,6 +6,7 @@ from pyarm.gui.abstract_gui import AbstractGUI
 import Tkinter as tk
 import numpy as np
 import math
+import os
 
 class GUI(AbstractGUI):
     "Tkinter graphical user interface."
@@ -14,6 +15,8 @@ class GUI(AbstractGUI):
 
     arm = None
     muscle = None
+    clock = None
+    screencast = None
 
     root = None
     canvas = None
@@ -34,9 +37,14 @@ class GUI(AbstractGUI):
     draw_joints = True
     draw_muscles = True
 
-    def __init__(self, muscle, arm):
+    screenshot_format = 'png'
+    screenshot_iteration = 0
+
+    def __init__(self, muscle, arm, clock, screencast):
         self.arm = arm
         self.muscle = muscle
+        self.clock = clock
+        self.screencast = screencast
 
         # Create the main window
         self.root = tk.Tk()
@@ -155,48 +163,23 @@ class GUI(AbstractGUI):
             self.root.update_idletasks() # redraw
             self.root.update()           # process events
             
-            self.take_a_screenshot()
+            if self.screencast:
+                self.take_a_screenshot()
+
         except tk.TclError:
             pass # to avoid errors when the window is closed
 
     def take_a_screenshot(self):
         "Take a screenshot and save it into a file."
-        pass
-        #try:
-
-        #w = gtk.gdk.get_default_root_window()
-        #sz = w.get_size()
-        #print "The size of the window is %d x %d" % sz
-        #pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,sz[0],sz[1])
-        #pb = pb.get_from_drawable(w,w.get_colormap(),0,0,0,0,sz[0],sz[1])
-        #if (pb != None):
-        #    pb.save("screenshot.png","png")
-        #    print "Screenshot saved to screenshot.png."
-        #else:
-        #    print "Unable to get the screenshot."
-
-
-
-        # Either "png" or "jpeg"
-        #format = "png"
-
-        #width = gtk.gdk.screen_width()
-        #height = gtk.gdk.screen_height()
-        #screenshot = gtk.gdk.Pixbuf.get_from_drawable(
-        #             gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, width, height),
-        #             gtk.gdk.get_default_root_window(),
-        #             gtk.gdk.colormap_get_system(),
-        #             0, 0, 0, 0, width, height)
-
-        ## Pixbuf's have a save method 
-        ## Note that png doesnt support the quality argument. 
-        #screenshot.save("screenshot_" + str(time.time()) + "." + format, format)
-
-        ### To avoid a big memory leak
-        ##del screenshot
-        ##gc.collect()
-
-        ##except:
+        self.screenshot_iteration += 1
+        basename = '%s/%05d' % (self.screencast_path, self.screenshot_iteration)
+        self.canvas.postscript(file=basename + '.ps', colormode='color')
+        if self.screenshot_format == 'jpeg':
+            cmd = 'gs -sDEVICE=jpeg -dJPEGQ=100 -sOutputFile=%(bn)s.%(format)s -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -dEPSCrop -dNOPAUSE -q -dBATCH %(bn)s.ps' % {'bn': basename, 'format': self.screenshot_format}
+        else:
+            # PNG DEVICES : pngalpha png16m pnggray png256 png16 pngmono
+            cmd = 'gs -sDEVICE=png16m -sOutputFile=%(bn)s.%(format)s -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -dEPSCrop -dNOPAUSE -q -dBATCH %(bn)s.ps' % {'bn': basename, 'format': self.screenshot_format}
+        os.system(cmd)
 
     def clear_canvas(self):
         "Clear the canvas"

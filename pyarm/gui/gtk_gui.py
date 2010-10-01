@@ -17,6 +17,8 @@ class GUI(AbstractGUI):
 
     arm = None
     muscle = None
+    clock = None
+    screencast = None
 
     window = None
     drawable = None
@@ -36,9 +38,14 @@ class GUI(AbstractGUI):
     draw_joints = True
     draw_muscles = True
 
-    def __init__(self, muscle, arm):
+    screenshot_format = 'png'
+    screenshot_iteration = 0
+
+    def __init__(self, muscle, arm, clock, screencast):
         self.arm = arm
         self.muscle = muscle
+        self.clock = clock
+        self.screencast = screencast
 
         # Create the main window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -77,7 +84,7 @@ class GUI(AbstractGUI):
     def quit_handler(self, widget) :
         " Quit the application."
         self.running = False
-        gtk.main_quit()
+        #gtk.main_quit()
 
 
     def keypress_callback(self, event):
@@ -150,37 +157,28 @@ class GUI(AbstractGUI):
         # Process all pending events.
         while gtk.events_pending():
             gtk.main_iteration(False)
-            
-        self.take_a_screenshot()
+        
+        if self.screencast:
+            self.take_a_screenshot()
+
         #except tk.TclError:
         #    pass # to avoid errors when the window is closed
 
     def take_a_screenshot(self):
         "Take a screenshot and save it into a file."
-        #w = gtk.gdk.get_default_root_window()
-        #sz = w.get_size()
-        #print "The size of the window is %d x %d" % sz
-        #pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,sz[0],sz[1])
-        #pb = pb.get_from_drawable(w,w.get_colormap(),0,0,0,0,sz[0],sz[1])
-        #if (pb != None):
-        #    pb.save("screenshot.png","png")
-        #    print "Screenshot saved to screenshot.png."
-        #else:
-        #    print "Unable to get the screenshot."
-
-
-        # Either "png" or "jpeg"
-        format = "png"
+        self.screenshot_iteration += 1
 
         screenshot = gtk.gdk.Pixbuf.get_from_drawable(
-                     gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.canevas_width, self.canevas_height),
-                     self.drawable,
-                     gtk.gdk.colormap_get_system(),
-                     0, 0, 0, 0, self.canevas_width, self.canevas_height)
+                         gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.canevas_width, self.canevas_height),
+                         self.drawable,
+                         gtk.gdk.colormap_get_system(),
+                         0, 0, 0, 0, self.canevas_width, self.canevas_height)
 
         # Pixbuf's have a save method 
         # Note that png doesnt support the quality argument. 
-        screenshot.save("screenshot_%3.03f.%s" % (time.time(), format), format)
+        basename = '%s/%05d' % (self.screencast_path, self.screenshot_iteration)
+        screenshot.save("%s.%s" % (basename, self.screenshot_format),
+                        self.screenshot_format)
 
         ### To avoid a big memory leak
         ##del screenshot

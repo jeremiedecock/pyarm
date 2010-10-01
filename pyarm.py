@@ -109,7 +109,6 @@ def main():
             gui_delta_time = float(a)
         elif o in ("-s", "--screencast"):
             screencast = True
-            raise NotImplementedError()
         elif o in ("-f", "--figures"):
             save_figures = True
         elif o in ("-l", "--log"):
@@ -220,7 +219,7 @@ def main():
     else:
         clock = clock_mod.SimulationtimeClock(delta_time)
 
-    gui = gui_mod.GUI(muscle, arm)
+    gui = gui_mod.GUI(muscle, arm, clock, screencast)
 
     # Miscellaneous initialization
     fig.CLOCK = clock
@@ -262,8 +261,9 @@ def main():
     # Quit ####################################################################
     if screencast:
         print "Making screencast..."
-        os.system("ffmpeg2theora -f image2 %(path)s/%%05d.jpeg" + \
-                  "-o %(path)s/screencast.ogv" % {'path': 'screencast'})
+        cmd = "ffmpeg2theora -f image2 %(path)s/%%05d.%(format)s -o %(path)s/screencast.ogv" % {'path': gui.screencast_path, 'format': gui.screenshot_format}
+        print cmd
+        os.system(cmd)
 
     if log:
         print 'Saving log...'
