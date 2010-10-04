@@ -11,10 +11,15 @@ import getopt
 from pyarm import fig
 from pyarm import clock as clock_mod
 
-# Lionel's old format
-COMMAND_SLICE = slice(8, 14)
-ANGLES_SLICE = slice(2, 4)
-VELOCITIES_SLICE = slice(0, 2)
+## Lionel's old format
+#COMMAND_SLICE = slice(8, 14)
+#ANGLES_SLICE = slice(2, 4)
+#VELOCITIES_SLICE = slice(0, 2)
+
+# Lionel's new format
+COMMAND_SLICE = slice(18, 24)
+ANGLES_SLICE = slice(10, 12)
+VELOCITIES_SLICE = slice(8, 10)
 
 def usage():
     """Print help message"""
