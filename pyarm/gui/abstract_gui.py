@@ -16,11 +16,15 @@ class AbstractGUI:
     canevas_width = 800
     canevas_height = 600
     scale = 450. # px/m (pixels per meter)
+     
+    shoulder_point = None
 
     draw_angles_bounds = False
     draw_angles = False
     draw_muscles = False
     draw_joints = False
+
+    target_angle = None
 
     screencast_path = 'screencast'
 
@@ -38,7 +42,11 @@ class AbstractGUI:
         global_shoulder_angle = self.initial_angle + shoulder_angle
         global_elbow_angle = global_shoulder_angle + elbow_angle
 
-        shoulder_point = np.array([self.canevas_width, self.canevas_height]) / 2.
+        shoulder_point = None
+        if self.shoulder_point is None:
+            shoulder_point = np.array([self.canevas_width, self.canevas_height]) / 2.
+        else:
+            shoulder_point = np.array(self.shoulder_point)
         elbow_point = np.array([math.cos(global_shoulder_angle),
                                 math.sin(global_shoulder_angle)]) \
                       * self.arm.upperarm_length * self.scale + shoulder_point
@@ -50,6 +58,21 @@ class AbstractGUI:
 
         # Clear the canvas
         self.clear_canvas()
+
+        # Draw target
+        if self.target_angle is not None:
+            #point = np.array(self.target_angle)
+            ## START TODO ##
+            target_elbow_point = np.array([math.cos(self.initial_angle + self.target_angle[0]),
+                                    math.sin(self.initial_angle + self.target_angle[0])]) \
+                          * self.arm.upperarm_length * self.scale + shoulder_point
+            target_wrist_point = np.array([math.cos(self.initial_angle + self.target_angle[0] + self.target_angle[1]),
+                                    math.sin(self.initial_angle + self.target_angle[0] + self.target_angle[1])]) \
+                          * self.arm.upperarm_length * self.scale + target_elbow_point
+            point = target_wrist_point
+            ## END TODO ##
+            self.draw_line((point + np.array([3, 3])).tolist() + (point + np.array([-3, -3])).tolist(), width=2)
+            self.draw_line((point + np.array([-3, 3])).tolist() + (point + np.array([3, -3])).tolist(), width=2)
 
         # Draw angles bounds
         if self.draw_angles_bounds:

@@ -20,6 +20,7 @@ from pyarm import clock as clock_mod
 COMMAND_SLICE = slice(18, 24)
 ANGLES_SLICE = slice(10, 12)
 VELOCITIES_SLICE = slice(8, 10)
+TARGETS_ANGLES_SLICE = slice(2, 4)
 
 def usage():
     """Print help message"""
@@ -171,50 +172,47 @@ def main():
     # Miscellaneous initialization
     fig.CLOCK = clock
     former_gui_time = 0
-
-    # Get states and commands #################################################
-    log_datas = []
-
-    try:
-        fd = file(log_file, 'rU')
-        for line in fd.readlines():
-            if not line.lstrip().startswith('#'):
-                log_datas.append([float(num) for num in line.split()])
-        fd.close()
-    except IOError:
-        print
-        print "** Put your controls in the commands.dat file " + \
-              "of the current directory. **"
-        print
-        raise
+    gui.shoulder_point = [70, 70]
+    gui.scale = 1200. # px/m (pixels per meter)
 
     # The mainloop ############################################################
-    while gui.running and len(log_datas) > 0:       # TODO
+    fd = file(log_file, 'rU')
+    line = fd.readline()
 
-        datas = log_datas.pop(0)
+    while gui.running and line != '':       # TODO
 
-        # Update clock
-        clock.update()
+        if not line.lstrip().startswith('#'):
+            datas = [float(num) for num in line.split()]
 
-        # Get input signals
-        commands = datas[COMMAND_SLICE]
-    
-        # Update angles (physics)
-        arm.angles = datas[ANGLES_SLICE]
-        arm.velocities = datas[VELOCITIES_SLICE]
-        torque = [0, 0]
-        acceleration = [0, 0]
+            # Update clock
+            clock.update()
 
-        # Update GUI
-        current_time = clock.time
-        if current_time - former_gui_time >= gui_delta_time:
-            gui.update(commands, torque, acceleration)
-            former_gui_time = current_time
+            # Get input signals
+            commands = datas[COMMAND_SLICE]
+        
+            # Update angles (physics)
+            arm.angles = datas[ANGLES_SLICE]
+            arm.velocities = datas[VELOCITIES_SLICE]
+            torque = [0, 0]
+            acceleration = [0, 0]
+
+            # Update target
+            gui.target_angle = datas[TARGETS_ANGLES_SLICE]
+
+            # Update GUI
+            current_time = clock.time
+            if current_time - former_gui_time >= gui_delta_time:
+                gui.update(commands, torque, acceleration)
+                former_gui_time = current_time
+
+        line = fd.readline()
+
+    fd.close()
 
     # Quit ####################################################################
     if screencast:
         print "Making screencast..."
-        cmd = "ffmpeg2theora -f image2 %(path)s/%%05d.%(format)s -o %(path)s/screencast.ogv" % {'path': gui.screencast_path, 'format': gui.screenshot_format}
+        cmd = "ffmpeg2theora -v 7 -f image2 %(path)s/%%05d.%(format)s -o %(path)s/screencast.ogv" % {'path': gui.screencast_path, 'format': gui.screenshot_format}
         print cmd
         os.system(cmd)
 
