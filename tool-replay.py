@@ -212,7 +212,7 @@ def main():
     # Quit ####################################################################
     if screencast:
         print "Making screencast..."
-        cmd = "ffmpeg2theora -v 7 -f image2 %(path)s/%%05d.%(format)s -o %(path)s/screencast.ogv" % {'path': gui.screencast_path, 'format': gui.screenshot_format}
+        cmd = "ffmpeg2theora -v 9 -f image2 %(path)s/%%05d.%(format)s -o %(path)s/screencast.ogv" % {'path': gui.screencast_path, 'format': gui.screenshot_format}
         print cmd
         os.system(cmd)
 
