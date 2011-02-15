@@ -11,14 +11,16 @@ import getopt
 from pyarm import fig
 from pyarm import clock as clock_mod
 
+VERSION = "0.1.3"
+
 def usage():
     """Print help message"""
 
-    print '''Usage : ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI]
-                [-d DELTA_TIME] [-D GUI_DELTA_TIME] [-s] [-l]
-    
-    A robotic arm model and simulator.
+    print '''A robotic arm model and simulator.
 
+Usage: ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-d DELTA_TIME] [-D GUI_DELTA_TIME] [-s] [-l]
+    
+Options:
     -m, --muscle
         the muscle model to use (kambara, mitrovic, li or none)
 
@@ -58,7 +60,14 @@ def usage():
 
     -h, --help
         display this help and exit
-    '''
+
+Examples:
+    pyarm -f -l -m mitrovic -d 0.005 -A sigmoid
+
+    pyarm -a sagittal -m kambara -d 0.005 -A sigmoid
+
+Report bugs to <gremy@tuxfamily.org>.
+'''
 
 
 def main():
@@ -116,7 +125,11 @@ def main():
         elif o in ("-u", "--unbounded"):
             unbounded = True
         elif o in ("-v", "--version"):
-            # TODO
+            print 'Pyarm ', VERSION
+            print
+            print 'Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)'
+            print 'This is free software; see the source for copying conditions.',
+            print 'There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.'
             sys.exit(0)
         else:
             assert False, "unhandled option"
