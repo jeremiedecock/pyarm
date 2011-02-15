@@ -18,28 +18,28 @@ def usage():
 
     print '''A robotic arm model and simulator.
 
-Usage: ./pyarm [-m MUSCLE] [-a ARM] [-A AGENT] [-g GUI] [-d DELTA_TIME] [-D GUI_DELTA_TIME] [-s] [-l]
+Usage: pyarm [OPTION]...
     
 Options:
-    -m, --muscle
+    -m, --muscle=MUSCLE
         the muscle model to use (kambara, mitrovic, li or none)
 
-    -a, --arm
+    -a, --arm=ARM
         the arm model to use (kambara, mitrovic, li or sagittal)
 
-    -A, --agent
+    -A, --agent=AGENT
         the agent to use (oscillator, random, filereader, sigmoid, heaviside,
         ilqg, none)
 
-    -g, --gui
+    -g, --gui=GUI
         the graphical user interface to use (tk, gtk, none)
 
-    -d, --deltatime
+    -d, --deltatime=DELTA_TIME
         timestep value in second (should be near to 0.005 seconds)
         realtime simulation (eg. framerate dependant simulation) is set if this
         option is omitted
 
-    -D, --guideltatime
+    -D, --guideltatime=GUI_DELTA_TIME
         set the interval between two display in milliseconds (default = 0.04)
 
     -s, --screencast
