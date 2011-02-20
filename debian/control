@@ -10,4 +10,5 @@ Package: pyarm
 Architecture: all
 Depends: python (>= 2.5), python-numpy, python-matplotlib (>=  0.98.1)
 Description: A robotic arm model and simulator
- Pyarm is a simulator used for experiments on human motor control with an anthropomorphic arm model.
+ Pyarm is a simulator used for experiments on human motor control with an
+ anthropomorphic arm model.

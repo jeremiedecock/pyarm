@@ -77,7 +77,7 @@ def main():
     launch the simulator."""
 
     # Parse options ###########################################################
-    muscle = 'none'
+    muscle = 'mitrovic'
     arm = 'li'
     agent = 'none'
     gui = 'tk'

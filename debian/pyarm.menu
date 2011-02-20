@@ -1,0 +1,2 @@
+?package(pyarm):needs="X11" section="Applications/Science/Engineering"\
+  title="pyarm" command="/usr/bin/pyarm"
