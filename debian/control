@@ -1,0 +1,13 @@
+Source: pyarm
+Section: science
+Priority: optional
+Maintainer: Jeremie Decock <gremy@tuxfamily.org>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: http://www.jdhp.org
+
+Package: pyarm
+Architecture: all
+Depends: python (>= 2.5), python-numpy, python-matplotlib (>=  0.98.1)
+Description: A robotic arm model and simulator
+ Pyarm is a simulator used for experiments on human motor control with an anthropomorphic arm model.
