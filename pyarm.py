@@ -66,7 +66,7 @@ Examples:
 
     pyarm -a sagittal -m kambara -d 0.005 -A sigmoid
 
-Report bugs to <gremy@tuxfamily.org>.
+Report bugs to <jd.jdhp@gmail.com>.
 '''
 
 

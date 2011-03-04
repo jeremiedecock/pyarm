@@ -1,15 +1,15 @@
-This package was debianized by Jeremie Decock <gremy@tuxfamily.org> on
+This package was debianized by Jeremie Decock <jd.jdhp@gmail.com> on
 Sun, 20 Feb 2011 15:04:01 +0100.
 
 It was downloaded from <http://www.jdhp.org>
 
 Upstream Author(s):
 
-    Jeremie DECOCK <gremy@tuxfamily.org>
+    Jeremie DECOCK <jd.jdhp@gmail.com>
 
 Copyright:
 
-    Copyright (C) 2010 Jeremie DECOCK <gremy@tuxfamily.org>
+    Copyright (C) 2010 Jeremie DECOCK <jd.jdhp@gmail.com>
 
 License:
 
@@ -33,5 +33,5 @@ License:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
-The Debian packaging is (C) 2011 Jeremie Decock <gremy@tuxfamily.org> and
+The Debian packaging is (C) 2011 Jeremie Decock <jd.jdhp@gmail.com> and
 is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

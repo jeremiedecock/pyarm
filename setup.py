@@ -47,14 +47,14 @@ for source, dest in SCRIPTS.iteritems():
 
 # Don't use unicode strings in setup arguments or bdist_rpm will fail.
 setup(author='Jeremie DECOCK',
-      author_email='gremy@tuxfamily.org',
+      author_email='jd.jdhp@gmail.com',
       # See :  http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=CLASSIFIERS,
       description='A robotic arm model and simulator.',
       license='MIT license',
       long_description=README_FILE.read(),
       maintainer='Jeremie DECOCK',
-      maintainer_email='gremy@tuxfamily.org',
+      maintainer_email='jd.jdhp@gmail.com',
       name='pyarm',
       packages=PACKAGES,
       platforms=['Linux'],
