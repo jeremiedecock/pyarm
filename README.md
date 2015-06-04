@@ -4,7 +4,7 @@ Copyright (c) 2010 Jeremie DECOCK (http://www.jdhp.org)
 
 ## Description
 
-Pyarm is a physics simulator which provide an anthropomorphic arm model for
+Pyarm is a physics simulator which provides an anthropomorphic arm model for
 experiments on human like motor control. 
 
 The arm model is described in the following technical report (written in
