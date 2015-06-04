@@ -49,7 +49,7 @@ pyarm
 
 ## Usage example
 
-Use the following command to run simulations using the "Mitrovic" muscle model
+Use the following command to run simulations with graphs and logs using the "Mitrovic" muscle model
 described in the [technical report](http://download.tuxfamily.org/jdhp/pdf/pyarm.pdf)
 and a "sigmoid" controler: 
 
