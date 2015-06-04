@@ -10,16 +10,16 @@ experiments on human like motor control.
 The arm model is described in the following technical report (written in
 French): http://download.tuxfamily.org/jdhp/pdf/pyarm.pdf .
 
-Pyarm has been used at the Institute for Intelligent Systems and Robotics
-(http://www.isir.upmc.fr/) for experiments on adaptive systems.
+Pyarm has been used at the [Institute for Intelligent Systems and Robotics](http://www.isir.upmc.fr/)
+for experiments on adaptive systems.
 These experiments are described in the following academic paper "Learning
 cost-efficient control policies with XCSF: generalization capabilities and
 further improvement" by Didier Marin, Jérémie Decock, Lionel Rigoux and Olivier
 Sigaud.
 This scientific contribution has been published in the "Proceedings of the 13th
 annual conference on Genetic and evolutionary computation (GECCO'11)", the main
-international conference on Genetic and evolutionary computation.
-This paper can be downloaded at http://www.jdhp.org/articles_en.html#XCSF .
+international conference on genetic and evolutionary computation.
+This paper can be downloaded on [www.jdhp.org](http://www.jdhp.org/articles_en.html#XCSF).
 
 ## Pyarm dependencies
 
