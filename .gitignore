@@ -1,7 +1,7 @@
 MANIFEST
+__pycache__/
 build/
 dist/
-scripts/
 screencast
 ip.py
 bib.png
@@ -9,6 +9,7 @@ list.txt
 doc/*.html
 pyarm_logs/
 pyarm_figs/
+pyarm.egg-info/
 commands.dat
 *.swp
 *.pyc
