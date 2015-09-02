@@ -2,11 +2,11 @@
 
 ## Short term
 
-- [ ] Add a GTK+3/Cairo version
 - [ ] Update the README file
     - [ ] Improve the description: explain the experiments, the goal, the results, ...
     - [ ] Add pictures (results, ...)
     - [ ] Add a video demonstration *explaining* the experiments
+- [ ] Add a GTK+3/Cairo version ?
 
 ## Long term
 
