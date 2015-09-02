@@ -17,10 +17,10 @@ class Agent:
                     self.inputs.append([float(num) for num in line.split()])
             fd.close()
         except IOError:
-            print
-            print "** Put your controls in the commands.dat file " + \
-                  "of the current directory. **"
-            print
+            print()
+            print("** Put your controls in the commands.dat file " + \
+                  "of the current directory. **")
+            print()
             raise
 
     def get_commands(self, angles, velocities, time):

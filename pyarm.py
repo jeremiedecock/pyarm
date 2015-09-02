@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
@@ -16,7 +16,7 @@ VERSION = "0.1.3"
 def usage():
     """Print help message"""
 
-    print '''A robotic arm model and simulator.
+    print('''A robotic arm model and simulator.
 
 Usage: pyarm [OPTION]...
     
@@ -67,7 +67,7 @@ Examples:
     pyarm -a sagittal -m kambara -d 0.005 -A sigmoid
 
 Report bugs to <jd.jdhp@gmail.com>.
-'''
+''')
 
 
 def main():
@@ -94,9 +94,9 @@ def main():
                      ["muscle=", "arm=", "agent=", "gui=", "deltatime=",
                       "guideltatime=", "screencast", "figures", "log",
                       "unbounded", "version", "help"])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # will print something like "option -x not recognized"
-        print str(err) 
+        print(str(err)) 
         usage()
         sys.exit(1)
  
@@ -125,11 +125,11 @@ def main():
         elif o in ("-u", "--unbounded"):
             unbounded = True
         elif o in ("-v", "--version"):
-            print 'Pyarm ', VERSION
-            print
-            print 'Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)'
-            print 'This is free software; see the source for copying conditions.',
-            print 'There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.'
+            print('Pyarm ', VERSION)
+            print()
+            print('Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)')
+            print('This is free software; see the source for copying conditions.', end=' ')
+            print('There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.')
             sys.exit(0)
         else:
             assert False, "unhandled option"
@@ -178,7 +178,7 @@ def main():
     # Agent module
     if agent == 'none':
         agent_module = None
-        print 'Press NumKey 1 to 6 to move the arm'
+        print('Press NumKey 1 to 6 to move the arm')
     elif agent == 'oscillator':
         from pyarm.agent import oscillator as agent_module
     elif agent == 'random':
@@ -196,8 +196,8 @@ def main():
             from pyarm.agent import ilqg6_agent as agent_module
 
         if delta_time is None:
-            print("ILQG agent can't be used in realtime mode. " + \
-                  "Use -d option to set a delta_time value.")
+            print(("ILQG agent can't be used in realtime mode. " + \
+                  "Use -d option to set a delta_time value."))
             sys.exit(3)
         else:
             agent_module.DELTA_TIME = delta_time  ###### TODO !
@@ -273,18 +273,18 @@ def main():
 
     # Quit ####################################################################
     if screencast:
-        print "Making screencast..."
+        print("Making screencast...")
         cmd = "ffmpeg2theora -f image2 %(path)s/%%05d.%(format)s -o %(path)s/screencast.ogv" % {'path': gui.screencast_path, 'format': gui.screenshot_format}
-        print cmd
+        print(cmd)
         os.system(cmd)
 
     if log:
-        print 'Saving log...'
+        print('Saving log...')
         fig.save_log()
 
     # Display figures
     if save_figures:
-        print 'Saving figures...'
+        print('Saving figures...')
         fig.save_all_figs()
     fig.show()
 

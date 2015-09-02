@@ -3,7 +3,7 @@
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
 from pyarm.gui.abstract_gui import AbstractGUI
-import Tkinter as tk
+import tkinter as tk
 import numpy as np
 import math
 import os

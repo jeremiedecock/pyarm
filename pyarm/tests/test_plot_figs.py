@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
@@ -42,7 +42,7 @@ class PlotFigsTest(unittest.TestCase):
                  "muscle_Li_fv.png", "muscle_Mitrovic_k.png",
                  "muscle_Mitrovic_lr.png")
         try:
-            map(os.remove, files)
+            list(map(os.remove, files))
         except:
             pass
 

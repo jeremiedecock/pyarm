@@ -16,9 +16,9 @@ class Agent:
         pass
 
     def get_commands(self, angles, velocities, time):
-        self.amp = map(update, self.amp)
-        self.freq = map(update, self.freq)
-        self.off = map(update, self.off)
+        self.amp = list(map(update, self.amp))
+        self.freq = list(map(update, self.freq))
+        self.off = list(map(update, self.off))
 
         return [func(time, self.amp[i], self.freq[i],
                      self.phase[i], self.off[i]) for i in range(6)]

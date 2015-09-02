@@ -25,23 +25,23 @@ class GUI(AbstractGUI):
         self.clock = clock
         self.screencast = screencast
 
-        print "time      s. angle   e. angle   s. velocity   e. velocity   commands (x6)"
+        print("time      s. angle   e. angle   s. velocity   e. velocity   commands (x6)")
 
     def update(self, command, torque, acceleration):
         "Redraw the screen."
 
-        print "\r",
-        print "% 6.2fs  " % self.clock.time,
-        print "%+1.2frd    %+1.2frd   " % (self.arm.angles[0],
-                                           self.arm.angles[1]),
-        print "%+1.2frd/s     %+1.2frd/s    " % (self.arm.velocities[0],
-                                                 self.arm.velocities[1]),
-        print "%1.2f  %1.2f  %1.2f  %1.2f  %1.2f  %1.2f" % (command[0],
+        print("\r", end=' ')
+        print("% 6.2fs  " % self.clock.time, end=' ')
+        print("%+1.2frd    %+1.2frd   " % (self.arm.angles[0],
+                                           self.arm.angles[1]), end=' ')
+        print("%+1.2frd/s     %+1.2frd/s    " % (self.arm.velocities[0],
+                                                 self.arm.velocities[1]), end=' ')
+        print("%1.2f  %1.2f  %1.2f  %1.2f  %1.2f  %1.2f" % (command[0],
                                                             command[1],
                                                             command[2],
                                                             command[3],
                                                             command[4],
-                                                            command[5]),
+                                                            command[5]), end=' ')
         sys.stdout.flush()
 
         if self.screencast:

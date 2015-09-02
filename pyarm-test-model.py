@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
@@ -33,16 +33,16 @@ def main():
                                                                                arm.angles,
                                                                                DELTA_TIME)
 
-                            print qs, "\t",
-                            print qe, "\t",
-                            print qps, "\t",
-                            print qpe, "\t",
-                            print us, "\t",
-                            print ue, "\t",
-                            print angles[0], "\t",
-                            print angles[1], "\t",
-                            print velocities[0], "\t",
-                            print velocities[1]
+                            print(qs, "\t", end=' ')
+                            print(qe, "\t", end=' ')
+                            print(qps, "\t", end=' ')
+                            print(qpe, "\t", end=' ')
+                            print(us, "\t", end=' ')
+                            print(ue, "\t", end=' ')
+                            print(angles[0], "\t", end=' ')
+                            print(angles[1], "\t", end=' ')
+                            print(velocities[0], "\t", end=' ')
+                            print(velocities[1])
 
 if __name__ == '__main__':
     main()

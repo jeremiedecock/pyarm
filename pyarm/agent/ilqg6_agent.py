@@ -25,9 +25,9 @@ class Agent:
         init_qps = velocities[0]
         init_qpe = velocities[1]
 
-        print "new target : (", qs_target, ", ", qe_target, ")"
-        print "initial state : (", init_qs, ", ", init_qe, ", ", \
-                                   init_qps, ", ", init_qpe, ")"
+        print("new target : (", qs_target, ", ", qe_target, ")")
+        print("initial state : (", init_qs, ", ", init_qe, ", ", \
+                                   init_qps, ", ", init_qpe, ")")
 
         return_value = ilqg.init(qs_target, qe_target,
                                  DELTA_TIME, EPS, MAXSTEP,
