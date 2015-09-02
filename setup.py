@@ -76,7 +76,9 @@ INSTALL_REQUIRES = ['numpy', 'matplotlib']
 #INSTALL_REQUIRES = []
 
 
-SCRIPTS = ["scripts/pyarm"]
+SCRIPTS = ["scripts/pyarm",
+           "scripts/pyarm-plot",
+           "scripts/pyarm-test-model"]
 
 
 # Entry point can be used to create plugins or to automatically generate
