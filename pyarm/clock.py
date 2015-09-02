@@ -2,6 +2,9 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
+__all__ = ['RealtimeClock',
+           'SimulationtimeClock']
+
 import time
 
 class RealtimeClock:

@@ -2,6 +2,13 @@
 
 # Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
 
+__all__ = ['append',
+           'subfig',
+           'save_log',
+           'save_fig',
+           'save_all_figs',
+           'show']
+
 import math
 import os
 import time
