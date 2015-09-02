@@ -95,8 +95,8 @@ Gnu/Linux
 You can install, upgrade, uninstall PyArm with these commands (in a
 terminal)::
 
-    pip install --pre pyarm12
-    pip install --upgrade pyarm12
+    pip install --pre pyarm
+    pip install --upgrade pyarm
     pip uninstall pyarm
 
 Or, if you have downloaded the PyArm source code::
