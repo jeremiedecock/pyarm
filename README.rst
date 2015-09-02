@@ -153,7 +153,7 @@ Documentation
 
 .. PyArm documentation is available on the following page:
 .. 
-..     http://pyax-12.rtfd.org/
+..     http://pyarm.rtfd.org/
 
 - Online Documentation: http://pyarm.readthedocs.org
 - API Documentation: http://pyarm.readthedocs.org/en/latest/api.html
