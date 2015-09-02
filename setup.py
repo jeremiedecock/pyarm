@@ -1,23 +1,66 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Jérémie DECOCK (http://www.jdhp.org)
+# PyArm
 
-from distutils.core import setup
-import subprocess
-import os
-import shutil
+# The MIT License
+#
+# Copyright (c) 2010,2015 Jeremie DECOCK (http://www.jdhp.org)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
+try:
+    from setuptools import setup, find_packages
+except ImportError:
+    from distutils.core import setup
+
+from pyarm import __version__ as VERSION
+
+# See :  http://pypi.python.org/pypi?%3Aaction=list_classifiers
 CLASSIFIERS = ['Development Status :: 4 - Beta',
-               'Environment :: Console',
-               'Environment :: X11 Applications',
+               'Intended Audience :: Education',
+               'Intended Audience :: End Users/Desktop',
                'Intended Audience :: Science/Research',
                'License :: OSI Approved :: MIT License',
-               'Operating System :: POSIX :: Linux',
-               'Programming Language :: Python',
+               'Natural Language :: English',
+               'Operating System :: OS Independent',
+               'Programming Language :: Python :: 3',
+               'Programming Language :: Python :: 3.0',
+               'Programming Language :: Python :: 3.1',
+               'Programming Language :: Python :: 3.2',
+               'Programming Language :: Python :: 3.3',
+               'Programming Language :: Python :: 3.4',
                'Topic :: Scientific/Engineering :: Physics',
-               'Topic :: Scientific/Engineering :: Artificial Intelligence']
+               'Topic :: Scientific/Engineering :: Artificial Intelligence',
+               'Topic :: Software Development :: Libraries',
+               'Topic :: Software Development :: Libraries :: Python Modules',
+               'Topic :: Software Development :: Libraries :: Application Frameworks']
 
+
+KEYWORDS = 'robotics simultion library'
+
+
+# You can either specify manually the list of packages to include in the
+# distribution or use "setuptools.find_packages()" to include them
+# automatically with a recursive search (from the root directory of the
+# project).
+#PACKAGES = find_packages()
 PACKAGES = ['pyarm',
             'pyarm.agent',
             'pyarm.gui',
@@ -26,41 +69,58 @@ PACKAGES = ['pyarm',
             'pyarm.model.kinematics',
             'pyarm.model.muscle']
 
-README_FILE = open('README', 'r')
 
-# Prepare scripts ###########
-
-# The list of scripts we want to export in the distrib ({'src': 'dest', ...}).
-SCRIPTS = {'pyarm.py' : os.path.join('scripts', 'pyarm')}
-
-for source, dest in SCRIPTS.iteritems():
-    try:
-        os.mkdir(os.path.dirname(dest))
-    except OSError:
-        pass # TODO
-
-    try:
-        shutil.copyfile(source, dest)
-    except IOError:
-        pass # TODO
+# The following list contains all dependencies that Python will try to
+# install with this project
+INSTALL_REQUIRES = ['numpy', 'matplotlib']
+#INSTALL_REQUIRES = []
 
 
-# Don't use unicode strings in setup arguments or bdist_rpm will fail.
+SCRIPTS = ["scripts/pyarm"]
+
+
+# Entry point can be used to create plugins or to automatically generate
+# system commands to call specific functions.
+# Syntax: "name_of_the_command_to_make = package.module:function".
+ENTRY_POINTS = {}
+#ENTRY_POINTS = {
+#  'console_scripts': [
+#      'pyarmgui = pyarm.gui:run',
+#  ],
+#}
+
+
+README_FILE = 'README.rst'
+
+def get_long_description():
+    with open(README_FILE, 'r') as fd:
+        desc = fd.read()
+    return desc
+
+
 setup(author='Jeremie DECOCK',
       author_email='jd.jdhp@gmail.com',
-      # See :  http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      classifiers=CLASSIFIERS,
-      description='A robotic arm model and simulator.',
-      license='MIT license',
-      long_description=README_FILE.read(),
       maintainer='Jeremie DECOCK',
       maintainer_email='jd.jdhp@gmail.com',
-      name='pyarm',
-      packages=PACKAGES,
-      platforms=['Linux'],
-      requires=['numpy', 'matplotlib'],
-      scripts=SCRIPTS.values(),
-      url='http://code.google.com/p/pyarm/',
-      version='0.1.3')
 
-README_FILE.close()
+      name='pyarm',
+      description='A robotic arm model and simulator.',
+      long_description=get_long_description(),
+      url='http://www.jdhp.org/',
+      download_url='http://www.jdhp.org/',# Where the package can be downloaded
+
+      classifiers=CLASSIFIERS,
+      #license='MIT',            # Useless if license is already in CLASSIFIERS
+      keywords=KEYWORDS,
+
+      packages=PACKAGES,
+      include_package_data=True, # Use the MANIFEST.in file
+
+      install_requires=INSTALL_REQUIRES,
+      #platforms=['Linux'],
+      #requires=['numpy', 'matplotlib'],
+
+      scripts=SCRIPTS,
+      entry_points=ENTRY_POINTS,
+
+      version=VERSION)
